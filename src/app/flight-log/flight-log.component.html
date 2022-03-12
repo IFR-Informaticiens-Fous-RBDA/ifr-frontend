@@ -1,0 +1,175 @@
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+  <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+    <!-- Name Column -->
+
+  <ng-container matColumnDef="date">
+    <th mat-header-cell *matHeaderCellDef> Date </th>
+    <td mat-cell *matCellDef="let element"> {{element.date}} </td>
+  </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="airport departure">
+      <th mat-header-cell *matHeaderCellDef> Departure airport </th>
+      <td mat-cell *matCellDef="let element"> {{element.departure_place}} </td>
+    </ng-container>
+
+      <!-- Name Column -->
+  <ng-container matColumnDef="departure time">
+    <th mat-header-cell *matHeaderCellDef> Departure time </th>
+    <td mat-cell *matCellDef="let element"> {{element.departure_time}} </td>
+  </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="airport arrival">
+      <th mat-header-cell *matHeaderCellDef> Arrival airport </th>
+      <td mat-cell *matCellDef="let element"> {{element.arrival_place}} </td>
+    </ng-container>
+
+      <!-- Name Column -->
+  <ng-container matColumnDef="arrival time">
+    <th mat-header-cell *matHeaderCellDef> Arrival time </th>
+    <td mat-cell *matCellDef="let element"> {{element.arrival_time}} </td>
+  </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="flight duration">
+      <th mat-header-cell *matHeaderCellDef> Flight duration </th>
+      <td mat-cell *matCellDef="let element"> {{element.total_time_of_flight}} </td>
+    </ng-container>
+
+      <!-- Name Column -->
+  <ng-container matColumnDef="PIC name">
+    <th mat-header-cell *matHeaderCellDef> PIC name </th>
+    <td mat-cell *matCellDef="let element"> {{element.name_pic}} </td>
+  </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="instructor name">
+      <th mat-header-cell *matHeaderCellDef> Instructor name </th>
+      <td mat-cell *matCellDef="let element"> {{element.name_instructor}} </td>
+    </ng-container>
+
+      <!-- Name Column -->
+  <ng-container matColumnDef="student name">
+    <th mat-header-cell *matHeaderCellDef> Student's name </th>
+    <td mat-cell *matCellDef="let element"> {{element.name_student}} </td>
+  </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="type of runway">
+      <th mat-header-cell *matHeaderCellDef> Type of runway </th>
+      <td mat-cell *matCellDef="let element"> {{element.type_of_runway}} </td>
+    </ng-container>
+
+      <!-- Name Column -->
+  <ng-container matColumnDef="number of landings day">
+    <th mat-header-cell *matHeaderCellDef> Number of landings - day </th>
+    <td mat-cell *matCellDef="let element"> {{element.landing_number_day}} </td>
+  </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="number of landing night">
+      <th mat-header-cell *matHeaderCellDef> Number of landings - night </th>
+      <td mat-cell *matCellDef="let element"> {{element.landing_number_night}} </td>
+    </ng-container>
+
+      <!-- Name Column -->
+  <ng-container matColumnDef="VFR">
+    <th mat-header-cell *matHeaderCellDef> VFR </th>
+    <td mat-cell *matCellDef="let element"> {{element.is_vfr}} </td>
+  </ng-container>
+    <!-- Name Column -->
+    <ng-container matColumnDef="IFR">
+      <th mat-header-cell *matHeaderCellDef> IFR </th>
+      <td mat-cell *matCellDef="let element"> {{element.is_ifr}} </td>
+    </ng-container>
+
+      <!-- Name Column -->
+  <ng-container matColumnDef="night">
+    <th mat-header-cell *matHeaderCellDef> Night </th>
+    <td mat-cell *matCellDef="let element"> {{element.is_night}} </td>
+  </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="nature of flight">
+      <th mat-header-cell *matHeaderCellDef> Nature of the flight </th>
+      <td mat-cell *matCellDef="let element"> {{element.nature_of_flight}} </td>
+    </ng-container>
+
+      <!-- Name Column -->
+  <ng-container matColumnDef="engine start">
+    <th mat-header-cell *matHeaderCellDef> Engine start </th>
+    <td mat-cell *matCellDef="let element"> {{element.engine_start}} </td>
+  </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="engine stop">
+      <th mat-header-cell *matHeaderCellDef> Engine stop </th>
+      <td mat-cell *matCellDef="let element"> {{element.engine_stop}} </td>
+    </ng-container>
+
+      <!-- Name Column -->
+  <ng-container matColumnDef="engine time">
+    <th mat-header-cell *matHeaderCellDef> Engine time </th>
+    <td mat-cell *matCellDef="let element"> {{element.engine_time}} </td>
+  </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="inspection hours">
+      <th mat-header-cell *matHeaderCellDef> Hours before inspection </th>
+      <td mat-cell *matCellDef="let element"> {{element.remaining_hours_inspection}} </td>
+    </ng-container>
+
+      <!-- Name Column -->
+  <ng-container matColumnDef="oil added before">
+    <th mat-header-cell *matHeaderCellDef> Oil added before </th>
+    <td mat-cell *matCellDef="let element"> {{element.oil_added_before}} </td>
+  </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="oil added after">
+      <th mat-header-cell *matHeaderCellDef> Oil added after </th>
+      <td mat-cell *matCellDef="let element"> {{element.oil_added_after}} </td>
+    </ng-container>
+
+      <!-- Name Column -->
+  <ng-container matColumnDef="fuel added before">
+    <th mat-header-cell *matHeaderCellDef> Fuel added before </th>
+    <td mat-cell *matCellDef="let element"> {{element.fuel_added_before}} </td>
+  </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="fuel added after">
+      <th mat-header-cell *matHeaderCellDef> Fuel added after </th>
+      <td mat-cell *matCellDef="let element"> {{element.fuel_added_after}} </td>
+    </ng-container>
+
+      <!-- Name Column -->
+  <ng-container matColumnDef="passenger number">
+    <th mat-header-cell *matHeaderCellDef> Number of passengers </th>
+    <td mat-cell *matCellDef="let element"> {{element.passenger_number}} </td>
+  </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="passenger names">
+      <th mat-header-cell *matHeaderCellDef> Passenger's name </th>
+      <td mat-cell *matCellDef="let element"> {{element.passenger_names}} </td>
+    </ng-container>
+
+      <!-- Name Column -->
+  <ng-container matColumnDef="remarks">
+    <th mat-header-cell *matHeaderCellDef> Remarks </th>
+    <td mat-cell *matCellDef="let element"> {{element.remarks}} </td>
+  </ng-container>
+
+<tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
+<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+
+
+
+<!-- Copyright 2022 Google LLC. All Rights Reserved.
+    Use of this source code is governed by an MIT-style license that
+    can be found in the LICENSE file at https://angular.io/license -->
