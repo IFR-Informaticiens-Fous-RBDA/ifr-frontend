@@ -1,6 +1,0 @@
-{
-    "source": {
-      "type": "geojson",
-      "data": "https://localhost:3000/clusters"
-    }
-}

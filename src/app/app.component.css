@@ -1,0 +1,8 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+button{
+  background-color: #3F51B5;
+  border-color: #3F51B5;
+  border: none;
+}

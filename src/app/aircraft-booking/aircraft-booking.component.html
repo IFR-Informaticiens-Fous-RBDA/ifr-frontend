@@ -1,0 +1,68 @@
+<!--<div class="row">
+  <div class="col-md-6">
+    <mat-form-field appearance="fill">
+      <mat-label>Choose a date</mat-label>
+      <input matInput [matDatepicker]="picker" (dateChange)="updateView($event)">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="col-md-6 text-right">
+    <h3>{{ viewDate | calendarDate:('dayViewTitle') }}</h3>
+  </div>d
+dd
+</div>-->
+
+<div class="container">
+  <div class="in-line"><h3>{{ viewDate | calendarDate:('weekViewTitle') }}</h3>
+  <button mat-icon-button [matMenuTriggerFor]="appMenu">
+    <mat-icon>calendar_today</mat-icon>
+  </button>
+  <mat-menu #appMenu="matMenu">
+       <mat-calendar #calendar
+          (selectedChange)="updateView($event)" >
+       </mat-calendar>
+  </mat-menu></div>
+  <div class="row">
+      <div class="col-md-6">
+        <div class="btn-group">
+          <div
+            class="btn btn-primary"
+            mwlCalendarPreviousView
+            [view]="'week'"
+            [(viewDate)]="viewDate"
+          >
+            Previous
+          </div>
+          <div
+            class="btn btn-outline-secondary"
+            mwlCalendarToday
+            [(viewDate)]="viewDate"
+          >
+            Today
+          </div>
+          <div
+            class="btn btn-primary"
+            mwlCalendarNextView
+            [view]="'week'"
+            [(viewDate)]="viewDate"
+          >
+            Next
+          </div>
+        </div>
+      </div>
+
+  </div>
+</div>
+<br />
+
+<mwl-calendar-week-view [viewDate]="viewDate" [daysInWeek]="daysInWeek" [dayStartHour]="8" [dayEndHour]="20" [events]= "events" (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="addEventDialog($event)"
+(hourSegmentClicked)="addEventDialog($event)">
+</mwl-calendar-week-view>
+<div class="dots">
+  <span class="dotBU"></span>OO-HBU
+  <span class="dotBI"></span>OO-HBI
+  <span class="dotBY"></span>OO-HBY
+  <span class="dotBQ"></span>OO-HBQ
+</div>
+

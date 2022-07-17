@@ -1,0 +1,57 @@
+div.container{
+  margin-right:0;
+}
+.scroll-container {
+  height: calc(100vh - 320px);
+  overflow-y: auto;
+}
+.in-line{
+  display: flex;
+  align-items: center;
+}
+button.mat-menu-trigger{
+  border: none;
+  background-color: #FAFAFA;
+}
+
+.dots{
+  float:right;
+  margin-right:3em;
+  margin-top: 2em;
+}
+.dotBU{
+  height: 25px;
+  width: 25px;
+  background-color: #AB46D2;
+  border-radius: 50%;
+  display: inline-block;
+
+}
+.dotBI{
+  height: 25px;
+  width: 25px;
+  background-color: #F9D923;
+  border-radius: 50%;
+  display: inline-block;
+
+}
+.dotBY{
+  height: 25px;
+  width: 25px;
+  background-color: #36AE7C;
+  border-radius: 50%;
+  display: inline-block;
+
+}
+.dotBQ{
+  height: 25px;
+  width: 25px;
+  background-color: #187498;
+  border-radius: 50%;
+  display: inline-block;
+
+}
+
+div.cal-event.ng-star-inserted{
+  width: 10px;
+}

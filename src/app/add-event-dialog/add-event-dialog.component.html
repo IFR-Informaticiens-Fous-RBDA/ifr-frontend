@@ -1,0 +1,47 @@
+<h1 mat-dialog-title>Ajouter une réservation <!--{{data.slot}}--></h1>
+<div mat-dialog-content>
+  <p>Quel est votre nom ?</p>
+  <mat-form-field appearance="fill">
+    <mat-label>Votre nom</mat-label>
+    <input matInput [(ngModel)] = "name">
+  </mat-form-field>
+  <p>Sur quel avion comptez-vous voler ?</p>
+  <mat-form-field>
+    <mat-label>Avion choisi</mat-label>
+    <mat-select [(value)] = "selectedAircraft">
+      <mat-option *ngFor="let aircraft of aircrafts" [value]="aircraft.value">
+        {{aircraft.viewValue}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <p>Date et heure de départ</p>
+  <mat-form-field>
+    <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date" [formControl]="dateControlStart"
+      [min]="minDate" [max]="maxDate" [disabled]="disabled">
+    <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
+    <ngx-mat-datetime-picker #picker [showSpinners]="showSpinners" [showSeconds]="showSeconds"
+      [stepHour]="stepHour" [stepMinute]="30" [stepSecond]="stepSecond" [touchUi]="touchUi"
+      [color]="color" [enableMeridian]="enableMeridian">
+    </ngx-mat-datetime-picker>
+  </mat-form-field>
+
+  <p>Date et heure d'arrivée</p>
+  <mat-form-field>
+    <input matInput [ngxMatDatetimePicker]="picker2" placeholder="Choose a date" [formControl]="dateControlEnd"
+       [disabled]="false" [min]="minDate" [max]="maxDate">
+    <mat-datepicker-toggle matSuffix [for]="$any(picker2)"></mat-datepicker-toggle>
+    <ngx-mat-datetime-picker #picker2 [showSpinners]="true" [showSeconds]="false" [stepHour]="1"
+      [stepMinute]="30" [stepSecond]="1" [touchUi]="false"
+      [enableMeridian]="false" [disableMinute]="false" [hideTime]="false">
+      <!-- Custom icon or text of Apply icon -->
+      <ng-template>
+        <!-- <mat-icon>star</mat-icon> -->
+        <span>OK</span>
+      </ng-template>
+    </ngx-mat-datetime-picker>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button class = "btn btn-danger" mat-button (click)="onNoClick()">Annuler</button>
+  <button class = "btn btn-success" mat-button (click)="sendData()" mat-dialog-close cdkFocusInitial>Valider</button>
+</div>
