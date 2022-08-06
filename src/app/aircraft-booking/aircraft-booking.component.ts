@@ -11,6 +11,7 @@ import { Subject } from 'rxjs';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { AddEventDialogComponent } from '../add-event-dialog/add-event-dialog.component';
+import { ApiService } from '../services/api.service';
 
 
 const colors: any={
@@ -133,11 +134,11 @@ export class AircraftBookingComponent {
     private breakpointObserver: BreakpointObserver,
     private cd: ChangeDetectorRef,
     public dialog: MatDialog,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private _api: ApiService
   ) {}
 
   ngOnInit() {
-    console.log(this.events);
     const CALENDAR_RESPONSIVE = {
       small: {
         breakpoint: '(max-width: 576px)',
@@ -169,6 +170,9 @@ export class AircraftBookingComponent {
         }
         this.cd.markForCheck();
       });
+      this._api.getTypeRequest('event/all-events').subscribe((result) => {
+        console.log(result)
+      });
   }
 
   eventTimesChanged({
@@ -192,24 +196,22 @@ export class AircraftBookingComponent {
   }
 
   updateView(dateChange: Date){
-    console.log(dateChange)
     this.viewDate = dateChange;
   }
 
   addEventDialog(slot: any) : void{
-    console.log("kikou")
     const dialogRef = this.dialog.open(AddEventDialogComponent, {
       width:'500px',
       data: {
         slot: slot.date
       }
     });
-    console.log("je suis fermé")
 
     dialogRef.afterClosed().subscribe(result =>{
+      this._api.postTypeRequest('event/addevent', result).subscribe((res: any) => {
+        console.log(res)
+      });
       //add even
-      console.log("je suis dans after closed")
-      console.log(result.aircraft.color)
         this.events = [
           ...this.events,
           {
@@ -225,10 +227,6 @@ export class AircraftBookingComponent {
 
           },
         ];
-      console.log(this.events)
-
-      console.log(result);
-
       this.slot = result
     });
 }

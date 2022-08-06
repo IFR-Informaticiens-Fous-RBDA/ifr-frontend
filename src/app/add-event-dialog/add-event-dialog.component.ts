@@ -4,14 +4,17 @@ import { AircraftBookingComponent } from '../aircraft-booking/aircraft-booking.c
 import * as moment from 'moment';
 import { ThemePalette } from '@angular/material/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../services/auth.service';
+import { ApiService } from '../services/api.service';
 
 
 export interface DialogData {
   slot: Date,
   start: Date,
   end: Date,
-  description: string,
-  aircraft: Aircraft
+  user: any,
+  aircraft: Aircraft,
+  description: string
 }
 interface Color {
   primary: string,
@@ -29,9 +32,19 @@ interface Aircraft {
 export class AddEventDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<AddEventDialogComponent>,
+    private _auth: AuthService,
+    private _api: ApiService,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
   ) {}
 
+  ngOnInit(){
+    console.log("coucoucou")
+    this._api.getTypeRequest('aircraft/all').subscribe((res : any) =>
+    {
+      this.aircrafts = res.data;
+      console.log(this.aircrafts)
+    });
+  }
   @ViewChild('picker') picker: any;
   @ViewChild('picker') picker2: any;
   public date: moment.Moment | undefined;
@@ -40,6 +53,7 @@ export class AddEventDialogComponent {
   public showSpinners = true;
   public showSeconds = false;
   public name = "";
+  public description = "";
   public touchUi = false;
   public enableMeridian = false;
   public minDate: moment.Moment | undefined;
@@ -68,43 +82,21 @@ export class AddEventDialogComponent {
   public stepHours = [1, 2, 3, 4, 5];
   public stepMinutes = [1, 5, 10, 15, 20, 25];
   public stepSeconds = [1, 5, 10, 15, 20, 25];
-  aircrafts: Aircraft[] = [
-    {value: 'OO-HBI', viewValue: 'OO-HBI',
-      color:{
-        primary: '#FAE3E3',
-        secondary: '#F9D923',
-      }
-    },
-    {value: 'OO-HBU', viewValue: 'OO-HBU',
-      color:{
-        primary: '#FAE3E3',
-        secondary: '#AB46D2',
-      }
-    },
-    {value: 'OO-HBY', viewValue: 'OO-HBY',
-      color:{
-        primary: '#FAE3E3',
-        secondary: '#36AE7C',
-      }
-    },
-    {value: 'OO-HBQ', viewValue: 'OO-HBQ',
-      color:{
-        primary: '#FAE3E3',
-        secondary: '#187498',
-      }
-    }
-  ];
+  public aircrafts: any;
 
   onNoClick(): void {
     this.dialogRef.close();
   }
 
   sendData(){
-    this.data.aircraft = this.aircrafts.find(aircraft => aircraft.value == this.selectedAircraft)!
-    console.log(this.data.aircraft)
-    this.data.description = this.name
+    this.data.aircraft = this.aircrafts.find((aircraft: { name: string; }) => aircraft.name == this.selectedAircraft)!
+    this.data.description = this.description
+    this.data.user = this._auth.getUserDetails()
+    console.log("auth data")
+    console.log(this.data.user)
     this.data.start = this.dateControlStart.value
     this.data.end = this.dateControlEnd.value
+
     this.dialogRef.close(this.data);
   }
 
