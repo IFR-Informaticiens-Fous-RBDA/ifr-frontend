@@ -52,6 +52,9 @@ button.mat-menu-trigger{
 
 }
 
-div.cal-event.ng-star-inserted{
-  width: 10px;
+::ng-deep .cal-week-view .cal-event-container:not(.cal-draggable){
+  width: 25% !important;
+}
+::ng-deep .cal-week-view .cal-event-title {
+  color: white;
 }

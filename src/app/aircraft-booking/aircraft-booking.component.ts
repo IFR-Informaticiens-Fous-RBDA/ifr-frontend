@@ -71,60 +71,7 @@ export class AircraftBookingComponent {
 
   clickedColumn: number | undefined;
 
-  events: CalendarEvent[] = [
-    {
-      title: 'An event',
-      color: users[0].color,
-      start: addHours(startOfDay(new Date()), 10),
-      meta: {
-        user: users[0],
-      },
-      resizable: {
-        beforeStart: true,
-        afterEnd: true,
-      },
-      draggable: true,
-    },
-    {
-      title: 'Another event',
-      color: users[1].color,
-      start: addHours(startOfDay(new Date()), 5),
-      meta: {
-        user: users[1],
-      },
-      resizable: {
-        beforeStart: true,
-        afterEnd: true,
-      },
-      draggable: true,
-    },
-    {
-      title: 'A 3rd event',
-      color: users[0].color,
-      start: addHours(startOfDay(new Date()), 5),
-      meta: {
-        user: users[0],
-      },
-      resizable: {
-        beforeStart: true,
-        afterEnd: true,
-      },
-      draggable: true,
-    },
-    {
-      title: 'A 4rd event',
-      color: users[0].color,
-      start: addHours(startOfDay(new Date()), 5),
-      meta: {
-        user: users[0],
-      },
-      resizable: {
-        beforeStart: true,
-        afterEnd: true,
-      },
-      draggable: true,
-    }
-  ];
+  events: CalendarEvent[] | any;
 
 
 
@@ -170,9 +117,21 @@ export class AircraftBookingComponent {
         }
         this.cd.markForCheck();
       });
-      this._api.getTypeRequest('event/all-events').subscribe((result) => {
-        console.log(result)
+
+
+      this._api.getTypeRequest('event/all-events').subscribe((result: any) => {
+        this.events = <CalendarEvent[]>result.data;
+        this.events.forEach((event: {
+          end: Date; start: Date;
+          }) => {
+            event.start = new Date(event.start)
+            event.end = new Date(event.end)
+        });
+        console.log(this.events);
+        console.log(typeof(this.events))
       });
+
+      console.log(typeof(this.events))
   }
 
   eventTimesChanged({
@@ -208,27 +167,32 @@ export class AircraftBookingComponent {
     });
 
     dialogRef.afterClosed().subscribe(result =>{
+      console.log(result)
       this._api.postTypeRequest('event/addevent', result).subscribe((res: any) => {
-        console.log(res)
-      });
-      //add even
+        console.log(res.data[0])
+        console.log(typeof(result.start))
+        //add even
         this.events = [
           ...this.events,
           {
             title: result.description,
             start: result.start,
             end: result.end,
-            color: result.aircraft.color,
-            draggable: true,
+            color: {primary: res.data[0].color_primary,
+                    secondary: res.data[0].color_secondary},
+            draggable: false,
             resizable: {
-              beforeStart: true,
-              afterEnd: true,
+              beforeStart: false,
+              afterEnd: false,
             },
 
           },
         ];
+        console.log(this.events)
       this.slot = result
     });
+      });
+
 }
 
 
