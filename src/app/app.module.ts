@@ -39,6 +39,9 @@ import { AuthModule } from './auth/auth/auth.module';
 import { ProfileComponent } from './main/profile/profile.component';
 import { InterceptorService } from './services/interceptor-service.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { UpdateEventComponent } from './update-event/update-event.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ShowEventDialogComponent } from './show-event-dialog/show-event-dialog.component';
 
 
 
@@ -52,6 +55,8 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
     AircraftBookingComponent,
     AddEventDialogComponent,
     ProfileComponent,
+    UpdateEventComponent,
+    ShowEventDialogComponent,
   ],
   exports: [AppComponent],
   imports: [
@@ -76,7 +81,8 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
     BrowserAnimationsModule,
     MatNativeDateModule,
     MatFormFieldModule,
-    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory })
+    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
+    FontAwesomeModule
   ],
   providers: [
     {

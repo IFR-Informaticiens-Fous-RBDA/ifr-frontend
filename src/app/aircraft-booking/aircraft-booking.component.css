@@ -1,14 +1,27 @@
-div.container{
+::ng-deep div.container{
   margin: 0;
   padding-left: 45%;
+}
+
+* {
+  -webkit-box-sizing: content-box;
+     -moz-box-sizing: content-box;
+          box-sizing: content-box;
+}
+*:before,
+*:after {
+  -webkit-box-sizing: content-box;
+     -moz-box-sizing: content-box;
+          box-sizing: content-box;
 }
 .scroll-container {
   height: calc(100vh - 320px);
   overflow-y: auto;
 }
-.in-line{
+.inline{
   display: flex;
 }
+
 button.mat-menu-trigger{
   border: none;
   background-color: #FAFAFA;
@@ -54,6 +67,12 @@ button.mat-menu-trigger{
 
 ::ng-deep .cal-week-view .cal-event-container:not(.cal-draggable){
   width: 25% !important;
+
+}
+::ng-deep div.cal-event{
+  background-image: url("../../assets/img/oohbu.png");
+  background-repeat: no-repeat;
+  background-position: bottom;
 }
 ::ng-deep .cal-week-view .cal-event-title {
   color: white;

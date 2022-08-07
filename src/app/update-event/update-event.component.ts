@@ -6,6 +6,7 @@ import { ThemePalette } from '@angular/material/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 
 export interface DialogData {
@@ -14,7 +15,8 @@ export interface DialogData {
   end: Date,
   user: any,
   aircraft: Aircraft,
-  description: string
+  description: string,
+  delete: boolean
 }
 interface Color {
   primary: string,
@@ -27,22 +29,20 @@ interface Aircraft {
 }
 @Component({
   selector: 'dialog-overview-example-dialog',
-  templateUrl: 'add-event-dialog.component.html',
+  templateUrl: 'update-event.component.html',
 })
-export class AddEventDialogComponent {
+export class UpdateEventComponent {
   constructor(
-    public dialogRef: MatDialogRef<AddEventDialogComponent>,
+    public dialogRef: MatDialogRef<UpdateEventComponent>,
     private _auth: AuthService,
     private _api: ApiService,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
   ) {}
 
   ngOnInit(){
-    console.log("coucoucou")
     this._api.getTypeRequest('aircraft/all').subscribe((res : any) =>
     {
       this.aircrafts = res.data;
-      console.log(this.aircrafts)
     });
   }
   @ViewChild('picker') picker: any;
@@ -62,6 +62,7 @@ export class AddEventDialogComponent {
   public stepMinute = 10;
   public stepSecond = 1;
   public color: ThemePalette = 'primary';
+  public faTrash = faTrash;
 
   public formGroup = new UntypedFormGroup({
     date: new UntypedFormControl(null, [Validators.required]),
@@ -94,8 +95,13 @@ export class AddEventDialogComponent {
     this.data.user = this._auth.getUserDetails()
     this.data.start = this.dateControlStart.value
     this.data.end = this.dateControlEnd.value
+    this.data.delete = false
 
     this.dialogRef.close(this.data);
+  }
+  deleteEvent(){
+    this.data.delete = true;
+    this.dialogRef.close(this.data)
   }
 
   addHoursToDate(date: Date, hours: number): Date {

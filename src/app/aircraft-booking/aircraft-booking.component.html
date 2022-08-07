@@ -14,15 +14,15 @@ dd
 </div>-->
 
 <div class="container">
-  <div class="in-line"><h3>{{ viewDate | calendarDate:('weekViewTitle') }}</h3>
+  <div class = "inline"><h3>{{ viewDate | calendarDate:('weekViewTitle') }}</h3>
   <button mat-icon-button [matMenuTriggerFor]="appMenu">
     <mat-icon>calendar_today</mat-icon>
-  </button>
+  </button></div>
   <mat-menu #appMenu="matMenu">
        <mat-calendar #calendar
           (selectedChange)="updateView($event)" >
        </mat-calendar>
-  </mat-menu></div>
+  </mat-menu>
   <div class="row">
       <div class="col-md-6">
         <div class="btn-group">
@@ -51,13 +51,12 @@ dd
           </div>
         </div>
       </div>
-
   </div>
 </div>
 <br />
 
 <mwl-calendar-week-view [viewDate]="viewDate" [daysInWeek]="daysInWeek" [dayStartHour]="8" [dayEndHour]="20" [events]= "events" (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="addEventDialog($event)"
-(hourSegmentClicked)="addEventDialog($event)">
+(hourSegmentClicked)="addEventDialog($event)" (eventClicked)="updateEventDialog($event)">
 </mwl-calendar-week-view>
 <div class="dots">
   <span class="dotBU"></span>OO-HBU

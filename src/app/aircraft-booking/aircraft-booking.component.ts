@@ -11,45 +11,9 @@ import { Subject } from 'rxjs';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { AddEventDialogComponent } from '../add-event-dialog/add-event-dialog.component';
+import { UpdateEventComponent } from '../update-event/update-event.component';
 import { ApiService } from '../services/api.service';
-
-
-const colors: any={
-  red: {
-    primary: '#ad2121',
-    secondary: '#FAE3E3',
-  },
-  blue: {
-    primary: '#1e90ff',
-    secondary: '#D1E8FF',
-  },
-  yellow: {
-    primary: '#e3bc08',
-    secondary: '#FDF1BA',
-  },
-}
-const users: User[] = [
-  {
-    id: 0,
-    name: 'OO-HBI',
-    color: colors.yellow,
-  },
-  {
-    id: 1,
-    name: 'OO-HBU',
-    color: colors.blue,
-  },
-  {
-    id: 2,
-    name: 'OO-HBY',
-    color: colors.red,
-  },
-  {
-    id: 3,
-    name: 'OO-HBQ',
-    color: colors.blue,
-  },
-];
+import { ShowEventDialogComponent } from '../show-event-dialog/show-event-dialog.component';
 
 @Component({
   selector: 'mwl-day-',
@@ -65,13 +29,13 @@ export class AircraftBookingComponent {
 
   slot: Date | undefined;
 
-  users = users;
-
   clickedDate: Date | undefined;
 
   clickedColumn: number | undefined;
 
   events: CalendarEvent[] | any;
+
+  currentUser: any;
 
 
 
@@ -86,6 +50,7 @@ export class AircraftBookingComponent {
   ) {}
 
   ngOnInit() {
+    this.currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
     const CALENDAR_RESPONSIVE = {
       small: {
         breakpoint: '(max-width: 576px)',
@@ -118,7 +83,7 @@ export class AircraftBookingComponent {
         this.cd.markForCheck();
       });
 
-
+      console.log(localStorage.getItem('userData'))
       this._api.getTypeRequest('event/all-events').subscribe((result: any) => {
         this.events = <CalendarEvent[]>result.data;
         this.events.forEach((event: {
@@ -127,11 +92,7 @@ export class AircraftBookingComponent {
             event.start = new Date(event.start)
             event.end = new Date(event.end)
         });
-        console.log(this.events);
-        console.log(typeof(this.events))
       });
-
-      console.log(typeof(this.events))
   }
 
   eventTimesChanged({
@@ -167,17 +128,20 @@ export class AircraftBookingComponent {
     });
 
     dialogRef.afterClosed().subscribe(result =>{
-      console.log(result)
       this._api.postTypeRequest('event/addevent', result).subscribe((res: any) => {
-        console.log(res.data[0])
-        console.log(typeof(result.start))
+        console.log(res)
         //add even
         this.events = [
           ...this.events,
           {
-            title: result.description,
+            title: res.data[0].title,
             start: result.start,
             end: result.end,
+            meta: {
+              user: res.data[0],
+              eventId: res.data[1].insert_result.insertId,
+              description: result.description
+            },
             color: {primary: res.data[0].color_primary,
                     secondary: res.data[0].color_secondary},
             draggable: false,
@@ -188,12 +152,56 @@ export class AircraftBookingComponent {
 
           },
         ];
-        console.log(this.events)
       this.slot = result
     });
       });
 
 }
 
+updateEventDialog(currentEvent: any){
+  let check = {currentEvent : currentEvent, currentUser: this.currentUser}
+  this._api.postTypeRequest('user/check-event', check).subscribe((res: any) => {
+
+    if(res.status){
+      const dialogRef = this.dialog.open(UpdateEventComponent, {
+        width:'500px',
+        data: {
+          slot: currentEvent.event.start,
+          currentEvent: currentEvent
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result =>{
+        if(!result.delete){
+          this._api.postTypeRequest('event/update-event/', result).subscribe((res: any) => {
+            const updatedEvents = this.events.map((event: { meta: { eventId: any; }; }) => {
+              if (event.meta.eventId === result.currentEvent.event.meta.eventId) {
+                return { ...event, title: res.data[0].title, color: { primary: res.data[0].color_primary, secondary: res.data[0].color_secondary }, start: result.start, end: result.end };
+              }
+              return event
+            })
+            this.events = updatedEvents
+          });
+        }
+        else{
+          this._api.postTypeRequest('event/delete-event', result).subscribe((res: any) => {
+            if(res.status){
+              const updatedEvents = this.events.filter((event: { meta: { eventId: any; }; }) => event.meta.eventId !== result.currentEvent.event.meta.eventId)
+              this.events = updatedEvents
+            }
+          })
+        }
+      });
+    }
+    else{
+      const dialogRef = this.dialog.open(ShowEventDialogComponent, {
+        width:'500px',
+        data: {
+          currentEvent: currentEvent
+        }
+      });
+    }
+  })
+}
 
 }
