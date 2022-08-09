@@ -1,9 +1,14 @@
-import { NgModule } from '@angular/core';
+import { NgModule, Injectable } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+
+import { CalendarUtils as BaseCalendarUtils } from 'angular-calendar';
+import {GetWeekViewArgs, WeekView, getWeekView} from 'calendar-utils';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
+
+import{CalendarUtils} from './aircraft-booking/aircraft-booking.component'
 
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 
@@ -42,6 +47,13 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UpdateEventComponent } from './update-event/update-event.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ShowEventDialogComponent } from './show-event-dialog/show-event-dialog.component';
+import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
+import { DutyPilotBookingComponent } from './duty-pilot-booking/duty-pilot-booking.component';
+import { AddDutyPilotDialogComponent } from './add-duty-pilot-dialog/add-duty-pilot-dialog.component';
+import { LogoutComponent } from './auth/components/logout/logout.component';
+import { FlightsComponent } from './flights/flights.component';
+import { MatTableModule } from '@angular/material/table'
+
 
 
 
@@ -57,12 +69,17 @@ import { ShowEventDialogComponent } from './show-event-dialog/show-event-dialog.
     ProfileComponent,
     UpdateEventComponent,
     ShowEventDialogComponent,
+    DutyPilotBookingComponent,
+    AddDutyPilotDialogComponent,
+    LogoutComponent,
+    FlightsComponent,
   ],
   exports: [AppComponent],
   imports: [
     CommonModule,
     BrowserModule,
     AppRoutingModule,
+    MatTableModule,
     MatDatepickerModule,
     MatListModule,
     MatMenuModule,
@@ -81,14 +98,20 @@ import { ShowEventDialogComponent } from './show-event-dialog/show-event-dialog.
     BrowserAnimationsModule,
     MatNativeDateModule,
     MatFormFieldModule,
-    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
+    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }, { utils: {
+      provide: BaseCalendarUtils, useClass: CalendarUtils
+    }}),
     FontAwesomeModule
   ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: InterceptorService,
-      multi: true
+      multi: true,
+    },
+    {
+      provide: MAT_DIALOG_DEFAULT_OPTIONS,
+      useValue: {disableCLose: true}
     }
   ],
   bootstrap: [AppComponent]

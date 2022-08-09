@@ -27,43 +27,6 @@ button.mat-menu-trigger{
   background-color: #FAFAFA;
 }
 
-.dots{
-  float:right;
-  margin-right:3em;
-  margin-top: 2em;
-}
-.dotBU{
-  height: 25px;
-  width: 25px;
-  background-color: #AB46D2;
-  border-radius: 50%;
-  display: inline-block;
-
-}
-.dotBI{
-  height: 25px;
-  width: 25px;
-  background-color: #F9D923;
-  border-radius: 50%;
-  display: inline-block;
-
-}
-.dotBY{
-  height: 25px;
-  width: 25px;
-  background-color: #36AE7C;
-  border-radius: 50%;
-  display: inline-block;
-
-}
-.dotBQ{
-  height: 25px;
-  width: 25px;
-  background-color: #187498;
-  border-radius: 50%;
-  display: inline-block;
-
-}
 
 ::ng-deep .cal-week-view .cal-event-title {
   color: white;

@@ -4,6 +4,11 @@
       <mat-icon (click)="sidenav.toggle()">menu</mat-icon>
     </button>
     <h1>RBDA Booking</h1>
+    <img src="../assets/img/logo.png"/>
+    <span class="example-spacer"></span>
+      <button mat-icon-button [ngStyle]="{'color': 'white'}" class="logout-icon" [routerLink]="['logout']" *ngIf = "localStorage != null" routerLinkActive="active">
+        <mat-icon>logout</mat-icon>
+      </button>
   </mat-toolbar-row>
 
 </mat-toolbar>
@@ -11,8 +16,10 @@
   <mat-sidenav #sidenav>
     <mat-nav-list>
 
-      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['login']" routerLinkActive="active"> Login </a>
-      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['register']" routerLinkActive="active"> Register </a>
+      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['login']" *ngIf = "!localStorage" routerLinkActive="active"> Login </a>
+      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['register']" *ngIf = "!localStorage" routerLinkActive="active"> Register </a>
+      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['']" *ngIf = "localStorage" routerLinkActive="active">Booking</a>
+      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['flights']" *ngIf="localStorage" routerLinkActive="active">My flights</a>
 
     </mat-nav-list>
   </mat-sidenav>

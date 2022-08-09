@@ -12,6 +12,7 @@
   </div>d
 dd
 </div>-->
+
 <div class="container">
   <div class = "inline"><h3>{{ viewDate | calendarDate:('weekViewTitle') }}</h3>
   <button mat-icon-button [matMenuTriggerFor]="appMenu">
@@ -55,14 +56,9 @@ dd
 <br />
 
 <mwl-calendar-week-view [viewDate]="viewDate" [daysInWeek]="daysInWeek" [dayStartHour]="8" [dayEndHour]="20" [events]= "events" (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="addEventDialog($event)"
-(hourSegmentClicked)="addEventDialog($event)" (eventClicked)="updateEventDialog($event)" [refresh]="refresh">
+(hourSegmentClicked)="addEventDialog($event)" (eventClicked)="deleteDutyPilotDialog($event)" >
 </mwl-calendar-week-view>
-<button (click) = "changeView()" [routerLink]="['duty-pilot']" routerLinkActive="active" class = "btn btn-outline-secondary">Duty Pilot Booking</button>
+<button (click) = "changeView()" [routerLink]="['']" routerLinkActive="active" class = "btn btn-outline-secondary">Aircraft booking</button>
 
-<div class="dots">
-  <span class="dotBI"></span>OO-HBI
-  <span class="dotBU"></span>OO-HBU
-  <span class="dotBY"></span>OO-HBY
-  <span class="dotBQ"></span>OO-HBQ
-</div>
+
 

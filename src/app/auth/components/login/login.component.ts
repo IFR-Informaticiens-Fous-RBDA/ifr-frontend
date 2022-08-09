@@ -52,6 +52,7 @@ export class LoginComponent implements OnInit {
 
   logout(){
     this._auth.clearStorage()
-    this._router.navigate(['']);
+    this.isLogin = false
+    this._router.navigate(['login']);
   }
 }
