@@ -1,0 +1,44 @@
+<h1 mat-dialog-title>Fermer le vol <!--{{data.slot}}--></h1>
+<div mat-dialog-content>
+  <mat-checkbox [checked] = "isPIC"  (change) = "updatePIC()">Etiez-vous PIC ?</mat-checkbox>
+  <br><br>
+  <div *ngIf = "!isPIC" class = "instructor">
+    <p>Avec quel instructeur voliez-vous ?</p>
+    <mat-form-field>
+      <mat-label>Instructeur : </mat-label>
+      <mat-select [(value)] = "selectedInstructor">
+        <mat-option *ngFor="let instructor of instructorsList" [value]="instructor">
+          {{instructor}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <p>Heure de départ</p>
+    <ngx-mat-timepicker-field color="warn"
+      [format]="24"
+      [defaultTime]="'09:00'"
+      [controlOnly]="true">
+    </ngx-mat-timepicker-field>
+  <p>Heure d'arrivée</p>
+    <ngx-mat-timepicker-field color="warn"
+      [format]="24"
+      [defaultTime]="'10:00'"
+      [controlOnly]="true">
+    </ngx-mat-timepicker-field>
+  </div>
+  <p>Departure airport (ICAO)</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>ICAO code airport</mat-label>
+    <input matInput placeholder="Ex. EBFS" value="EBFS">
+  </mat-form-field>
+
+  <p>Arrival airport (ICAO)</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>ICAO code airport</mat-label>
+    <input matInput placeholder="Ex. EBFS" value="EBFS">
+  </mat-form-field>
+
+  <div mat-dialog-actions>
+  <button class = "btn btn-danger" mat-button (click)="onNoClick()">Annuler</button>
+  <button class = "btn btn-success" mat-button (click)="sendData()" mat-dialog-close cdkFocusInitial>Valider</button>
+</div>

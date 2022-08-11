@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { AddFlightDialogComponent } from '../add-flight-dialog/add-flight-dialog.component';
 import { ApiService } from '../services/api.service';
+import { SocketService } from '../services/socket.service';
 
 @Component({
   selector: 'app-flights',
@@ -13,9 +16,19 @@ export class FlightsComponent implements OnInit {
   pastFlights: Array<any> = [];
 
 
-  constructor(private _api: ApiService) { }
+  constructor(private _api: ApiService, private _socket: SocketService, public dialog: MatDialog) { }
 
   ngOnInit(): void {
+    this._socket.onReloadForEveryone().subscribe((data:any) => {
+        this._api.postTypeRequest('flights/all-flights', this.currentUser).subscribe((result:any) => {
+        this.dataSource = result.data
+        this.dataSource.forEach(function(element : any){
+          element.date_depart = new Date(element.date_depart)
+          element.date_arrivee = new Date(element.date_arrivee)
+        })
+        this.displayedColumns = ['id', 'registration', 'description', 'date_depart', 'date_arrivee', 'status']
+      });
+    })
     this.currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
     this._api.postTypeRequest('flights/all-flights', this.currentUser).subscribe((result:any) => {
       console.log(result)
@@ -29,7 +42,16 @@ export class FlightsComponent implements OnInit {
     });
   }
   logFlight(element:any){
-    console.log(element)
+
+    const dialogRef = this.dialog.open(AddFlightDialogComponent, {
+      width:'500px',
+      data: {
+        slot: element.date_depart
+      },
+      disableClose: true
+    });
+    dialogRef.afterClosed().subscribe(result =>{})
+    /*console.log(element)
     this._api.postTypeRequest('flights/log-flight', element).subscribe((result: any) => {
       console.log(result)
 
@@ -42,7 +64,7 @@ export class FlightsComponent implements OnInit {
         return item
       })
 
-      console.log(this.dataSource)
+      this._socket.reloadForEveryone()
 
     })
 
@@ -52,7 +74,7 @@ export class FlightsComponent implements OnInit {
   this.pastFlights = [
     ...this.pastFlights, element
   ]
-  console.log(this.pastFlights)
+  console.log(this.pastFlights)*/
   }
   goFlying(element: any){
     console.log(element)
@@ -67,7 +89,7 @@ export class FlightsComponent implements OnInit {
         }
         return item
       })
-
+      this._socket.reloadForEveryone();
       console.log(this.dataSource)
 
     })

@@ -17,6 +17,7 @@ import { DateAdapter } from 'angular-calendar';
 import { CalendarUtils as BaseCalendarUtils } from 'angular-calendar';
 import {GetWeekViewArgs, WeekView, getWeekView} from 'calendar-utils';
 import { GlobalConstants } from '../common/global-constants';
+import { SocketService } from '../services/socket.service';
 
 
 
@@ -153,6 +154,7 @@ export class AircraftBookingComponent implements AfterViewChecked{
     public dialog: MatDialog,
     private ngZone: NgZone,
     private _api: ApiService,
+    private _socket: SocketService,
     private cdRef: ChangeDetectorRef
   ) {
     this.cat1aircraft = []
@@ -162,6 +164,17 @@ export class AircraftBookingComponent implements AfterViewChecked{
   }
 
   ngOnInit() {
+    this._socket.onReloadForEveryone().subscribe((data: any) => {
+      this._api.getTypeRequest('event/all-events').subscribe((result: any) => {
+        this.events = <CalendarEvent[]>result.data;
+        this.events.forEach((event: {
+          end: Date; start: Date;
+          }) => {
+            event.start = new Date(event.start)
+            event.end = new Date(event.end)
+        });
+      });
+    })
     GlobalConstants.view = false
     this.currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
     const CALENDAR_RESPONSIVE = {
@@ -269,6 +282,7 @@ export class AircraftBookingComponent implements AfterViewChecked{
 
             },
           ]
+          this._socket.reloadForEveryone()
           /*let nodes = document.getElementsByClassName('cal-event')
           console.log(nodes[0])
           for(var i = 0; i <= nodes.length; i++){
@@ -362,7 +376,7 @@ updateEventDialog(currentEvent: any): void{
 
                     },
                   ]
-                  console.log(this.events)
+                  this._socket.reloadForEveryone()
                 }
               })
             }
@@ -373,8 +387,7 @@ updateEventDialog(currentEvent: any): void{
             if(res.status){
               const updatedEvents = this.events.filter((event: { meta: { eventId: any; }; }) => event.meta.eventId !== result.currentEvent.event.meta.eventId)
               this.events = updatedEvents
-              console.log("coucou")
-              this.refresh.next()
+              this._socket.reloadForEveryone()
             }
           })
         }

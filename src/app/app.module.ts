@@ -31,7 +31,6 @@ import { MatDialogModule } from '@angular/material/dialog';
 import {
   NgxMatDatetimePickerModule,
   NgxMatNativeDateModule,
-  NgxMatTimepickerModule
 } from '@angular-material-components/datetime-picker';
 
 
@@ -54,10 +53,21 @@ import { LogoutComponent } from './auth/components/logout/logout.component';
 import { FlightsComponent } from './flights/flights.component';
 import { MatTableModule } from '@angular/material/table'
 
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { environment } from 'src/environments/environment';
+import { AddFlightDialogComponent } from './add-flight-dialog/add-flight-dialog.component';
+import {NgxMatTimepickerModule} from 'ngx-mat-timepicker';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 
 
 
+const config: SocketIoConfig = {
+  url: environment.socketUrl,
+  options: {
+    transports: ['websocket']
+  }
+}
 
 
 @NgModule({
@@ -73,6 +83,7 @@ import { MatTableModule } from '@angular/material/table'
     AddDutyPilotDialogComponent,
     LogoutComponent,
     FlightsComponent,
+    AddFlightDialogComponent,
   ],
   exports: [AppComponent],
   imports: [
@@ -80,6 +91,7 @@ import { MatTableModule } from '@angular/material/table'
     BrowserModule,
     AppRoutingModule,
     MatTableModule,
+    MatCheckboxModule,
     MatDatepickerModule,
     MatListModule,
     MatMenuModule,
@@ -92,6 +104,7 @@ import { MatTableModule } from '@angular/material/table'
     MatInputModule,
     MatToolbarModule,
     AuthModule,
+    SocketIoModule.forRoot(config),
     MatSelectModule,
     MatDialogModule,
     MatIconModule,

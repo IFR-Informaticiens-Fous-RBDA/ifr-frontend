@@ -31,6 +31,8 @@
     "bootstrap": "^5.1.3",
     "date-fns": "^2.23.0",
     "moment": "^2.29.4",
+    "ngx-mat-timepicker": "^14.0.2",
+    "ngx-socket-io": "^4.3.0",
     "pdfmake": "^0.2.5",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",

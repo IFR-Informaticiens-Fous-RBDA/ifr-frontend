@@ -22,6 +22,7 @@ import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { GlobalConstants } from '../common/global-constants';
 import { AddDutyPilotDialogComponent } from '../add-duty-pilot-dialog/add-duty-pilot-dialog.component';
+import { SocketService } from '../services/socket.service';
 
 
 @Component({
@@ -55,12 +56,26 @@ export class DutyPilotBookingComponent{
     public dialog: MatDialog,
     private ngZone: NgZone,
     private _api: ApiService,
+    private _socket: SocketService,
     private cdRef: ChangeDetectorRef
   ) {
 
   }
 
   ngOnInit() {
+    this._socket.onReloadForEveryone().subscribe((data: any) => {
+      this._api.getTypeRequest('event/all-duty-pilots').subscribe((result: any) => {
+        console.log(result.data)
+        this.events = <CalendarEvent[]>result.data;
+        console.log(this.events)
+        this.events.forEach((event: {
+          end: Date; start: Date;
+          }) => {
+            event.start = new Date(event.start)
+            event.end = new Date(event.end)
+        });
+      });
+    })
     GlobalConstants.view = true
     this.currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
     const CALENDAR_RESPONSIVE = {
@@ -173,7 +188,7 @@ export class DutyPilotBookingComponent{
 
             },
           ]
-          console.log(this.events)
+          this._socket.reloadForEveryone()
 
         }
         else{
@@ -210,7 +225,7 @@ deleteDutyPilotDialog(currentEvent: any): void{
             if(res.status){
               const updatedEvents = this.events.filter((event: { meta: { eventId: any; }; }) => event.meta.eventId !== currentEvent.event.meta.eventId)
               this.events = updatedEvents
-              console.log("coucou")
+              this._socket.reloadForEveryone()
             }
           })
         }
