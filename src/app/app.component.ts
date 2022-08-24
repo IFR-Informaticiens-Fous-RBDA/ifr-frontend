@@ -18,7 +18,9 @@ export class AppComponent implements OnInit, AfterViewChecked{
     this.localStorage = null
   }
   ngAfterViewChecked(){
-    this.localStorage = localStorage.getItem('userData')
+    if(localStorage.getItem('userData')){
+      this.localStorage = JSON.parse(localStorage.getItem('userData') || "")[0];
+    }
     this.cdref.detectChanges()
   }
 }

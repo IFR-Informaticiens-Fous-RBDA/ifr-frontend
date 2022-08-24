@@ -32,7 +32,6 @@ export class ShowEventDialogComponent {
   ) {}
 
   ngOnInit(){
-    console.log(this.data)
   }
 
   onNoClick(): void {

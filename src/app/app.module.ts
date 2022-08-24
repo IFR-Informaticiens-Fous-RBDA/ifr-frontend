@@ -52,12 +52,21 @@ import { AddDutyPilotDialogComponent } from './add-duty-pilot-dialog/add-duty-pi
 import { LogoutComponent } from './auth/components/logout/logout.component';
 import { FlightsComponent } from './flights/flights.component';
 import { MatTableModule } from '@angular/material/table'
+import { MatPaginatorModule } from '@angular/material/paginator';
+
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { environment } from 'src/environments/environment';
 import { AddFlightDialogComponent } from './add-flight-dialog/add-flight-dialog.component';
 import {NgxMatTimepickerModule} from 'ngx-mat-timepicker';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { RecurringEventChooserComponent } from './recurring-event-chooser/recurring-event-chooser.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FlightsManagementComponent } from './flights-management/flights-management.component';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatChipsModule} from '@angular/material/chips';
+
+
 
 
 
@@ -84,6 +93,8 @@ const config: SocketIoConfig = {
     LogoutComponent,
     FlightsComponent,
     AddFlightDialogComponent,
+    RecurringEventChooserComponent,
+    FlightsManagementComponent,
   ],
   exports: [AppComponent],
   imports: [
@@ -93,13 +104,16 @@ const config: SocketIoConfig = {
     MatTableModule,
     MatCheckboxModule,
     MatDatepickerModule,
+    MatAutocompleteModule,
     MatListModule,
     MatMenuModule,
+    MatPaginatorModule,
     NgxMatDatetimePickerModule,
     FormsModule,
     MatSidenavModule,
     ReactiveFormsModule,
     NgxMatNativeDateModule,
+    MatChipsModule,
     NgxMatTimepickerModule,
     MatInputModule,
     MatToolbarModule,
@@ -114,7 +128,8 @@ const config: SocketIoConfig = {
     CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }, { utils: {
       provide: BaseCalendarUtils, useClass: CalendarUtils
     }}),
-    FontAwesomeModule
+    FontAwesomeModule,
+    NgbModule
   ],
   providers: [
     {

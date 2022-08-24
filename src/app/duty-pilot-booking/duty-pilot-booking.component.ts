@@ -65,9 +65,7 @@ export class DutyPilotBookingComponent{
   ngOnInit() {
     this._socket.onReloadForEveryone().subscribe((data: any) => {
       this._api.getTypeRequest('event/all-duty-pilots').subscribe((result: any) => {
-        console.log(result.data)
         this.events = <CalendarEvent[]>result.data;
-        console.log(this.events)
         this.events.forEach((event: {
           end: Date; start: Date;
           }) => {
@@ -111,9 +109,7 @@ export class DutyPilotBookingComponent{
       });
 
       this._api.getTypeRequest('event/all-duty-pilots').subscribe((result: any) => {
-        console.log(result.data)
         this.events = <CalendarEvent[]>result.data;
-        console.log(this.events)
         this.events.forEach((event: {
           end: Date; start: Date;
           }) => {
@@ -162,9 +158,7 @@ export class DutyPilotBookingComponent{
       disableClose: true
     });
     dialogRef.afterClosed().subscribe(result =>{
-      console.log(result)
       this._api.postTypeRequest('event/add-duty-pilot', result).subscribe((res: any) => {
-        console.log(res.data[0])
         if(res.status){
           //add even
           this.events = [
@@ -201,12 +195,10 @@ export class DutyPilotBookingComponent{
 
 
 deleteDutyPilotDialog(currentEvent: any): void{
-  console.log("currentevent")
-  console.log(currentEvent)
   let check = {currentEvent : currentEvent, currentUser: this.currentUser}
   this._api.postTypeRequest('user/check-duty-pilot', check).subscribe((res: any) => {
 
-    if(res.status){
+    if(res.status && currentEvent.event.start.getTime() > Date.now()){
       const dialogRef = this.dialog.open(AddDutyPilotDialogComponent, {
         width:'500px',
         data: {
@@ -219,8 +211,6 @@ deleteDutyPilotDialog(currentEvent: any): void{
       dialogRef.afterClosed().subscribe(result => {
 
         if(result.delete){
-          console.log("currentevent2")
-          console.log(currentEvent)
           this._api.postTypeRequest('event/delete-duty-pilot', currentEvent).subscribe((res: any) => {
             if(res.status){
               const updatedEvents = this.events.filter((event: { meta: { eventId: any; }; }) => event.meta.eventId !== currentEvent.event.meta.eventId)

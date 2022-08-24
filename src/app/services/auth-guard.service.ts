@@ -13,13 +13,24 @@ export class AuthGuardService {
   ) { }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    if (this._authService.getToken()) {
-      return true;
+    let url = state.root.url
+    return this.checkUserLogin(next, url)
+
+
+  }
+
+  checkUserLogin(route: ActivatedRouteSnapshot, url: any): boolean {
+    if(this._authService.getToken()){
+      const userRole = this._authService.getRole()
+      console.log(userRole)
+      if(route.data.role && userRole.filter(e => e.Role_Name === route.data.role).length === 0){
+        this._router.navigate(['']);
+        return false
+      }
+      return true
     }
 
-    // navigate to login page
-    this._router.navigate(['/login']);
-    // you can save redirect url so after authing we can move them back to the page they requested
-    return false;
+    this._router.navigate(['login'])
+    return false
   }
 }

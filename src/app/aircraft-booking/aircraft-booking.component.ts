@@ -258,7 +258,8 @@ export class AircraftBookingComponent implements AfterViewChecked{
     });
     dialogRef.afterClosed().subscribe(result =>{
       this._api.postTypeRequest('event/addevent', result).subscribe((res: any) => {
-        if(res.status){
+        console.log(res)
+        if(res.status && !res.rec_ids){
           //add even
           this.events = [
             ...this.events,
@@ -283,12 +284,33 @@ export class AircraftBookingComponent implements AfterViewChecked{
             },
           ]
           this._socket.reloadForEveryone()
-          /*let nodes = document.getElementsByClassName('cal-event')
-          console.log(nodes[0])
-          for(var i = 0; i <= nodes.length; i++){
-            console.log(window.getComputedStyle(document.getElementsByClassName('cal-event')[i]).backgroundColor)
-          }*/
 
+        }
+        else if(res.status && res.rec_ids.length > 0){
+          for(let i = 0; i < res.rec_ids.length; i++){
+            this.events = [
+              ...this.events,
+              {
+                title: res.data[0].title,
+                start: new Date(res.rec_ids[i].start),
+                end: new Date(res.rec_ids[i].end),
+                meta: {
+                  user: res.data[0],
+                  eventId: res.rec_ids[i].id,
+                  description: result.description,
+                  type: res.data[0].aircraft_registration
+                },
+                color: {primary: res.data[0].color_primary,
+                        secondary: res.data[0].color_secondary},
+                draggable: false,
+                resizable: {
+                  beforeStart: false,
+                  afterEnd: false,
+                },
+
+              },
+            ]
+          }
         }
         else{
           console.log("l'even n'ea pas tete cree")
@@ -337,7 +359,7 @@ updateEventDialog(currentEvent: any): void{
   let check = {currentEvent : currentEvent, currentUser: this.currentUser}
   this._api.postTypeRequest('user/check-event', check).subscribe((res: any) => {
 
-    if(res.status){
+    if(res.status && currentEvent.event.start.getTime() > Date.now()){
       const dialogRef = this.dialog.open(UpdateEventComponent, {
         width:'500px',
         data: {
@@ -347,7 +369,6 @@ updateEventDialog(currentEvent: any): void{
       });
 
       dialogRef.afterClosed().subscribe(result =>{
-        console.log(result)
         if(!result.delete){
           this._api.postTypeRequest('event/update-event/', result).subscribe((res2: any) => {
             if(res2.status){

@@ -1,5 +1,81 @@
-<h2 style = 'margin-top:  30px;'>This is the protected profile page</h2>
-
-<h2 *ngIf = 'this.protectedData?.data' >{{this.protectedData.data.userName}}</h2>
-
-<h2 *ngIf = 'this.protectedData?.data' >{{this.protectedData.data.userWebsite}}</h2>
+<div class="container rounded bg-white mt-5 mb-5">
+  <div class="row">
+      <div class="col-md-3 border-right">
+        <label class="hoverable" for="fileInput">
+          <img [src]="url ? url : 'https://www.w3schools.com/howto/img_avatar.png'">
+          <div class="hover-text"><mat-icon>download</mat-icon></div>
+          <div class="background"></div>
+        </label>
+        <br/>
+        <input id="fileInput" type='file' (change)="onSelectFile($event)">
+        <button *ngIf="url" (click)="delete()" >delete</button>
+      </div>
+      <div class="col-md-5 border-right">
+          <div class="p-3 py-5">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h4 class="text-right">Profile Settings</h4>
+              </div>
+              <div class="row mt-2">
+                  <div class="col-md-6"><label class="labels">First name</label><input type="text" *ngIf = "userInfo" class="form-control" value="{{userInfo.FirstName}}"[disabled]="userInfo.FirstName"></div>
+                  <div class="col-md-6"><label class="labels">Last name</label><input type="text" *ngIf = "userInfo" class="form-control" value="{{userInfo.LastName}}" [disabled]="userInfo.LastName" ></div>
+              </div>
+              <div class="row mt-3">
+                  <div class="col-md-12"><label class="labels">Mobile Number</label><input type="text" *ngIf = "userInfo" class="form-control" value="{{userInfo.Phone_Number}}"></div>
+                  <div class="col-md-12"><label class="labels">Address Line 1</label><input type="text" *ngIf = "userInfo" class="form-control" value="{{userInfo.Address}}"></div>
+                  <div class="col-md-12"><label class="labels">Postcode</label><input type="text" *ngIf = "userInfo" class="form-control" value="{{userInfo.Postal_Code}}"></div>
+                  <div class="col-md-12"><label class="labels">Email</label><input type="text" *ngIf = "userInfo" class="form-control" value="{{userInfo.EMail}}"></div>
+              </div>
+              <div class="row mt-3">
+                  <div class="col-md-6"><label class="labels">Country</label><input type="text" *ngIf = "userInfo" class="form-control" value="{{userInfo.Country}}"></div>
+                  <div class="col-md-6"><label class="labels">City</label><input type="text" *ngIf = "userInfo" class="form-control" value="{{userInfo.City}}"></div>
+              </div>
+              <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button">Save Profile</button></div>
+          </div>
+      </div>
+      <div class="col-md-4">
+          <div class="p-3 py-5">
+              <div class="d-flex justify-content-between align-items-center experience"><span>Edit the qualifications</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;Qualifications</span></div><br>
+              <div class="col-md-12">
+                <p>PPL license valid until :</p>
+                <mat-form-field *ngIf = "userInfo" appearance="fill">
+                  <mat-label>Choose a date</mat-label>
+                  <input matInput value = "{{userInfo.License_validity}}" [matDatepicker]="pickerLicense">
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle matSuffix [for]="pickerLicense"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerLicense></mat-datepicker>
+                </mat-form-field>
+              </div> <br>
+              <div class="col-md-12">
+                <p>SEP valid until :</p>
+                <mat-form-field *ngIf = "userInfo" appearance="fill">
+                  <mat-label>Choose a date</mat-label>
+                  <input matInput value = "{{userInfo.Sep_validity}}" [matDatepicker]="pickerSep">
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle matSuffix [for]="pickerSep"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerSep></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div class = "col-md-12">
+                <p>Medical class 2 certificate valid until :</p>
+                <mat-form-field *ngIf = "userInfo" appearance="fill">
+                  <mat-label>Choose a date</mat-label>
+                  <input matInput value = "{{userInfo.Medical_class_validity}}" [matDatepicker]="pickerMedical">
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle matSuffix [for]="pickerMedical"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerMedical></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div class = "col-md-12">
+                <p>Piper cub / L21 series validity date until :</p>
+                <mat-form-field *ngIf = "userInfo" appearance="fill">
+                  <mat-label>Choose a date</mat-label>
+                  <input matInput value = "{{userInfo.Piper_validity}}" [matDatepicker]="pickerPiper">
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle matSuffix [for]="pickerPiper"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerPiper></mat-datepicker>
+                </mat-form-field>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

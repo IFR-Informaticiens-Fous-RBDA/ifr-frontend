@@ -6,6 +6,9 @@
     <h1>RBDA Booking</h1>
     <img src="../assets/img/logo.png"/>
     <span class="example-spacer"></span>
+      <button mat-icon-button [ngStyle]="{'color': 'white'}" class = "account_box-icon" [routerLink]="['profile']" *ngIf = "localStorage != null" routerLinkActive="active">
+        <mat-icon>account_box</mat-icon>
+      </button>
       <button mat-icon-button [ngStyle]="{'color': 'white'}" class="logout-icon" [routerLink]="['logout']" *ngIf = "localStorage != null" routerLinkActive="active">
         <mat-icon>logout</mat-icon>
       </button>
@@ -20,6 +23,7 @@
       <a mat-list-item (click) = "sidenav.close()" [routerLink]="['register']" *ngIf = "!localStorage" routerLinkActive="active"> Register </a>
       <a mat-list-item (click) = "sidenav.close()" [routerLink]="['']" *ngIf = "localStorage" routerLinkActive="active">Booking</a>
       <a mat-list-item (click) = "sidenav.close()" [routerLink]="['flights']" *ngIf="localStorage" routerLinkActive="active">My flights</a>
+      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['flights-management']" *ngIf="localStorage && localStorage.roles.includes('Flights manager')" routerLinkActive="active">Flights management</a>
 
     </mat-nav-list>
   </mat-sidenav>

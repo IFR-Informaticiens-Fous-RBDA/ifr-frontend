@@ -1,19 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AddFlightDialogComponent } from '../add-flight-dialog/add-flight-dialog.component';
 import { ApiService } from '../services/api.service';
 import { SocketService } from '../services/socket.service';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+
 
 @Component({
   selector: 'app-flights',
   templateUrl: './flights.component.html',
   styleUrls: ['./flights.component.css']
 })
-export class FlightsComponent implements OnInit {
+export class FlightsComponent implements OnInit, AfterViewInit {
   currentUser: any;
-  dataSource: any;
+  dataSource: MatTableDataSource<any> = new MatTableDataSource();
+  pastFlights: MatTableDataSource<any> = new MatTableDataSource();
   displayedColumns: string[] = [];
-  pastFlights: Array<any> = [];
+  displayedColumnsLog: string[] = []
+  selectedInstructor: any
+  @ViewChild('paginator') paginator!: MatPaginator;
 
 
   constructor(private _api: ApiService, private _socket: SocketService, public dialog: MatDialog) { }
@@ -21,8 +27,9 @@ export class FlightsComponent implements OnInit {
   ngOnInit(): void {
     this._socket.onReloadForEveryone().subscribe((data:any) => {
         this._api.postTypeRequest('flights/all-flights', this.currentUser).subscribe((result:any) => {
-        this.dataSource = result.data
-        this.dataSource.forEach(function(element : any){
+        this.dataSource = new MatTableDataSource(result.data)
+        this.dataSource.data = this.dataSource.data.filter((item: { isLogged: any; }) => item.isLogged === 0)
+        this.dataSource.data.forEach(function(element : any){
           element.date_depart = new Date(element.date_depart)
           element.date_arrivee = new Date(element.date_arrivee)
         })
@@ -31,67 +38,89 @@ export class FlightsComponent implements OnInit {
     })
     this.currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
     this._api.postTypeRequest('flights/all-flights', this.currentUser).subscribe((result:any) => {
-      console.log(result)
-      this.dataSource = result.data
-      console.log(typeof(result.data[0].date_depart))
-      this.dataSource.forEach(function(element : any){
+      this.dataSource = new MatTableDataSource(result.data)
+      this.dataSource.data = this.dataSource.data.filter((item: { isLogged: any; }) => item.isLogged === 0)
+      this.dataSource.data.forEach(function(element : any){
         element.date_depart = new Date(element.date_depart)
         element.date_arrivee = new Date(element.date_arrivee)
       })
+
+    this._api.postTypeRequest('flights/all-logged-flights', this.currentUser).subscribe((result: any) => {
+      this.pastFlights.data = result.data
+
+    })
       this.displayedColumns = ['id', 'registration', 'description', 'date_depart', 'date_arrivee', 'status']
+      this.displayedColumnsLog = ['Registration','Date_Of_Flight', 'Departure_ICAO_Code', 'Departure_Time', 'Arrival_ICAO_Code', 'Arrival_Time', 'Total_Time_Of_Flight', 'FirstName', 'LastName', 'ShortName', 'Landings_Number_Day', 'Name', 'Engine_Start', 'Engine_Stop', 'Engine_Time']
+
     });
   }
   logFlight(element:any){
-
     const dialogRef = this.dialog.open(AddFlightDialogComponent, {
       width:'500px',
       data: {
-        slot: element.date_depart
+        currentEvent: element,
+        currentUser: this.currentUser[0].id,
+        slot: element.date_depart,
+        aircraft_id: element.aircraft_id
       },
       disableClose: true
     });
-    dialogRef.afterClosed().subscribe(result =>{})
-    /*console.log(element)
-    this._api.postTypeRequest('flights/log-flight', element).subscribe((result: any) => {
-      console.log(result)
+    dialogRef.afterClosed().subscribe(result =>{
+      if(result != undefined){
+        this.selectedInstructor = result.instructor
+        this._api.postTypeRequest('flights/log-flight', result).subscribe((result:any) => {
+          element.IsActive = result.data[0].IsActive
+          element.flight_started = result.data[0].flight_started
+          this.dataSource.data = this.dataSource.data.map((item: { registration: any; }) => {
+            if(item.registration === element.registration){
+              return {...item, IsActive: 0}
+            }
+            return item
+          })
 
-      element.IsActive = result.data[0].IsActive
-      element.flight_started = result.data[0].flight_started
-      this.dataSource = this.dataSource.map((item: { registration: any; }) => {
-        if(item.registration === element.registration){
-          return {...item, IsActive: 0}
-        }
-        return item
-      })
+          this.dataSource.data = this.dataSource.data.filter((item: { id: any; }) => item.id !== element.id)
 
-      this._socket.reloadForEveryone()
-
+          this._socket.reloadForEveryone()
+        })
+        this._api.postTypeRequest('flights/last-logged-flight', this.currentUser).subscribe((result: any) => {
+          const index = this.pastFlights.data.findIndex(element => element.ID === result.data[0].ID)
+          if(index === -1){
+            this.pastFlights.data = [
+              ...this.pastFlights.data, result.data[0]
+            ]
+          }
+        })
+      }
     })
 
-  console.log(this.dataSource)
-  this.dataSource = this.dataSource.filter((item: { id: any; }) => item.id !== element.id)
 
-  this.pastFlights = [
-    ...this.pastFlights, element
-  ]
-  console.log(this.pastFlights)*/
+
+
+
   }
+  ngAfterViewInit(){
+    this.pastFlights.paginator = this.paginator
+
+  }
+
   goFlying(element: any){
-    console.log(element)
     this._api.postTypeRequest('flights/ground-me', element).subscribe((result: any) => {
-      console.log(result)
 
       element.IsActive = result.data[0].IsActive
       element.flight_started = result.data[0].flight_started
-      this.dataSource = this.dataSource.map((item: { registration: any; }) => {
+      this.dataSource.data = this.dataSource.data.map((item: { registration: any; }) => {
         if(item.registration === element.registration){
           return {...item, IsActive: 1}
         }
         return item
       })
       this._socket.reloadForEveryone();
-      console.log(this.dataSource)
 
     })
+  }
+  applyFilter(event: Event) {
+    //  debugger;
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.pastFlights.filter = filterValue.trim().toLowerCase();
   }
 }

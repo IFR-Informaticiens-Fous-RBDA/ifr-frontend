@@ -12,33 +12,162 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
+    <!-- Instructor errors -->
+    <div *ngIf="!selectedInstructor"
+    class="alert alert-warning">
+      Please select an instructor.
+    </div>
   </div>
+
   <p>Heure de départ</p>
     <ngx-mat-timepicker-field color="warn"
       [format]="24"
       [defaultTime]="'09:00'"
-      [controlOnly]="true">
+      [controlOnly]="true"
+      [(ngModel)] = "departure_time">
     </ngx-mat-timepicker-field>
   <p>Heure d'arrivée</p>
     <ngx-mat-timepicker-field color="warn"
       [format]="24"
       [defaultTime]="'10:00'"
-      [controlOnly]="true">
+      [controlOnly]="true"
+      [(ngModel)] = "arrival_time">
     </ngx-mat-timepicker-field>
   </div>
   <p>Departure airport (ICAO)</p>
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>ICAO code airport</mat-label>
-    <input matInput placeholder="Ex. EBFS" value="EBFS">
+    <input required  #departure_icao = "ngModel" matInput placeholder="Ex. EBFS" [(ngModel)] = "departure_icao_code" value="EBFS">
   </mat-form-field>
+  <!-- Departure airport errors -->
+  <div *ngIf="departure_icao.invalid && (departure_icao.dirty || departure_icao.touched)"
+    class="alert alert-danger">
+    <div *ngIf="departure_icao.errors?.['required']">
+      Departure ICAO is required.
+    </div>
+  </div>
 
   <p>Arrival airport (ICAO)</p>
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>ICAO code airport</mat-label>
-    <input matInput placeholder="Ex. EBFS" value="EBFS">
+    <input required #arrival_icao = "ngModel" matInput placeholder="Ex. EBFS" value="EBFS" [(ngModel)] = "arrival_icao_code">
+  </mat-form-field>
+  <!-- Arrival airport errors -->
+  <div *ngIf="arrival_icao.invalid && (arrival_icao.dirty || arrival_icao.touched)"
+    class="alert alert-danger">
+    <div *ngIf="arrival_icao.errors?.['required']">
+       ICAO is required.
+    </div>
+  </div>
+  <p>Engine start time (format : xxxx:xx)</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Engine start time</mat-label>
+    <input matInput placeholder="5031:25" value="{{engine_last_start}}" [disabled]="engine_last_start != ''">
   </mat-form-field>
 
+  <p>Engine end time (format : xxxx:xx)</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Engine end time</mat-label>
+    <input required #engine_stop = "ngModel" matInput placeholder="5031:25" [(ngModel)] = "engine_end" (change)="computeFlightTime()">
+  </mat-form-field>
+    <!-- Engine end  errors -->
+    <div *ngIf="engine_stop.invalid && (engine_stop.dirty || engine_stop.touched)"
+    class="alert alert-danger">
+      <div *ngIf="engine_stop.errors?.['required']">
+        Engine stop is required.
+      </div>
+    </div>
+
+  <p>Total time of flight</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Time of flight</mat-label>
+    <input matInput [disabled]="true" [(ngModel)] = "total_flight_time">
+  </mat-form-field>
+   <!-- Total time errors -->
+   <div *ngIf="total_flight_time.includes('NaN')"
+   class="alert alert-danger">
+       Engine end time is invalid.
+    </div>
+  <p>Type of runway</p>
+  <mat-form-field>
+    <mat-label>Type de piste : </mat-label>
+    <mat-select [(value)] = "selectedRunway">
+      <mat-option *ngFor="let runway_type of type_of_runwayList" [value]="runway_type">
+        {{runway_type}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Nature errors -->
+  <div *ngIf="!selectedRunway"
+  class="alert alert-warning">
+    Please select a runway type.
+  </div>
+
+
+  <p>Number of landings</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Number of landings</mat-label>
+    <input matInput type="number" [(ngModel)]="number_landings_day">
+  </mat-form-field>
+  <br>
+  <mat-checkbox [checked] = "isNightFlight === 1"  (change) = "updateNightFlight()">Was it a night flight ?</mat-checkbox>
+  <br><br>
+  <div class = "nightLanding" *ngIf = "isNightFlight === 1" >
+    <p>Number of night landings</p>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Number of night landings</mat-label>
+      <input matInput type="number" value="1">
+    </mat-form-field>
+  </div>
+  <p>Quelle était la nature du vol ?</p>
+  <mat-form-field>
+    <mat-label>Nature du vol : </mat-label>
+    <mat-select [(value)] = "selectedNature">
+      <mat-option *ngFor="let flight_nature of nature_of_flightsList" [value]="flight_nature">
+        {{flight_nature}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Nature errors -->
+  <div *ngIf="!selectedNature"
+  class="alert alert-warning">
+    Please select a flight Nature.
+  </div>
+
+
+  <p>Huile ajoutée avant le vol</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Oil added before</mat-label>
+    <input matInput type="number" [(ngModel)] = "oil_added_before">
+  </mat-form-field>
+  <p>Huile ajoutée après le vol</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Oil added after</mat-label>
+    <input matInput type="number" [(ngModel)] = "oil_added_after">
+  </mat-form-field>
+  <p>Essence ajoutée avant le vol</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Fuel added before</mat-label>
+    <input matInput type="number" [(ngModel)] = "fuel_added_before">
+  </mat-form-field>
+  <p>Essence ajoutée après le vol</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Fuel added after</mat-label>
+    <input matInput type="number" [(ngModel)] = "fuel_added_after">
+  </mat-form-field>
+  <p>Nom des passagers</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Passengers names</mat-label>
+    <input matInput placeholder="Ex. Philippe" [(ngModel)] = "passengers">
+  </mat-form-field>
+  <p>Remarques</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Remarks</mat-label>
+    <textarea matInput placeholder="Ex. Tires exploded..." [(ngModel)] = "remarks"></textarea>
+  </mat-form-field>
   <div mat-dialog-actions>
   <button class = "btn btn-danger" mat-button (click)="onNoClick()">Annuler</button>
-  <button class = "btn btn-success" mat-button (click)="sendData()" mat-dialog-close cdkFocusInitial>Valider</button>
+  <button class = "btn btn-success" mat-button (click)="sendData()" [disabled]="!selectedNature || !selectedRunway || !engine_end" cdkFocusInitial>Valider</button>
 </div>
