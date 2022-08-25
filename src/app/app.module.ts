@@ -65,6 +65,13 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FlightsManagementComponent } from './flights-management/flights-management.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatChipsModule} from '@angular/material/chips';
+import {DialogModule} from 'primeng/dialog';
+import {ConfirmPopupModule} from 'primeng/confirmpopup';
+import {ToastModule} from 'primeng/toast';
+import { MembersOperationalStatusComponent } from './members-operational-status/members-operational-status.component';
+
+
+
 
 
 
@@ -95,6 +102,7 @@ const config: SocketIoConfig = {
     AddFlightDialogComponent,
     RecurringEventChooserComponent,
     FlightsManagementComponent,
+    MembersOperationalStatusComponent,
   ],
   exports: [AppComponent],
   imports: [
@@ -102,8 +110,11 @@ const config: SocketIoConfig = {
     BrowserModule,
     AppRoutingModule,
     MatTableModule,
+    ToastModule,
     MatCheckboxModule,
+    ConfirmPopupModule,
     MatDatepickerModule,
+    DialogModule,
     MatAutocompleteModule,
     MatListModule,
     MatMenuModule,

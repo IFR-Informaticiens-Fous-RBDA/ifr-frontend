@@ -24,6 +24,7 @@
       <a mat-list-item (click) = "sidenav.close()" [routerLink]="['']" *ngIf = "localStorage" routerLinkActive="active">Booking</a>
       <a mat-list-item (click) = "sidenav.close()" [routerLink]="['flights']" *ngIf="localStorage" routerLinkActive="active">My flights</a>
       <a mat-list-item (click) = "sidenav.close()" [routerLink]="['flights-management']" *ngIf="localStorage && localStorage.roles.includes('Flights manager')" routerLinkActive="active">Flights management</a>
+      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['members-operational-status']" *ngIf="localStorage && localStorage.roles.includes('Flights manager')" routerLinkActive="active">Members operational status</a>
 
     </mat-nav-list>
   </mat-sidenav>

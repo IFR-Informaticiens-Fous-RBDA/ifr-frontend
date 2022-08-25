@@ -1,0 +1,176 @@
+<h2>Display and edit members operational status</h2>
+<div class="mat-elevation-z8">
+  <mat-form-field style="width: 40%">
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
+  </mat-form-field>
+  <mat-form-field style="width: 20%; float: right;">
+    <mat-label>Go to Page</mat-label>
+    <input matInput type="number" placeholder="Enter page number" [(ngModel)]="pageNumber" (ngModelChange)="goToPage()">
+  </mat-form-field>
+  <form [formGroup]="VOForm" autocomplete="off">
+    <ng-container formArrayName="VORows">
+      <table id="excel-table" mat-table *ngIf = "all_members_operational_status && all_members_operational_status.length != 0" [dataSource]="dataSource" class="mat-elevation-z8">
+
+        <!--- Note that these columns can be defined in any order.
+              The actual rendered columns are set as a property on the row definition" -->
+          <!-- Name Column -->
+
+        <ng-container matColumnDef="position">
+          <th mat-header-cell *matHeaderCellDef> No. </th>
+          <td mat-cell *matCellDef="let element; let i = index" [formGroup]="element">
+            <mat-form-field style="width: 70px;" [appearance]="VOForm!.get('VORows')!.value[i].isEditable ? 'none' : 'legacy'">
+              <input matInput type="text" formControlName="position" [readonly]="VOForm!.get('VORows')!.value[i].isEditable">
+            </mat-form-field>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="FirstName">
+          <th mat-header-cell *matHeaderCellDef> First name </th>
+          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+            <mat-form-field style="width: 70px;"
+              [appearance]="VOForm!.get('VORows')!.value[i].isEditable ? 'none' : 'legacy'">
+              <input matInput type="text" formControlName="FirstName" [readonly]="VOForm!.get('VORows')!.value[i].isEditable">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="LastName">
+            <th mat-header-cell *matHeaderCellDef> Last Name </th>
+            <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+              <mat-form-field style="width: 70px;"
+              [appearance]="VOForm!.get('VORows')!.value[i].isEditable ? 'none' : 'legacy'">
+              <input matInput type="text" formControlName="LastName" [readonly]="VOForm!.get('VORows')!.value[i].isEditable">
+            </mat-form-field>
+            </td>
+          </ng-container>
+
+            <!-- Name Column -->
+        <ng-container matColumnDef="License_validity">
+          <th mat-header-cell *matHeaderCellDef> PPL License validity</th>
+          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+            <mat-form-field style="width: 70px;"
+              [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
+              <input matInput type="text" formControlName="License_validity" [readonly]="VOForm.get('VORows').value[i].isEditable">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="Sep_validity">
+            <th mat-header-cell *matHeaderCellDef> SEP validity </th>
+            <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+              <mat-form-field style="width: 70px;"
+                [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
+                <input matInput type="text" formControlName="Sep_validity" [readonly]="VOForm.get('VORows').value[i].isEditable">
+              </mat-form-field>
+            </td>
+          </ng-container>
+
+            <!-- Name Column -->
+        <ng-container matColumnDef="Medical_class_validity">
+          <th mat-header-cell *matHeaderCellDef> Medical class 2 validity</th>
+          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+            <mat-form-field style="width: 70px;"
+              [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
+              <input matInput type="text" formControlName="Medical_class_validity" [readonly]="VOForm.get('VORows').value[i].isEditable">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="Bi_qual">
+            <th mat-header-cell *matHeaderCellDef> OO-HBI qualification date</th>
+            <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+              <mat-form-field style="width: 70px;"
+                [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
+                <input matInput type="text" formControlName="Bi_qual" [readonly]="VOForm.get('VORows').value[i].isEditable">
+              </mat-form-field>
+            </td>
+          </ng-container>
+
+            <!-- Name Column -->
+        <ng-container matColumnDef="Bu_qual">
+          <th mat-header-cell *matHeaderCellDef> OO-HBU qualification date </th>
+          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+            <mat-form-field style="width: 70px;"
+              [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
+              <input matInput type="text" formControlName="Bu_qual" [readonly]="VOForm.get('VORows').value[i].isEditable">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="By_qual">
+            <th mat-header-cell *matHeaderCellDef> OO-HBY qualification date</th>
+            <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+              <mat-form-field *ngIf = "element.LastName != null" style="width: 70px;"
+                [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
+                <input matInput type="text"  formControlName="By_qual" [readonly]="VOForm.get('VORows').value[i].isEditable">
+              </mat-form-field>
+            </td>
+          </ng-container>
+
+            <!-- Name Column -->
+        <ng-container matColumnDef="Bq_qual">
+          <th mat-header-cell *matHeaderCellDef> OO-HBQ qualification date</th>
+          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+            <mat-form-field *ngIf = "element.LastName != null" style="width: 70px;"
+              [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
+              <input matInput type="text" formControlName="Bq_qual" [readonly]="VOForm.get('VORows').value[i].isEditable">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="Special_decision_end">
+          <th mat-header-cell *matHeaderCellDef> Special decision end date</th>
+          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+            <mat-form-field *ngIf = "element.LastName != null" style="width: 70px;"
+              [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
+              <input matInput type="text" formControlName="Special_decision_end" [readonly]="VOForm.get('VORows').value[i].isEditable">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+
+
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef> Action </th>
+          <td mat-cell *matCellDef="let element; let i = index" [formGroup]="element">
+            <button mat-icon-button class="material-icons app-toolbar-menu save-button"
+                                    matTooltip="Save Changes" (click)="SaveVO(VOForm,i)"
+                                    *ngIf="!VOForm.get('VORows').value[i].isEditable" color="primary">
+                                    <mat-icon [ngStyle]="{'color': 'blue'}">check_circle</mat-icon>
+                                </button>
+
+            <button mat-icon-button class="material-icons app-toolbar-menu cancel-button"
+                                    matTooltip="Cancel Changes" color="warn"
+                                    (click)="CancelSVO(VOForm,i)"
+                                    *ngIf="!VOForm.get('VORows').value[i].isEditable">
+                                    <mat-icon [ngStyle]="{'color': 'red'}">cancel</mat-icon>
+                                </button>
+
+            <button mat-icon-button class="material-icons app-toolbar-menu save-button"
+                                    *ngIf="VOForm.get('VORows').value[i].isEditable"
+                                    matTooltip="Edit" color="primary" (click)="EditSVO(VOForm,i)">
+                                    <mat-icon [ngStyle]="{'color': 'blue'}">edit</mat-icon>
+                                </button>
+
+            <button mat-icon-button class="material-icons app-toolbar-menu delete-button"
+                                    *ngIf="VOForm.get('VORows').value[i].isEditable"
+                                    matTooltip="Delete" color="warn">
+                                    <mat-icon [ngStyle]="{'color': 'red'}">delete</mat-icon>
+                                </button>
+          </td>
+        </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </ng-container>
+  </form>
+  <mat-paginator #paginator [pageSizeOptions]="[2, 5, 10]"
+  showFirstLastButtons></mat-paginator>
+</div>
+<button class = "btn btn-primary" (click) = "exportExcel()">Export<mat-icon>file_download</mat-icon></button>
