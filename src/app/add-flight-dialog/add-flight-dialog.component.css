@@ -1,3 +1,21 @@
 ::ng-deep .mat-dialog-container{
-  max-height: 500px !important;
+  max-height: 75vh !important;
 }
+table{
+  width: 100%
+}
+::ng-deep button{
+  border: none;
+  background-color: white;
+}
+.mat-form-field{
+  width: 46.5vw !important;
+}
+#pilotText{
+  width: 22vw !important;
+}
+#pilotShare{
+  width: 22vw !important;
+  margin-right: 1rem;
+}
+

@@ -5,6 +5,7 @@ import { ApiService } from '../services/api.service';
 import { SocketService } from '../services/socket.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import { interval, Subscription } from 'rxjs';
 
 
 @Component({
@@ -19,12 +20,19 @@ export class FlightsComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [];
   displayedColumnsLog: string[] = []
   selectedInstructor: any
+  dateNow: number = Date.now()
+  subscription!: Subscription;
+  legs_number: number[] = []
+  legs_index!: number
+  intervalId!: number;
   @ViewChild('paginator') paginator!: MatPaginator;
 
 
   constructor(private _api: ApiService, private _socket: SocketService, public dialog: MatDialog) { }
 
   ngOnInit(): void {
+    const source = interval(1000)
+    this.subscription = source.subscribe(val => this.opensnack())
     this._socket.onReloadForEveryone().subscribe((data:any) => {
         this._api.postTypeRequest('flights/all-flights', this.currentUser).subscribe((result:any) => {
         this.dataSource = new MatTableDataSource(result.data)
@@ -43,7 +51,11 @@ export class FlightsComponent implements OnInit, AfterViewInit {
       this.dataSource.data.forEach(function(element : any){
         element.date_depart = new Date(element.date_depart)
         element.date_arrivee = new Date(element.date_arrivee)
+
       })
+      for(let i = 0; i < this.dataSource.data.length; i++){
+        this.legs_number[i] = 1
+      }
 
     this._api.postTypeRequest('flights/all-logged-flights', this.currentUser).subscribe((result: any) => {
       this.pastFlights.data = result.data
@@ -53,24 +65,89 @@ export class FlightsComponent implements OnInit, AfterViewInit {
       this.displayedColumnsLog = ['Registration','Date_Of_Flight', 'Departure_ICAO_Code', 'Departure_Time', 'Arrival_ICAO_Code', 'Arrival_Time', 'Total_Time_Of_Flight', 'FirstName', 'LastName', 'ShortName', 'Landings_Number_Day', 'Name', 'Engine_Start', 'Engine_Stop', 'Engine_Time']
 
     });
+
+
+    console.log(this.legs_number)
+  }
+  opensnack() {
+    this.dateNow = this.dateNow + 1000
+    this.dataSource.data.forEach((element : any) =>{
+      if(!element.flight_started && this.dateNow > element.date_depart && this.dateNow < element.date_arrivee){
+        this._api.postTypeRequest('flights/ground-me', element).subscribe((result: any) => {
+
+          element.IsActive = result.data[0].IsActive
+          element.flight_started = result.data[0].flight_started
+          this.dataSource.data = this.dataSource.data.map((item: { registration: any; }) => {
+            if(item.registration === element.registration){
+              return {...item, IsActive: 1}
+            }
+            return item
+          })
+          this._socket.reloadForEveryone();
+
+        })
+      }
+      if(element.IsActive && this.dateNow > element.date_arrivee){
+        this._api.postTypeRequest('flights/unground-me', element).subscribe((result: any) => {
+
+          element.IsActive = result.data[0].IsActive
+          element.flight_started = result.data[0].flight_started
+          this.dataSource.data = this.dataSource.data.map((item: { registration: any; }) => {
+            if(item.registration === element.registration){
+              return {...item, IsActive: 0}
+            }
+            return item
+          })
+          this._socket.reloadForEveryone();
+
+        })
+      }
+
+    })
+  }
+  ngOnDestroy(){
+    this.subscription && this.subscription.unsubscribe()
+    clearInterval(this.intervalId)
+  }
+  getIndex(index: any){
+    console.log(index)
+    this.legs_index = index
   }
   logFlight(element:any){
+    console.log(this.currentUser[0].id)
     const dialogRef = this.dialog.open(AddFlightDialogComponent, {
-      width:'500px',
+      width:'50vw',
       data: {
         currentEvent: element,
-        currentUser: this.currentUser[0].id,
+        currentUser: this.currentUser[0],
         slot: element.date_depart,
-        aircraft_id: element.aircraft_id
+        aircraft_id: element.aircraft_id,
+        legs_number: this.legs_number[this.legs_index],
+        legs_index: this.legs_index
       },
       disableClose: true
     });
     dialogRef.afterClosed().subscribe(result =>{
-      if(result != undefined){
+      console.log(result)
+      if(this.legs_number[this.legs_index] > 1){
+        this._api.postTypeRequest('flights/log-leg', result).subscribe((result:any) => {
+          console.log(result)
+          console.log("leg added")
+        })
+        this._api.postTypeRequest('flights/last-logged-flight', this.currentUser).subscribe((result: any) => {
+          const index = this.pastFlights.data.findIndex(element => element.ID === result.data[0].ID)
+          if(index === -1){
+            this.pastFlights.data = [
+              ...this.pastFlights.data, result.data[0]
+            ]
+          }
+        })
+      }
+      if(result != undefined && this.legs_number[this.legs_index] === 1){
         this.selectedInstructor = result.instructor
         this._api.postTypeRequest('flights/log-flight', result).subscribe((result:any) => {
+          console.log(result)
           element.IsActive = result.data[0].IsActive
-          element.flight_started = result.data[0].flight_started
           this.dataSource.data = this.dataSource.data.map((item: { registration: any; }) => {
             if(item.registration === element.registration){
               return {...item, IsActive: 0}
@@ -91,6 +168,7 @@ export class FlightsComponent implements OnInit, AfterViewInit {
           }
         })
       }
+      this.legs_number[this.legs_index] = this.legs_number[this.legs_index] -1
     })
 
 
@@ -98,6 +176,7 @@ export class FlightsComponent implements OnInit, AfterViewInit {
 
 
   }
+
   ngAfterViewInit(){
     this.pastFlights.paginator = this.paginator
 

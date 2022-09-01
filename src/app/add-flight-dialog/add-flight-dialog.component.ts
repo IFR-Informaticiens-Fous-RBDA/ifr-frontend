@@ -3,11 +3,19 @@ import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog
 import { AircraftBookingComponent } from '../aircraft-booking/aircraft-booking.component';
 import * as moment from 'moment';
 import { ThemePalette } from '@angular/material/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
 import { NgxMatTimepickerComponent } from 'ngx-mat-timepicker';
+import { CurrencyPipe } from '@angular/common';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
+import { MatTableDataSource } from '@angular/material/table';
 
+export interface PilotShare{
+  pilot: string,
+  share: number
+}
 
 export interface DialogData {
   currentEvent: any
@@ -40,7 +48,8 @@ export interface DialogData {
 @Component({
   selector: 'dialog-overview-example-dialog',
   templateUrl: 'add-flight-dialog.component.html',
-  styleUrls: ['./add-flight-dialog.component.css']
+  styleUrls: ['./add-flight-dialog.component.css'],
+  providers: [CurrencyPipe]
 })
 export class AddFlightDialogComponent {
 
@@ -57,12 +66,27 @@ export class AddFlightDialogComponent {
   public selectedInstructor=""
   public selectedNature=""
   public selectedRunway = ""
+  public pilotShare: number = 0
+  public technical_problems: string = ""
+  public total_pob = 1
   public isPIC = true;
+  public hasOil = false;
+  public hasFuel = false;
+  public fuelInvoicePaid = false;
+  public landingFeePaid = false;
+  public hasLandingFee = false;
+  public hasSharing = false;
   public isNightFlight = 0;
   public total_flight_time : string = ""
   public engine_end: any
   public departure_icao_code: string = "EBFS"
   public arrival_icao_code: string = "EBFS"
+  public fuel_location: string="EBFS"
+  public landing_fee_location: string="EBFS"
+  public fuel_invoice: number = 0
+  public landing_fee: number = 0
+  public formatted_fuel_invoice!: string | null
+  public formatted_landing_fee!: string | null
   public departure_time: string = '09:00'
   public arrival_time: string = '10:00'
   public number_landings_day: number = 1
@@ -73,6 +97,13 @@ export class AddFlightDialogComponent {
   public fuel_added_before: number = 0
   public passengers: string = ""
   public remarks: string = ""
+  public pilotsSharingList = new MatTableDataSource<PilotShare>([])
+  public displayedColumns: string[] = ['pilot', 'share', 'action']
+  public filteredPilot!: Observable<string[]>;
+  public selectedPilot: string = ""
+  public pilotControl = new FormControl('')
+  public pilotsList : string[] = []
+  public pilots :any
 
   @ViewChild(NgxMatTimepickerComponent) picker: any
 
@@ -83,9 +114,25 @@ export class AddFlightDialogComponent {
     private _auth: AuthService,
     private _api: ApiService,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
-  ) {}
+    private _currencyPipe: CurrencyPipe
+  ) {
+  }
 
   ngOnInit(){
+
+    this._api.getTypeRequest('user/all-members').subscribe((res: any) => {
+      this.pilots = res.data
+      this.pilotsList = this.pilots.map(function(pilot: { [x: string]: any; }) {
+        return pilot['fullname']
+      })
+
+    })
+    this.filteredPilot = this.pilotControl.valueChanges.pipe(
+      startWith(''),
+      map((value: any) => value.length >= 1 ? this._filter(value || ''): []),
+    );
+    this.pilotsSharingList.data.push({pilot: this.data.currentUser.FirstName + " " + this.data.currentUser.LastName, share: 100})
+    console.log(this.pilotsSharingList)
     this._api.getTypeRequest('user/all-instructors').subscribe((res : any) =>
     {
       this.instructors = res.data;
@@ -111,11 +158,39 @@ export class AddFlightDialogComponent {
     this._api.getTypeRequest('flights/last-flight/' + this.data.aircraft_id).subscribe((res: any) => {
       if(res.status && res.data.length != 0){
         this.engine_last_start = res.data[0].Engine_Stop
+        this.departure_icao_code = res.data[0].Arrival_ICAO_Code
       }
       else{
         this.engine_last_start=""
       }
     })
+  }
+
+  transformAmount(element: any){
+    console.log(Number(this.fuel_invoice))
+    this.formatted_fuel_invoice = this._currencyPipe.transform(this.fuel_invoice, 'EUR');
+    // Remove or comment this line if you dont want
+    // to show the formatted amount in the textbox.
+}
+
+addPilotShare(pilot : any, share: any){
+  this.pilotsSharingList.data = [...this.pilotsSharingList.data, {pilot: pilot, share: share}]
+  this.pilotsSharingList.data[0].share = this.pilotsSharingList.data[0].share - share
+}
+delete(index: any){
+  this.pilotsSharingList.data[0].share = this.pilotsSharingList.data[0].share + this.pilotsSharingList.data[index].share
+  this.pilotsSharingList.data.splice(index, 1)
+  this.pilotsSharingList.data = [...this.pilotsSharingList.data]
+}
+
+  transformAmountFee(element: any){
+    this.formatted_landing_fee = this._currencyPipe.transform(this.landing_fee, 'EUR');
+  }
+
+  private _filter(value: string) : string[] {
+    const filterValue = value.toLowerCase()
+
+    return this.pilotsList.filter(pilot => pilot.toLowerCase().includes(filterValue))
   }
 
   computeFlightTime(){
@@ -134,6 +209,30 @@ export class AddFlightDialogComponent {
       this.isNightFlight = 1
     }
   }
+  updateLandingFee(){
+    if(this.hasLandingFee){
+      this.hasLandingFee = false
+    }
+    else{
+      this.hasLandingFee = true
+    }
+  }
+  updateLandingFeePaid(){
+    if(this.landingFeePaid){
+      this.landingFeePaid = false
+    }
+    else{
+      this.landingFeePaid = true
+    }
+  }
+  updateSharingPilots(){
+    if(this.hasSharing){
+      this.hasSharing = false
+    }
+    else{
+      this.hasSharing = true
+    }
+  }
 
   onNoClick(): void {
     this.dialogRef.close();
@@ -145,6 +244,30 @@ export class AddFlightDialogComponent {
     }
     else{
       this.isPIC = true
+    }
+  }
+  updateFuelInvoicePaid(){
+    if(this.fuelInvoicePaid){
+      this.fuelInvoicePaid = false
+    }
+    else{
+      this.fuelInvoicePaid = true
+    }
+  }
+  updateOil(){
+    if(this.hasOil){
+      this.hasOil = false
+    }
+    else{
+      this.hasOil = true
+    }
+  }
+  updateFuel(){
+    if(this.hasFuel){
+      this.hasFuel = false
+    }
+    else{
+      this.hasFuel = true
     }
   }
 

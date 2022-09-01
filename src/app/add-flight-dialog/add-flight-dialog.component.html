@@ -1,6 +1,6 @@
-<h1 mat-dialog-title>Fermer le vol <!--{{data.slot}}--></h1>
+<h1 mat-dialog-title>Close flight<!--{{data.slot}}--></h1>
 <div mat-dialog-content>
-  <mat-checkbox [checked] = "isPIC"  (change) = "updatePIC()">Etiez-vous PIC ?</mat-checkbox>
+  <mat-checkbox [checked] = "isPIC"  (change) = "updatePIC()">Were you pilot in command ?</mat-checkbox>
   <br><br>
   <div *ngIf = "!isPIC" class = "instructor">
     <p>Avec quel instructeur voliez-vous ?</p>
@@ -19,14 +19,14 @@
     </div>
   </div>
 
-  <p>Heure de départ</p>
+  <p>Off-Block date/time</p>
     <ngx-mat-timepicker-field color="warn"
       [format]="24"
       [defaultTime]="'09:00'"
       [controlOnly]="true"
       [(ngModel)] = "departure_time">
     </ngx-mat-timepicker-field>
-  <p>Heure d'arrivée</p>
+  <p>On-Block date/time</p>
     <ngx-mat-timepicker-field color="warn"
       [format]="24"
       [defaultTime]="'10:00'"
@@ -34,7 +34,7 @@
       [(ngModel)] = "arrival_time">
     </ngx-mat-timepicker-field>
   </div>
-  <p>Departure airport (ICAO)</p>
+  <p>Take-off Location (ICAO)</p>
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>ICAO code airport</mat-label>
     <input required  #departure_icao = "ngModel" matInput placeholder="Ex. EBFS" [(ngModel)] = "departure_icao_code" value="EBFS">
@@ -47,7 +47,7 @@
     </div>
   </div>
 
-  <p>Arrival airport (ICAO)</p>
+  <p>Landing Location (ICAO)</p>
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>ICAO code airport</mat-label>
     <input required #arrival_icao = "ngModel" matInput placeholder="Ex. EBFS" value="EBFS" [(ngModel)] = "arrival_icao_code">
@@ -59,13 +59,13 @@
        ICAO is required.
     </div>
   </div>
-  <p>Engine start time (format : xxxx:xx)</p>
+  <p>Start hour meter (format : xxxx:xx)</p>
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Engine start time</mat-label>
     <input matInput placeholder="5031:25" value="{{engine_last_start}}" [disabled]="engine_last_start != ''">
   </mat-form-field>
 
-  <p>Engine end time (format : xxxx:xx)</p>
+  <p>End hour meter (format : xxxx:xx)</p>
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Engine end time</mat-label>
     <input required #engine_stop = "ngModel" matInput placeholder="5031:25" [(ngModel)] = "engine_end" (change)="computeFlightTime()">
@@ -136,36 +136,127 @@
     Please select a flight Nature.
   </div>
 
+  <mat-checkbox [checked] = "hasOil"  (change) = "updateOil()">Oil added ?</mat-checkbox>
+  <br><br>
+  <div *ngIf = "hasOil" class = "oil">
+    <p>Oil added before flight</p>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Oil added before</mat-label>
+      <input matInput type="number" [(ngModel)] = "oil_added_before">
+    </mat-form-field>
+    <p>Oil added after flight</p>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Oil added after</mat-label>
+      <input matInput type="number" [(ngModel)] = "oil_added_after">
+    </mat-form-field>
 
-  <p>Huile ajoutée avant le vol</p>
+  </div>
+  <mat-checkbox [checked] = "hasFuel"  (change) = "updateFuel()">Fuel added ?</mat-checkbox>
+  <br><br>
+  <div *ngIf = "hasFuel" class = "fuel">
+    <p>Fuel added before flight</p>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Fuel added before</mat-label>
+      <input matInput type="number" [(ngModel)] = "fuel_added_before">
+    </mat-form-field>
+    <p>Fuel added after flight </p>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Fuel added after</mat-label>
+      <input matInput type="number" [(ngModel)] = "fuel_added_after">
+    </mat-form-field>
+    <p>Fuel Location</p>
+    <mat-form-field class = "example-full-width" appearance="fill">
+      <mat-label>Location</mat-label>
+      <input matInput placeholder="Ex.EBFS" [(ngModel)] = "fuel_location">
+    </mat-form-field>
+    <p>Fuel invoice</p>
+    <mat-form-field class = "example-full-width" appearance="fill">
+      <mat-label>Invoice</mat-label>
+      <input matInput type="text" [(ngModel)] = "fuel_invoice" (blur)="transformAmount($event)" [value] = "formatted_fuel_invoice">
+    </mat-form-field>
+
+    <p><mat-checkbox *ngIf = "fuel_invoice > 0" [checked] = "fuelInvoicePaid"  (change) = "updateFuelInvoicePaid()">Fuel invoice paid?</mat-checkbox></p>
+  </div>
+  <mat-checkbox [checked] = "hasLandingFee" (change) = "updateLandingFee()" >Landing fees?</mat-checkbox>
+  <br/>
+  <br/>
+  <div *ngIf = "hasLandingFee" class = "fee">
+    <p>Landing location</p>
+    <mat-form-field class = "example-full-width" appearance="fill">
+      <mat-label>Location</mat-label>
+      <input matInput placeholder="Ex.EBFS" [(ngModel)] = "landing_fee_location">
+    </mat-form-field>
+    <p>Landing fee</p>
+    <mat-form-field class = "example-full-width" appearance="fill">
+      <mat-label>Fee</mat-label>
+      <input matInput type="text" [(ngModel)] = "landing_fee" (blur)="transformAmountFee($event)" [value] = "formatted_landing_fee">
+    </mat-form-field>
+    <p><mat-checkbox *ngIf = "landing_fee > 0" [checked] = "landingFeePaid"  (change) = "updateLandingFeePaid()">Landing fee paid?</mat-checkbox></p>
+  </div>
+  <p><mat-checkbox [checked] = "hasSharing" (change) = "updateSharingPilots()" >Pilots members sharing flight?</mat-checkbox></p>
+  <div  *ngIf = "hasSharing" >
+    <mat-form-field id = "pilotText">
+      <mat-label>Pilot to add</mat-label>
+        <input type="text"
+            matInput
+            #pilotInput
+            [formControl]="pilotControl"
+            [(ngModel)]="selectedPilot"
+            [matAutocomplete]="auto2">
+        <mat-autocomplete autoActiveFirstOption #auto2="matAutocomplete" >
+          <mat-option *ngFor="let pilot of filteredPilot | async" [value]="pilot">
+            {{pilot}}
+          </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+    <mat-form-field id = "pilotShare">
+      <mat-label>Pilot's share</mat-label>
+      <input type="number" matInput [(ngModel)]="pilotShare">
+    </mat-form-field>
+    <button class = "btn btn-success" (click) = "addPilotShare(selectedPilot, pilotShare)">Add</button>
+    <table mat-table [dataSource]="pilotsSharingList" class="mat-elevation-z8">
+      <ng-container matColumnDef="pilot">
+        <th mat-header-cell *matHeaderCellDef>Pilot</th>
+        <td mat-cell *matCellDef="let element">{{element.pilot}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="share">
+        <th mat-header-cell *matHeaderCellDef>Share</th>
+        <td mat-cell *matCellDef="let element">{{element.share}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>Action</th>
+        <td mat-cell *matCellDef="let element; let i = index">
+          <button *ngIf = "i > 0" (click) = delete(i)><mat-icon [ngStyle]="{'color': 'red'}">delete</mat-icon></button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+  <br/>
+
+  <p>POB</p>
   <mat-form-field class="example-full-width" appearance="fill">
-    <mat-label>Oil added before</mat-label>
-    <input matInput type="number" [(ngModel)] = "oil_added_before">
+    <mat-label>Persons on board</mat-label>
+    <input matInput type="number" [(ngModel)] = "total_pob">
   </mat-form-field>
-  <p>Huile ajoutée après le vol</p>
-  <mat-form-field class="example-full-width" appearance="fill">
-    <mat-label>Oil added after</mat-label>
-    <input matInput type="number" [(ngModel)] = "oil_added_after">
-  </mat-form-field>
-  <p>Essence ajoutée avant le vol</p>
-  <mat-form-field class="example-full-width" appearance="fill">
-    <mat-label>Fuel added before</mat-label>
-    <input matInput type="number" [(ngModel)] = "fuel_added_before">
-  </mat-form-field>
-  <p>Essence ajoutée après le vol</p>
-  <mat-form-field class="example-full-width" appearance="fill">
-    <mat-label>Fuel added after</mat-label>
-    <input matInput type="number" [(ngModel)] = "fuel_added_after">
-  </mat-form-field>
-  <p>Nom des passagers</p>
+  <p>Passengers name</p>
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Passengers names</mat-label>
     <input matInput placeholder="Ex. Philippe" [(ngModel)] = "passengers">
   </mat-form-field>
-  <p>Remarques</p>
+  <p>Remarks</p>
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Remarks</mat-label>
     <textarea matInput placeholder="Ex. Tires exploded..." [(ngModel)] = "remarks"></textarea>
+  </mat-form-field>
+  <p>Technical issues</p>
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Technical issues</mat-label>
+    <textarea matInput placeholder="Ex. Tires exploded..." [(ngModel)] = "technical_problems"></textarea>
   </mat-form-field>
   <div mat-dialog-actions>
   <button class = "btn btn-danger" mat-button (click)="onNoClick()">Annuler</button>

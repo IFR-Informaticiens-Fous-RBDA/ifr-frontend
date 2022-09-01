@@ -18,6 +18,10 @@ h2{
 
 .btn-danger{
   float: right;
+  min-width: 107px !important;
+}
+.mat-form-field{
+  float: right !important;
 }
 
 .demo-row-is-clicked {
@@ -39,4 +43,8 @@ h2{
   border: 2px solid #ffffff;
   border-top-color: #000000;
   animation: spinner .8s linear infinite;
+}
+.mat-form-field{
+  width: 3vw !important;
+  margin-right: 1rem;
 }
