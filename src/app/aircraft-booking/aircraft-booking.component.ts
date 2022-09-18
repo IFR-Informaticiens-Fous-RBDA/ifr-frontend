@@ -18,6 +18,7 @@ import { CalendarUtils as BaseCalendarUtils } from 'angular-calendar';
 import {GetWeekViewArgs, WeekView, getWeekView} from 'calendar-utils';
 import { GlobalConstants } from '../common/global-constants';
 import { SocketService } from '../services/socket.service';
+import {ConfirmationService, MessageService, PrimeNGConfig} from 'primeng/api';
 
 
 
@@ -121,6 +122,7 @@ export class CalendarUtils extends BaseCalendarUtils {
   selector: 'mwl-day-',
   templateUrl: 'aircraft-booking.component.html',
   styleUrls: ['./aircraft-booking.component.css'],
+  providers: [ConfirmationService, MessageService]
 })
 export class AircraftBookingComponent implements AfterViewChecked{
   @ViewChild('scrollContainer') scrollContainer: ElementRef<HTMLElement> | undefined;
@@ -155,7 +157,9 @@ export class AircraftBookingComponent implements AfterViewChecked{
     private ngZone: NgZone,
     private _api: ApiService,
     private _socket: SocketService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private messageService: MessageService,
+    private primengConfig: PrimeNGConfig,
   ) {
     this.cat1aircraft = []
     this.cat2aircraft = []
@@ -314,6 +318,21 @@ export class AircraftBookingComponent implements AfterViewChecked{
         }
         else{
           console.log("l'even n'ea pas tete cree")
+          console.log(res.message)
+          switch(res.message){
+            case 'TIME_CONFLICT':{
+              this.messageService.add({severity:'error', summary:'Error', detail:'You booked the flight in the past'});
+              break;
+            }
+            case 'SLOT_CONFLICT':{
+              this.messageService.add({severity:'error', summary: 'Error', detail: 'There already is a flight on this time slot with the same aircraft'})
+              break;
+            }
+            default:{
+              this.messageService.add({severity:'error', summary:'Error', detail:'Something went wrong'});
+
+            }
+          }
         }
       });
     });

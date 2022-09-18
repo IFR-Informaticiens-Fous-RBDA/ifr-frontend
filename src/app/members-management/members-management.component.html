@@ -1,0 +1,99 @@
+<mat-form-field id = "editMember">
+  <mat-label>Edit member by name</mat-label>
+    <input type="text"
+        matInput
+        #pilotInput
+        [formControl]="memberControl"
+        [(ngModel)]="selectedMember"
+        [matAutocomplete]="auto2">
+    <mat-autocomplete autoActiveFirstOption #auto2="matAutocomplete" >
+      <mat-option *ngFor="let member of filteredMember | async" [value]="member" (click)="selectMember()">
+        {{member}}
+      </mat-option>
+    </mat-autocomplete>
+</mat-form-field>
+<span style = "margin-right: 1rem; margin-left: 1rem;">- OR -</span>
+<button class = "btn btn-success">Add a new member</button>
+
+<div *ngIf="selectedMemberBool && selectedMember.length > 0"  class="row">
+  <div class="col-md-9 border-right ">
+      <div class="p-3 py-5">
+        <div class = "d-flex justify-content-center">
+          <label class="hoverable" for="fileInput">
+            <img [src]="url ? url : 'https://www.w3schools.com/howto/img_avatar.png'">
+            <div class="hover-text"><mat-icon>download</mat-icon></div>
+            <div class="background"></div>
+          </label>
+          <br/>
+          <input id="fileInput" type='file' (change)="onSelectFile($event)">
+        </div>
+        <h4 class="text-center">Profile Settings</h4>
+          <div class="row mt-2">
+              <div class="col-md-6"><label class="labels">First name</label><input type="text" *ngIf = "userInfo" class="form-control" [(ngModel)]="userInfo.FirstName" value="{{userInfo.FirstName}}"[disabled]="userInfo.FirstName"></div>
+              <div class="col-md-6"><label class="labels">Last name</label><input type="text" *ngIf = "userInfo" class="form-control" [(ngModel)]="userInfo.LastName" value="{{userInfo.LastName}}" [disabled]="userInfo.LastName" ></div>
+          </div>
+          <div class="row mt-3">
+              <div class="col-md-12"><label class="labels">Mobile Number</label><input type="text" *ngIf = "userInfo" class="form-control" [(ngModel)]="userInfo.Phone_Number" value="{{userInfo.Phone_Number}}"></div>
+              <div class="col-md-12"><label class="labels">Address Line 1</label><input type="text" *ngIf = "userInfo" class="form-control" [(ngModel)]="userInfo.Address" value="{{userInfo.Address}}"></div>
+              <div class="col-md-12"><label class="labels">Postcode</label><input type="text" *ngIf = "userInfo" class="form-control" [(ngModel)]="userInfo.Postal_Code" value="{{userInfo.Postal_Code}}"></div>
+              <div class="col-md-12"><label class="labels">Email</label><input type="text" *ngIf = "userInfo" class="form-control" [(ngModel)]="userInfo.EMail" value="{{userInfo.EMail}}"></div>
+          </div>
+          <div class="row mt-3">
+              <div class="col-md-6"><label class="labels">Country</label><input type="text" *ngIf = "userInfo" class="form-control" [(ngModel)]="userInfo.Country" value="{{userInfo.Country}}"></div>
+              <div class="col-md-6"><label class="labels">City</label><input type="text" *ngIf = "userInfo" class="form-control" [(ngModel)]="userInfo.City" value="{{userInfo.City}}"></div>
+          </div>
+          <!-- Modal HTML -->
+          <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button" (click)="confirm($event)" pButton icon="pi pi-check">Save Profile</button></div>
+      </div>
+  </div>
+  <div class="col-md-3">
+      <div class="p-3 py-5">
+          <div class="d-flex align-items-center experience"><h4>Edit the qualifications</h4><button class="mat-icon-edit" (click)="editQualifications()"><mat-icon >edit</mat-icon></button></div><br>
+          <div class="col-md-12">
+            <p>PPL license valid until :</p>
+            <mat-form-field *ngIf = "userInfo" appearance="fill">
+              <mat-label>Choose a date</mat-label>
+              <input matInput [(ngModel)]="userInfo.License_validity" [matDatepicker]="pickerLicense" [disabled]="isEdit">
+              <mat-hint>MM/DD/YYYY</mat-hint>
+              <mat-datepicker-toggle matSuffix [for]="pickerLicense"></mat-datepicker-toggle>
+              <mat-datepicker #pickerLicense></mat-datepicker>
+            </mat-form-field>
+          </div> <br>
+          <div class="col-md-12">
+            <p>SEP valid until :</p>
+            <mat-form-field *ngIf = "userInfo" appearance="fill">
+              <mat-label>Choose a date</mat-label>
+              <input matInput [(ngModel)]="userInfo.Sep_validity" [matDatepicker]="pickerSep" [disabled]="isEdit">
+              <mat-hint>MM/DD/YYYY</mat-hint>
+              <mat-datepicker-toggle matSuffix [for]="pickerSep"></mat-datepicker-toggle>
+              <mat-datepicker #pickerSep></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class = "col-md-12">
+            <p>Medical class 2 certificate valid until :</p>
+            <mat-form-field *ngIf = "userInfo" appearance="fill">
+              <mat-label>Choose a date</mat-label>
+              <input matInput [(ngModel)]="userInfo.Medical_class_validity" [matDatepicker]="pickerMedical" [disabled]="isEdit">
+              <mat-hint>MM/DD/YYYY</mat-hint>
+              <mat-datepicker-toggle matSuffix [for]="pickerMedical"></mat-datepicker-toggle>
+              <mat-datepicker #pickerMedical></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class = "col-md-12">
+            <p>Piper cub / L21 series validity date until :</p>
+            <mat-form-field *ngIf = "userInfo" appearance="fill">
+              <mat-label>Choose a date</mat-label>
+              <input matInput [(ngModel)]="userInfo.Piper_validity" [matDatepicker]="pickerPiper" [disabled]="isEdit">
+              <mat-hint>MM/DD/YYYY</mat-hint>
+              <mat-datepicker-toggle matSuffix [for]="pickerPiper"></mat-datepicker-toggle>
+              <mat-datepicker #pickerPiper></mat-datepicker>
+            </mat-form-field>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<p-toast></p-toast>
+<p-confirmPopup></p-confirmPopup>
+

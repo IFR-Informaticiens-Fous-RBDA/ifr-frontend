@@ -15,9 +15,13 @@ export interface MembersOperationalStatus{
   Sep_validity: Date | null,
   Medical_class_validity: Date | null,
   Bq_qual: Date | null,
+  Bq_date: Date | null,
   Bi_qual: Date | null,
+  Bi_date: Date | null,
   Bu_qual: Date | null,
+  Bu_date: Date | null
   By_qual: Date | null,
+  By_date: Date | null,
   Special_decision_end: Date | null
 }
 @Component({
@@ -32,8 +36,9 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
   all_members_operational_status! :MembersOperationalStatus[]
   VOForm!: FormGroup;
   isEditableNew: boolean = true;
-  displayedColumns : string[] = ['position', 'FirstName', 'LastName', 'License_validity', 'Sep_validity', 'Medical_class_validity', 'Bq_qual', 'Bi_qual', 'Bu_qual', 'By_qual', 'Special_decision_end', 'action']
+  displayedColumns : string[] = ['position', 'FirstName', 'LastName', 'License_validity', 'Sep_validity', 'Medical_class_validity', 'Bq_qual', 'Bq_date', 'Bi_qual', 'Bi_date', 'Bu_qual', 'Bu_date','By_qual', 'By_date', 'Special_decision_end', 'action']
   dataSource = new MatTableDataSource<any>()
+  editClicked = false;
 
   @ViewChild('paginator') paginator!: MatPaginator;
 
@@ -41,13 +46,15 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
   constructor(private _api: ApiService, private _socket: SocketService, public dialog: MatDialog, private fb: FormBuilder, private _formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
+    this.currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
 
     this.VOForm = this._formBuilder.group({
       VORows: this._formBuilder.array([])
     })
 
-    this._api.getTypeRequest('user/all-members-operational-status').subscribe((result: any) => {
+    this._api.getTypeRequest('user/all-members-operational-status/' + this.currentUser[0].id).subscribe((result: any) => {
       this.all_members_operational_status = result.data
+      console.log(result.data)
 
       this.VOForm = this.fb.group({
         VORows: this.fb.array(this.all_members_operational_status.map((val: MembersOperationalStatus) => this.fb.group({
@@ -58,9 +65,13 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
           Sep_validity: new FormControl(val.Sep_validity),
           Medical_class_validity: new FormControl(val.Medical_class_validity),
           Bq_qual: new FormControl(val.Bq_qual),
+          Bq_date: new FormControl(val.Bq_date),
           Bi_qual: new FormControl(val.Bi_qual),
+          Bi_date: new FormControl(val.Bi_date),
           Bu_qual: new FormControl(val.Bu_qual),
+          Bu_date: new FormControl(val.Bu_date),
           By_qual: new FormControl(val.By_qual),
+          By_date: new FormControl(val.By_date),
           Special_decision_end: new FormControl(val.Special_decision_end),
           isEditable: new FormControl(true),
           isNewRow: new FormControl(false)
@@ -125,6 +136,7 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
     // VOFormElement.get('VORows').at(i).get('name').disabled(false)
     VOFormElement.get('VORows').at(i).get('isEditable').patchValue(false);
     console.log(VOFormElement.get('VORows').at(i))
+    this.editClicked = true
     // this.isEditableNew = true;
 
   }

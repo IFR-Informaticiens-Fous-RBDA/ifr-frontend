@@ -69,6 +69,7 @@ import {DialogModule} from 'primeng/dialog';
 import {ConfirmPopupModule} from 'primeng/confirmpopup';
 import {ToastModule} from 'primeng/toast';
 import { MembersOperationalStatusComponent } from './members-operational-status/members-operational-status.component';
+import { MembersManagementComponent } from './members-management/members-management.component';
 
 
 
@@ -103,6 +104,7 @@ const config: SocketIoConfig = {
     RecurringEventChooserComponent,
     FlightsManagementComponent,
     MembersOperationalStatusComponent,
+    MembersManagementComponent,
   ],
   exports: [AppComponent],
   imports: [
