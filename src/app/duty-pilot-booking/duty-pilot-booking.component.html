@@ -58,6 +58,7 @@ dd
 <mwl-calendar-week-view [viewDate]="viewDate" [daysInWeek]="daysInWeek" [dayStartHour]="8" [dayEndHour]="20" [events]= "events" (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="addEventDialog($event)"
 (hourSegmentClicked)="addEventDialog($event)" (eventClicked)="deleteDutyPilotDialog($event)" >
 </mwl-calendar-week-view>
+<button class = "btn btn-danger" (click)= "addDutyNeeded()" *ngIf="allRoles.includes('Flights manager')">Add duty needed</button>
 <button (click) = "changeView()" [routerLink]="['']" routerLinkActive="active" class = "btn btn-outline-secondary">Aircraft booking</button>
 
 

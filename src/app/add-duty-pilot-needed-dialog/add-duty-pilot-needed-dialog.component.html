@@ -1,0 +1,36 @@
+<h1 mat-dialog-title>Add duty pilot needed event <!--{{data.slot}}--></h1>
+
+<div mat-dialog-content>
+  <p>Date et heure de départ</p>
+  <mat-form-field>
+    <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date" [formControl]="dateControlStart"
+      [min]="minDate" [max]="maxDate" [disabled]="false" readonly>
+    <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
+    <ngx-mat-datetime-picker #picker [showSpinners]="showSpinners" [showSeconds]="showSeconds"
+      [stepHour]="stepHour" [stepMinute]="30" [stepSecond]="stepSecond" [touchUi]="touchUi"
+      [color]="color" [enableMeridian]="enableMeridian" [hideTime]="true" (closed)="changeEndHour()">
+    </ngx-mat-datetime-picker>
+  </mat-form-field>
+
+  <p>Date et heure d'arrivée</p>
+  <mat-form-field>
+    <input matInput [ngxMatDatetimePicker]="picker2" placeholder="Choose a date" [formControl]="dateControlEnd"
+       [disabled]="true" [min]="minDate" [max]="maxDate" readonly>
+    <mat-datepicker-toggle matSuffix [for]="$any(picker2)"></mat-datepicker-toggle>
+    <ngx-mat-datetime-picker #picker2 [showSpinners]="true" [showSeconds]="false" [stepHour]="1"
+      [stepMinute]="30" [stepSecond]="1" [touchUi]="false"
+      [enableMeridian]="false" [hideTime]="true" >
+      <!-- Custom icon or text of Apply icon -->
+      <ng-template>
+        <!-- <mat-icon>star</mat-icon> -->
+        <span>OK</span>
+      </ng-template>
+    </ngx-mat-datetime-picker>
+  </mat-form-field>
+  <p><mat-checkbox [checked] = "doesRepeat"  (change) = "repeatReservation()">Repeat reservation ?</mat-checkbox></p>
+  <app-recurring-event-chooser *ngIf = "doesRepeat" [childToMaster] = "dateControlStart" (newDateEvent)="childChange($event)"></app-recurring-event-chooser>
+</div>
+<div mat-dialog-actions>
+  <button class = "btn btn-danger" mat-button (click)="onNoClick()">Annuler</button>
+  <button class = "btn btn-success" mat-button (click)="sendData()" mat-dialog-close cdkFocusInitial>Valider</button>
+</div>

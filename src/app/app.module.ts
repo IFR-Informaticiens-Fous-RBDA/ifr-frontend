@@ -70,6 +70,7 @@ import {ConfirmPopupModule} from 'primeng/confirmpopup';
 import {ToastModule} from 'primeng/toast';
 import { MembersOperationalStatusComponent } from './members-operational-status/members-operational-status.component';
 import { MembersManagementComponent } from './members-management/members-management.component';
+import { AddDutyPilotNeededDialogComponent } from './add-duty-pilot-needed-dialog/add-duty-pilot-needed-dialog.component';
 
 
 
@@ -105,6 +106,7 @@ const config: SocketIoConfig = {
     FlightsManagementComponent,
     MembersOperationalStatusComponent,
     MembersManagementComponent,
+    AddDutyPilotNeededDialogComponent,
   ],
   exports: [AppComponent],
   imports: [

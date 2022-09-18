@@ -8,7 +8,7 @@ import { map, startWith } from 'rxjs/operators';
 
 
 export interface UserInfoFormData{
-  ID: number
+  Member_id: number
   FirstName: string,
   LastName: string,
   Phone_Number: string,
@@ -22,6 +22,15 @@ export interface UserInfoFormData{
   Medical_class_validity: Date,
   Piper_validity: Date
 }
+
+export interface UserToAdd{
+  FirstName : string,
+  LastName : string,
+  Avia_Number : number,
+  Member_Category : string,
+  Member_Since : Date
+}
+
 
 @Component({
   selector: 'app-profile',
@@ -44,10 +53,20 @@ export class MembersManagementComponent implements OnInit {
   public memberControl = new FormControl('')
   public selectedMemberBool = false
   public addMemberClicked = false
+  public selectedMemberCategory = ""
 
+  public firstName = ""
+  public avia_number = 0
+  public lastname = ""
+  public member_category = "A"
+  public member_since = new Date()
 
+  public categories : any
+  public categoriesList: string[] = []
+
+  public userToAdd! : UserToAdd
   public url : any
-  member_id: any;
+  public member_id: any;
 
   constructor(
     private _api: ApiService,
@@ -59,6 +78,20 @@ export class MembersManagementComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.userToAdd = {
+      FirstName : "",
+      LastName : "",
+      Avia_Number : 0,
+      Member_Category : "",
+      Member_Since : new Date()
+    }
+    this._api.getTypeRequest('user/all-categories').subscribe((res : any) =>
+    {
+      this.categories = res.data;
+      for(var i = 0; i < this.categories.length; i++){
+        this.categoriesList.push(this.categories[i].Category_ShortName)
+      }
+    });
     this._api.getTypeRequest('user/all-members').subscribe((res: any) => {
       this.members = res.data;
       for(var i = 0; i < this.members.length; i++){
@@ -100,6 +133,7 @@ export class MembersManagementComponent implements OnInit {
       this._api.getTypeRequest('user/info-member/' + this.member_id).subscribe((res1: any) => {
         console.log(res1)
         this.userInfo = res1.data[0]
+        this.userInfo.Member_id = this.member_id
         console.log(this.userInfo)
       })
     })
@@ -134,6 +168,7 @@ export class MembersManagementComponent implements OnInit {
   }
   confirm(event: Event) {
     this._api.postTypeRequest('user/update', this.userInfo).subscribe((res:any) => {
+      console.log(res)
       if(res.status){
         this.confirmationService.confirm({
           target: event.target as EventTarget,
@@ -154,7 +189,23 @@ export class MembersManagementComponent implements OnInit {
 
 }
 
-  update(){
+sendNewMember(){
+  this.userToAdd.FirstName = this.firstName
+  this.userToAdd.LastName = this.lastname
+  this.userToAdd.Avia_Number = this.avia_number
+  this.userToAdd.Member_Category = this.member_category
+  this.userToAdd.Member_Since = this.member_since
 
+  this._api.postTypeRequest('user/add-member', this.userToAdd).subscribe((res: any) => {
+    console.log(res)
+
+    if(res.status){
+      this.messageService.add({severity:'success', summary:'Success', detail:'Member added to the database'});
+    }
+  })
+}
+
+  addNewMember(){
+    this.addMemberClicked = true
   }
 }
