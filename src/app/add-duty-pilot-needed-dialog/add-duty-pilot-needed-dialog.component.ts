@@ -13,6 +13,7 @@ export interface DialogData {
   end: Date;
   recurringDates: any | undefined;
   delete: boolean
+  isDoublePilotService: boolean
 }
 
 
@@ -33,6 +34,7 @@ export class AddDutyPilotNeededDialogComponent{
   public name = "";
   public description = "";
   public touchUi = false;
+  public isDoublePilotService = false;
   public enableMeridian = false;
   public minDate: moment.Moment | undefined;
   public maxDate: moment.Moment | undefined;
@@ -86,6 +88,14 @@ export class AddDutyPilotNeededDialogComponent{
 
   }
 
+  updateDoublePilotService(){
+    if(this.isDoublePilotService){
+      this.isDoublePilotService = false
+    }
+    else{
+      this.isDoublePilotService = true
+    }
+  }
   changeEndHour(){
     console.log("coucou")
     this.endDate = new Date(this.dateControlStart.value.getTime())
@@ -103,6 +113,7 @@ export class AddDutyPilotNeededDialogComponent{
     this.data.start = this.dateControlStart.value
     this.data.end = this.dateControlEnd.value
     this.data.recurringDates = this.recurringDates
+    this.data.isDoublePilotService = this.isDoublePilotService
 
     this.dialogRef.close(this.data)
   }

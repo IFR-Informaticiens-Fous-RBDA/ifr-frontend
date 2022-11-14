@@ -10,6 +10,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 
 export interface DialogData {
+  currentEvent: any,
   slot: Date,
   start: Date,
   end: Date,

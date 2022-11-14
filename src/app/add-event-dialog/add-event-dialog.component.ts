@@ -17,6 +17,9 @@ import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material
 
 
 export interface DialogData {
+  maintenance: boolean
+  instructor_required: boolean,
+  aircraft_id:number,
   slot: Date,
   start: Date,
   end: Date,
@@ -37,6 +40,7 @@ interface Aircraft {
 @Component({
   selector: 'dialog-overview-example-dialog',
   templateUrl: 'add-event-dialog.component.html',
+  styleUrls: ['./add-event-dialog.component.css']
 })
 export class AddEventDialogComponent implements AfterViewInit{
   constructor(
@@ -97,6 +101,12 @@ export class AddEventDialogComponent implements AfterViewInit{
   public filteredMembers!: Observable<string[]>
   public selectedMembers: string[] = []
   public selectedInstructor =""
+  public isAddUnavailability: boolean = false;
+  public isAddReservation: boolean = true;
+  public aircraftsAvailability: string[] = []
+  public selectedAircraftAvailablity: string =""
+  public roleUser: any
+  public allRoles: string[] = []
 
   public formGroup = new UntypedFormGroup({
     date: new UntypedFormControl(null, [Validators.required]),
@@ -124,10 +134,28 @@ export class AddEventDialogComponent implements AfterViewInit{
   }
 
   ngOnInit(){
-    this._api.getTypeRequest('aircraft/all').subscribe((res : any) =>
+    this._api.getTypeRequest('aircraft/aircraft-name-by-id/'+this.data.aircraft_id).subscribe((res : any) =>
     {
-      this.aircrafts = res.data;
+      console.log(res)
+      this.aircrafts = res;
+
     });
+
+    this._api.getTypeRequest('user/role/' + JSON.parse(localStorage.getItem('userData') || '{}')[0].id).subscribe((result: any) => {
+      this.roleUser = result.data
+      for(let i = 0; i < this.roleUser.length; i++){
+        this.allRoles = [
+          ...this.allRoles, this.roleUser[i].Role_Name
+        ]
+      }
+    })
+
+    this._api.getTypeRequest('aircraft/all').subscribe((res:any) => {
+      console.log(res)
+      this.aircraftsAvailability = res.data
+    })
+    console.log(this.aircrafts)
+
     this._api.getTypeRequest('user/all-instructors').subscribe((res : any) =>
     {
       this.instructors = res.data;
@@ -174,6 +202,17 @@ export class AddEventDialogComponent implements AfterViewInit{
     }
   }
 
+  editAircraftAvailability(){
+    if(this.isAddReservation){
+      this.isAddReservation = false
+      this.isAddUnavailability = true
+    }
+    else{
+      this.isAddReservation = true
+      this.isAddUnavailability = false
+    }
+  }
+
   selected(event: MatAutocompleteSelectedEvent): void{
     if(!this.selectedMembers.find(member => member === event.option.viewValue)){
       console.log(event)
@@ -204,6 +243,7 @@ export class AddEventDialogComponent implements AfterViewInit{
     this.recurringDates = value
   }
   repeatReservation(){
+    console.log(this.aircrafts)
 
     if(this.doesRepeat){
       this.doesRepeat = false
@@ -214,12 +254,13 @@ export class AddEventDialogComponent implements AfterViewInit{
   }
 
   sendData(){
-    this.data.aircraft = this.aircrafts.find((aircraft: { registration: string; }) => aircraft.registration == this.selectedAircraft)!
+    this.data.aircraft = this.aircrafts
     this.data.description = this.description
     this.data.user = this._auth.getUserDetails()
     this.data.start = this.dateControlStart.value
     this.data.end = this.dateControlEnd.value
     this.data.recurringDates = this.recurringDates
+    this.data.maintenance = this.isAddUnavailability
 
     this.dialogRef.close(this.data);
   }

@@ -1,0 +1,124 @@
+
+<div class="jumbotron">
+<div class="row w-100">
+        <div class="col-md-3">
+            <div class="card border-info mx-sm-1 p-3 oohbi">
+                <div class="card border-info shadow text-info p-3 my-card" ><img src="../../assets/img/cessna icon.png" width = "16" height = "16"></div>
+                <div class="text-center mt-3"><h4 class = "toohbi">OO-HBI</h4></div>
+                <div *ngIf = "bi_potential != ''" class="text-center mt-2"><p>{{bi_potential}}</p> heure(s) de temps de vol avant la prochaine inspection</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-success mx-sm-1 p-3 oohbu">
+                <div class="card border-success shadow text-success p-3 my-card"><img src="../../assets/img/cessna icon.png" width = "16" height = "16"></div>
+                <div class="text-center mt-3"><h4 class = "toohbu">OO-HBU</h4></div>
+                <div *ngIf = "bu_potential != ''" class="text-center mt-2"><p>{{bu_potential}}</p> heure(s) de temps de vol avant la prochaine inspection</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-danger mx-sm-1 p-3 oohby">
+                <div class="card border-danger shadow text-danger p-3 my-card" ><img src="../../assets/img/cessna icon.png" width = "16" height = "16"></div>
+                <div class="text-center mt-3"><h4 class = "toohby">OO-HBY</h4></div>
+                <div *ngIf = "by_potential != ''" class="text-center mt-2"><p>{{by_potential}}</p> heure(s) de temps de vol avant la prochaine inspection</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-warning mx-sm-1 p-3 oohbq">
+                <div class="card border-warning shadow text-warning p-3 my-card" ><img src="../../assets/img/cub.png" style="margin-top: 0.2rem;"width = "16" height = "6.42"></div>
+                <div class="text-center mt-3"><h4 class = "toohbq">OO-HBQ</h4></div>
+                <div *ngIf = "bq_potential != ''" class="text-center mt-2"><p>{{bq_potential}}</p> heure(s) de temps de vol avant la prochaine inspection</div>
+              </div>
+        </div>
+     </div>
+</div>
+<button *ngIf = "allRoles.includes('Aircrafts manager')" (click) = "defineInspection()" class = "btn btn-success">Define Aircraft Potential</button>
+<div *ngIf = "inspection">
+  <div class = "row">
+    <div class="col-md-3 border-right ">
+      <div class="p-3 py-5">
+        <p>Aircraft to perform inspection</p>
+          <mat-form-field>
+            <mat-label>Chosen aircraft</mat-label>
+            <mat-select [(value)] = "selectedAircraft" (selectionChange)="onSelectAircraft($event)">
+              <mat-option *ngFor="let aircraft of aircrafts" [value]="aircraft.registration">
+                {{aircraft.registration}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        <p>Intervention hour meter (format : xxxx:xx)</p>
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Intervention hour meter</mat-label>
+            <input matInput placeholder="5031:25" [(ngModel)] = "engine_last_start" value="{{engine_last_start}}">
+          </mat-form-field>
+        <p>Intervention reason</p>
+          <mat-form-field appearance="fill">
+            <mat-label>Intervention reason</mat-label>
+            <input matInput [(ngModel)] = "reason">
+          </mat-form-field>
+        <p>Intervention description (Optional)</p>
+          <mat-form-field appearance="fill">
+            <mat-label>Intervention description</mat-label>
+            <input matInput [(ngModel)] = "description">
+          </mat-form-field>
+        <p><button class = "btn btn-danger" mat-button (click)="onNoClick()">Annuler</button>
+        <button class = "btn btn-success" mat-button (click)="sendData()" [disabled]="!selectedAircraft || !engine_last_start || !reason" cdkFocusInitial>Valider</button></p>
+      </div>
+    </div>
+  <div class = "col-md-8">
+    <div class="p-3 py-5">
+      <div class="mat-elevation-z8">
+        <mat-form-field style="width: 40%">
+          <mat-label>Filter</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
+        </mat-form-field>
+        <table mat-table *ngIf = "dataSource.data.length != 0" [dataSource]="dataSource" class="mat-elevation-z8">
+
+          <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+            <!-- Name Column -->
+
+          <ng-container matColumnDef="registration">
+            <th mat-header-cell *matHeaderCellDef> Aircraft </th>
+            <td mat-cell *matCellDef="let element"> {{element.Registration}} </td>
+          </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="hour_meter">
+              <th mat-header-cell *matHeaderCellDef> Hour Meter </th>
+              <td mat-cell *matCellDef="let element"> {{element.hour_meter}} </td>
+            </ng-container>
+
+              <!-- Name Column -->
+          <ng-container matColumnDef="reason">
+            <th mat-header-cell *matHeaderCellDef> Reason </th>
+            <td mat-cell *matCellDef="let element"> {{element.reason}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef> Description </th>
+            <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef> Status </th>
+            <td mat-cell *matCellDef="let element">
+              <mat-checkbox
+                [disabled] = "element.completed === 1"
+                [(ngModel)]="element.completed"
+                (change)="setInspectionComplete(element)"
+                >
+              </mat-checkbox>
+              <button class="mat-icon-delete" (click)="deleteInspection(element)"><mat-icon >delete</mat-icon></button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+          <mat-paginator #paginator [pageSizeOptions]="[10, 20, 50, 100]"
+          showFirstLastButtons></mat-paginator>
+      </div>
+  </div>
+
+</div>
+</div>

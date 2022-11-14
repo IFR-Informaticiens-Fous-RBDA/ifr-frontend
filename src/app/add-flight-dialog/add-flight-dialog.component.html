@@ -62,7 +62,7 @@
   <p>Start hour meter (format : xxxx:xx)</p>
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Engine start time</mat-label>
-    <input matInput placeholder="5031:25" value="{{engine_last_start}}" [disabled]="engine_last_start != ''">
+    <input matInput placeholder="5031:25" [(ngModel)] = "engine_last_start">
   </mat-form-field>
 
   <p>End hour meter (format : xxxx:xx)</p>

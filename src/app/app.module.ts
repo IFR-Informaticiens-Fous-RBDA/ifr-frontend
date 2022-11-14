@@ -1,6 +1,7 @@
 import { NgModule, Injectable } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
+
 import { CalendarUtils as BaseCalendarUtils } from 'angular-calendar';
 import {GetWeekViewArgs, WeekView, getWeekView} from 'calendar-utils';
 
@@ -71,6 +72,8 @@ import {ToastModule} from 'primeng/toast';
 import { MembersOperationalStatusComponent } from './members-operational-status/members-operational-status.component';
 import { MembersManagementComponent } from './members-management/members-management.component';
 import { AddDutyPilotNeededDialogComponent } from './add-duty-pilot-needed-dialog/add-duty-pilot-needed-dialog.component';
+import { NotAuthorizedHandlerComponent } from './not-authorized-handler/not-authorized-handler.component';
+import { AircraftPotentialComponent } from './aircraft-potential/aircraft-potential.component';
 
 
 
@@ -107,6 +110,8 @@ const config: SocketIoConfig = {
     MembersOperationalStatusComponent,
     MembersManagementComponent,
     AddDutyPilotNeededDialogComponent,
+    NotAuthorizedHandlerComponent,
+    AircraftPotentialComponent,
   ],
   exports: [AppComponent],
   imports: [

@@ -12,6 +12,8 @@
   </div>d
 dd
 </div>-->
+<div class = "btn btn-primary" (click)="changeViewToWeek()">Week only</div>
+<div class = "btn btn-primary" (click)="changeViewToWeekend()">Week-end only</div>
 <div class="container">
   <div class = "inline"><h3>{{ viewDate | calendarDate:('weekViewTitle') }}</h3>
   <button mat-icon-button [matMenuTriggerFor]="appMenu">
@@ -22,14 +24,18 @@ dd
           (selectedChange)="updateView($event)" >
        </mat-calendar>
   </mat-menu>
+
   <div class="row">
+
       <div class="col-md-6" style="margin-left: 2rem;">
+
         <div class="btn-group">
           <div
             class="btn btn-primary"
             mwlCalendarPreviousView
             [view]="'week'"
             [(viewDate)]="viewDate"
+            [excludeDays]="excludeDays"
           >
             Previous
           </div>
@@ -45,6 +51,7 @@ dd
             mwlCalendarNextView
             [view]="'week'"
             [(viewDate)]="viewDate"
+            [excludeDays]="excludeDays"
           >
             Next
           </div>
@@ -54,7 +61,7 @@ dd
 </div>
 <br />
 
-<mwl-calendar-week-view [viewDate]="viewDate" [daysInWeek]="daysInWeek" [dayStartHour]="8" [dayEndHour]="20" [events]= "events" (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="addEventDialog($event)"
+<mwl-calendar-week-view [viewDate]="viewDate" [daysInWeek]="daysInWeek" [dayStartHour]="8" [dayEndHour]="20" [events]= "events" [excludeDays]="excludeDays" (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="addEventDialog($event)"
 (hourSegmentClicked)="addEventDialog($event)" (eventClicked)="updateEventDialog($event)" [refresh]="refresh">
 </mwl-calendar-week-view>
 <button (click) = "changeView()" [routerLink]="['duty-pilot']" routerLinkActive="active" class = "btn btn-outline-secondary">Duty Pilot Booking</button>

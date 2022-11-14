@@ -49,7 +49,7 @@
             <!-- Name Column -->
         <ng-container matColumnDef="License_validity">
           <th mat-header-cell *matHeaderCellDef> PPL License validity</th>
-          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+          <td mat-cell [style.background-color] = "VOForm.get('VORows').value[i].color_License_validity" *matCellDef="let element; let i = index" [formGroup] = "element">
             <mat-form-field style="width: 70px;"
               [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
               <input matInput type="text" formControlName="License_validity" [readonly]="true">
@@ -60,18 +60,10 @@
           <!-- Name Column -->
           <ng-container matColumnDef="Sep_validity">
             <th mat-header-cell *matHeaderCellDef> SEP validity </th>
-            <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+            <td mat-cell [style.background-color] = "VOForm.get('VORows').value[i].color_Sep_validity" *matCellDef="let element; let i = index" [formGroup] = "element">
               <mat-form-field *ngIf="VOForm.get('VORows').value[i].isEditable" style="width: 70px;"
                 [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
-                <input matInput type="text" formControlName="Sep_validity" [readonly]="false">
-              </mat-form-field>
-              <mat-form-field *ngIf="!VOForm.get('VORows').value[i].isEditable" style="width: 70px;"
-              [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
-                <mat-label>Choose a date</mat-label>
-                <input matInput [matDatepicker]="picker_sep"  formControlName="Sep_validity" [readonly]="false">
-                <mat-hint>MM/DD/YYYY</mat-hint>
-                <mat-datepicker-toggle matSuffix [for]="picker_sep"></mat-datepicker-toggle>
-                <mat-datepicker #picker_sep></mat-datepicker>
+                <input matInput type="text" formControlName="Sep_validity" [readonly]="true">
               </mat-form-field>
             </td>
           </ng-container>
@@ -79,7 +71,7 @@
             <!-- Name Column -->
         <ng-container matColumnDef="Medical_class_validity">
           <th mat-header-cell *matHeaderCellDef> Medical class 2 validity</th>
-          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+          <td mat-cell [style.background-color] = "VOForm.get('VORows').value[i].color_Medical_class_validity" *matCellDef="let element; let i = index" [formGroup] = "element">
             <mat-form-field style="width: 70px;"
               [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
               <input matInput type="text" formControlName="Medical_class_validity" [readonly]="true">
@@ -90,7 +82,7 @@
           <!-- Name Column -->
           <ng-container matColumnDef="Bi_qual">
             <th mat-header-cell *matHeaderCellDef> OO-HBI qualification date</th>
-            <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+            <td mat-cell [(NgModel)] = "VOForm.get('VORows').value[i].color_Bi_qual" [style.background-color] = "VOForm.get('VORows').value[i].color_Bi_qual" *matCellDef="let element; let i = index" [formGroup] = "element">
               <mat-form-field *ngIf="VOForm.get('VORows').value[i].isEditable" style="width: 70px;"
                 [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
                 <input matInput type="text" formControlName="Bi_qual" [readonly]="false">
@@ -108,7 +100,7 @@
 
           <ng-container matColumnDef="Bi_date">
             <th mat-header-cell *matHeaderCellDef> OO-HBI last flight date</th>
-            <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+            <td mat-cell [style.background-color] = "VOForm.get('VORows').value[i].color_Bi_date" *matCellDef="let element; let i = index" [formGroup] = "element">
               <mat-form-field style="width: 70px;"
                 [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
                 <input matInput type="text" formControlName="Bi_date" [readonly]="true">
@@ -119,7 +111,7 @@
             <!-- Name Column -->
         <ng-container matColumnDef="Bu_qual">
           <th mat-header-cell *matHeaderCellDef> OO-HBU qualification date </th>
-          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+          <td mat-cell [style.background-color] = "VOForm.get('VORows').value[i].color_Bu_qual" *matCellDef="let element; let i = index" [formGroup] = "element">
             <mat-form-field *ngIf="VOForm.get('VORows').value[i].isEditable" style="width: 70px;"
               [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
               <input matInput type="text" formControlName="Bu_qual" [readonly]="false">
@@ -137,7 +129,7 @@
 
         <ng-container matColumnDef="Bu_date">
           <th mat-header-cell *matHeaderCellDef> OO-HBU last flight date</th>
-          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+          <td mat-cell [style.background-color] = "VOForm.get('VORows').value[i].color_Bu_date" *matCellDef="let element; let i = index" [formGroup] = "element">
             <mat-form-field style="width: 70px;"
               [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
               <input matInput type="text" formControlName="Bu_date" [readonly]="true">
@@ -148,7 +140,7 @@
           <!-- Name Column -->
           <ng-container matColumnDef="By_qual">
             <th mat-header-cell *matHeaderCellDef> OO-HBY qualification date</th>
-            <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+            <td mat-cell [style.background-color] = "VOForm.get('VORows').value[i].color_By_qual" *matCellDef="let element; let i = index" [formGroup] = "element">
               <mat-form-field *ngIf="VOForm.get('VORows').value[i].isEditable" style="width: 70px;"
                 [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
                 <input matInput type="text"  formControlName="By_qual" [readonly]="false">
@@ -166,7 +158,7 @@
 
           <ng-container matColumnDef="By_date">
             <th mat-header-cell *matHeaderCellDef> OO-HBY last flight date</th>
-            <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+            <td mat-cell [style.background-color] = "VOForm.get('VORows').value[i].color_By_date" *matCellDef="let element; let i = index" [formGroup] = "element">
               <mat-form-field style="width: 70px;"
                 [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
                 <input matInput type="text" formControlName="By_date" [readonly]="true">
@@ -177,7 +169,7 @@
             <!-- Name Column -->
         <ng-container matColumnDef="Bq_qual">
           <th mat-header-cell *matHeaderCellDef> OO-HBQ qualification date</th>
-          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+          <td mat-cell [style.background-color] = "VOForm.get('VORows').value[i].color_Bq_qual" *matCellDef="let element; let i = index" [formGroup] = "element">
             <mat-form-field *ngIf="VOForm.get('VORows').value[i].isEditable" style="width: 70px;"
               [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
               <input matInput type="text" formControlName="Bq_qual" [readonly] = "false">
@@ -197,7 +189,7 @@
 
         <ng-container matColumnDef="Bq_date">
           <th mat-header-cell *matHeaderCellDef> OO-HBQ last flight date</th>
-          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+          <td mat-cell [style.background-color] = "VOForm.get('VORows').value[i].color_Bq_date" *matCellDef="let element; let i = index" [formGroup] = "element">
             <mat-form-field style="width: 70px;"
               [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
               <input matInput type="text" formControlName="Bq_date" [readonly]="true">
@@ -207,7 +199,7 @@
 
         <ng-container matColumnDef="Special_decision_end">
           <th mat-header-cell *matHeaderCellDef> Special decision end date</th>
-          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+          <td mat-cell [style.background-color] = "VOForm.get('VORows').value[i].color_Special_decision_end" *matCellDef="let element; let i = index" [formGroup] = "element">
             <mat-form-field *ngIf="VOForm.get('VORows').value[i].isEditable" style="width: 70px;"
               [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
               <input matInput type="text" formControlName="Special_decision_end" [readonly]="false">
@@ -247,11 +239,6 @@
                                     <mat-icon [ngStyle]="{'color': 'blue'}">edit</mat-icon>
                                 </button>
 
-            <button mat-icon-button class="material-icons app-toolbar-menu delete-button"
-                                    *ngIf="VOForm.get('VORows').value[i].isEditable"
-                                    matTooltip="Delete" color="warn">
-                                    <mat-icon [ngStyle]="{'color': 'red'}">delete</mat-icon>
-                                </button>
           </td>
         </ng-container>
 
@@ -260,7 +247,7 @@
       </table>
     </ng-container>
   </form>
-  <mat-paginator #paginator [pageSizeOptions]="[2, 5, 10]"
+  <mat-paginator #paginator [pageSizeOptions]="[10, 20, 50, 100]"
   showFirstLastButtons></mat-paginator>
 </div>
 <button class = "btn btn-primary" (click) = "exportExcel()">Export<mat-icon>file_download</mat-icon></button>

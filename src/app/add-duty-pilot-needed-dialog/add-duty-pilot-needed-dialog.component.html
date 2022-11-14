@@ -29,6 +29,7 @@
   </mat-form-field>
   <p><mat-checkbox [checked] = "doesRepeat"  (change) = "repeatReservation()">Repeat reservation ?</mat-checkbox></p>
   <app-recurring-event-chooser *ngIf = "doesRepeat" [childToMaster] = "dateControlStart" (newDateEvent)="childChange($event)"></app-recurring-event-chooser>
+  <mat-checkbox [checked] = "isDoublePilotService"  (change) = "updateDoublePilotService()">Enable double service pilot for every dates?</mat-checkbox>
 </div>
 <div mat-dialog-actions>
   <button class = "btn btn-danger" mat-button (click)="onNoClick()">Annuler</button>

@@ -48,8 +48,10 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.primengConfig.ripple = true;
     this._api.getTypeRequest('user/info/' + JSON.parse(localStorage.getItem('userData') || '{}')[0].id).subscribe((res: any) => {
+      console.log(JSON.parse(localStorage.getItem('userData') || '{}')[0].id)
       this.userInfo = res.data[0]
-      console.log(this.userInfo.License_validity)
+      console.log(res)
+      console.log(this.userInfo)
       this._api.getTypeRequest('user/member-id/'+ JSON.parse(localStorage.getItem('userData') || '{}')[0].id).subscribe((res:any) => {
         this.userInfo.Member_id = res.data[0].ID_Member
       })
@@ -83,20 +85,14 @@ export class ProfileComponent implements OnInit {
     this.url = null
   }
   confirm(event: Event) {
-    this._api.postTypeRequest('user/update', this.userInfo).subscribe((res:any) => {
+    this._api.postTypeRequest('user/update-current', this.userInfo).subscribe((res:any) => {
+      console.log(res)
       if(res.status){
-        this.confirmationService.confirm({
-          target: event.target as EventTarget,
-          message: 'Are you sure that you want to proceed?',
-          icon: 'pi pi-exclamation-triangle',
-          accept: () => {
-              console.log("accepté bro")
-              this.messageService.add({severity:'success', summary:'Success', detail:'Your profile has been updated'});
-          },
-          reject: () => {
-              this.messageService.add({severity:'error', summary:'Rejected', detail:'You have rejected'});
-          }
-      });
+        this.messageService.add({severity:'success', summary:'Success', detail:'The member has been updated successfully.'});
+      }
+      else{
+        this.messageService.add({severity:'error', summary:'Rejected', detail:'Something went wrong. Please contact one of the website\'s administrators.'});
+
       }
     })
 

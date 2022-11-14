@@ -25,12 +25,14 @@ import { AddDutyPilotDialogComponent } from '../add-duty-pilot-dialog/add-duty-p
 import { SocketService } from '../services/socket.service';
 import { AuthService } from '../services/auth.service';
 import { AddDutyPilotNeededDialogComponent } from '../add-duty-pilot-needed-dialog/add-duty-pilot-needed-dialog.component';
+import { ConfirmationService, MessageService, PrimeNGConfig } from 'primeng/api';
 
 
 @Component({
   selector: 'mwl-day-',
   templateUrl: 'duty-pilot-booking.component.html',
   styleUrls: ['./duty-pilot-booking.component.css'],
+  providers: [ConfirmationService, MessageService]
 })
 export class DutyPilotBookingComponent{
   @ViewChild('scrollContainer') scrollContainer: ElementRef<HTMLElement> | undefined;
@@ -64,6 +66,8 @@ export class DutyPilotBookingComponent{
     private _api: ApiService,
     private _socket: SocketService,
     private cdRef: ChangeDetectorRef,
+    private messageService: MessageService,
+    private primengConfig: PrimeNGConfig,
   ) {
 
   }
@@ -173,7 +177,7 @@ export class DutyPilotBookingComponent{
     dialogRef.afterClosed().subscribe(result =>{
       this._api.postTypeRequest('event/add-duty-pilot-needed', result).subscribe((res: any) => {
         console.log(res)
-        if(res.status && !res.rec_ids){
+        if(res.status && !res.rec_ids && result.isDoublePilotService){
           for(let i = 0; i < res.data.length; i++){
             //add even
             this.events = [
@@ -199,7 +203,53 @@ export class DutyPilotBookingComponent{
           this._socket.reloadForEveryone()
 
         }
-        else if(res.status && res.rec_ids.length > 0){
+        else if(res.status && !res.rec_ids && !result.isDoublePilotService){
+          this.events = [
+            ...this.events,
+            {
+              title: 'DUTY PILOT NEEDED',
+              start: result.start,
+              end: result.end,
+              meta: {
+                eventId: res.data[0].insert_result.insertId,
+              },
+              color: {primary: '#104261',
+                      secondary: '#207fba'},
+              draggable: false,
+              resizable: {
+                beforeStart: false,
+                afterEnd: false,
+              },
+
+            },
+          ]
+          this._socket.reloadForEveryone()
+        }
+        else if(res.status && res.rec_ids.length > 0 && !result.isDoublePilotService){
+          console.log(res.rec_ids)
+          for(let i = 0; i < res.rec_ids.length; i++){
+            this.events = [
+              ...this.events,
+              {
+                title: 'DUTY PILOT NEEDED',
+                start: new Date(res.rec_ids[i][0].start),
+                end: new Date(res.rec_ids[i][0].end),
+                meta: {
+                  eventId: res.rec_ids[i][0].id,
+                },
+                color: {primary: '#104261',
+                          secondary: '#207fba'},
+                  draggable: false,
+                  resizable: {
+                    beforeStart: false,
+                    afterEnd: false,
+                  },
+              }
+            ]
+          }
+          this._socket.reloadForEveryone()
+        }
+        else if(res.status && res.rec_ids.length > 0 && result.isDoublePilotService){ //recurring dates with double service pilot
           for(let i = 0; i < res.rec_ids.length; i++){
             for(let j = 0; j < res.rec_ids[i].length; j++){
               this.events = [
@@ -227,7 +277,6 @@ export class DutyPilotBookingComponent{
         }
         else{
           console.log("l'even n'ea pas tete cree")
-          console.log(res.message)
         }
       });
     });
@@ -271,6 +320,28 @@ export class DutyPilotBookingComponent{
         }
         else{
           console.log("l'even n'ea pas tete cree")
+          console.log(res)
+          switch(res.message){
+            case 'TIME_CONFLICT':{
+              console.log("coucou")
+              this.messageService.add({severity:'error', summary:'Error', detail:'You booked the flight in the past'});
+              break;
+            }
+            case 'SLOT_CONFLICT':{
+              console.log("coucou2")
+              this.messageService.add({severity:'error', summary: 'Error', detail: 'There already is a duty pilot on this time slot or you already booked this hour'})
+              break;
+            }
+            case 'DUTY_NON_NEEDED':{
+              this.messageService.add({severity: 'error', summary: 'Error', detail: 'Duty pilot is not needed at this date'})
+              break;
+            }
+            default:{
+              console.log('coucou3')
+              this.messageService.add({severity:'error', summary:'Error', detail:'Something went wrong'});
+
+            }
+          }
         }
       });
     });

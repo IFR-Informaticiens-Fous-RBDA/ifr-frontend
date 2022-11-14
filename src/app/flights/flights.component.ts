@@ -46,8 +46,9 @@ export class FlightsComponent implements OnInit, AfterViewInit {
     })
     this.currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
     this._api.postTypeRequest('flights/all-flights', this.currentUser).subscribe((result:any) => {
+      console.log(result.data)
       this.dataSource = new MatTableDataSource(result.data)
-      this.dataSource.data = this.dataSource.data.filter((item: { isLogged: any; }) => item.isLogged === 0)
+      this.dataSource.data = this.dataSource.data.filter((item: { isLogged: any; isMaintenance: number }) => item.isLogged === 0 && (item.isMaintenance === 0 || item.isMaintenance === null))
       this.dataSource.data.forEach(function(element : any){
         element.date_depart = new Date(element.date_depart)
         element.date_arrivee = new Date(element.date_arrivee)
@@ -113,8 +114,11 @@ export class FlightsComponent implements OnInit, AfterViewInit {
     console.log(index)
     this.legs_index = index
   }
-  logFlight(element:any){
+  logFlight(element:any, index:any){
+    this.legs_index = index
     console.log(this.currentUser[0].id)
+    console.log(this.legs_index)
+    console.log(this.legs_number[this.legs_index])
     const dialogRef = this.dialog.open(AddFlightDialogComponent, {
       width:'50vw',
       data: {
@@ -131,6 +135,8 @@ export class FlightsComponent implements OnInit, AfterViewInit {
       console.log(result)
       if(this.legs_number[this.legs_index] > 1){
         this._api.postTypeRequest('flights/log-leg', result).subscribe((result:any) => {
+          this.legs_number[this.legs_index] = this.legs_number[this.legs_index] -1
+
           console.log(result)
           console.log("leg added")
         })
@@ -168,7 +174,6 @@ export class FlightsComponent implements OnInit, AfterViewInit {
           }
         })
       }
-      this.legs_number[this.legs_index] = this.legs_number[this.legs_index] -1
     })
 
 

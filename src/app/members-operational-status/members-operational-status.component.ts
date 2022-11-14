@@ -24,6 +24,14 @@ export interface MembersOperationalStatus{
   By_date: Date | null,
   Special_decision_end: Date | null
 }
+export interface MemberDataToSend{
+  member_id: number,
+  Bi_qual: Date | null,
+  Bu_qual: Date | null,
+  By_qual: Date | null,
+  Bq_qual: Date | null,
+  Special_decision_end: Date | null
+}
 @Component({
   selector: 'app-flights',
   templateUrl: './members-operational-status.component.html',
@@ -33,6 +41,14 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
   currentUser: any;
   pageNumber: number = 1;
   fileName = 'ExcelSheet.xlsx'
+  data_to_send: MemberDataToSend = {
+    member_id: 0,
+    Bi_qual: null,
+    Bu_qual: null,
+    By_qual: null,
+    Bq_qual: null,
+    Special_decision_end: null
+  }
   all_members_operational_status! :MembersOperationalStatus[]
   VOForm!: FormGroup;
   isEditableNew: boolean = true;
@@ -52,27 +68,88 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
       VORows: this._formBuilder.array([])
     })
 
+    this._socket.onReloadForEveryone().subscribe((data: any) => {
+      this._api.getTypeRequest('user/all-members-operational-status/' + this.currentUser[0].id).subscribe((result: any) => {
+        this.all_members_operational_status = result.data
+        console.log(result.data)
+        console.log(new Date(this.all_members_operational_status[0].Sep_validity!).getTime() > new Date().getTime())
+        this.VOForm = this.fb.group({
+          VORows: this.fb.array(this.all_members_operational_status.map((val: MembersOperationalStatus) => this.fb.group({
+            position: new FormControl(this.all_members_operational_status.indexOf(val) + 1),
+            FirstName: new FormControl(val.FirstName),
+            LastName: new FormControl(val.LastName),
+            License_validity: new FormControl(val.License_validity),
+            color_License_validity: val.License_validity !== null || new Date(val.License_validity!).getTime() > new Date().getTime() ? 'white' : 'red',
+            Sep_validity: new FormControl(val.Sep_validity),
+            color_Sep_validity: val.Sep_validity !== null || new Date(val.Sep_validity!).getTime() > new Date().getTime() ? 'white' : 'red',
+            Medical_class_validity: new FormControl(val.Medical_class_validity),
+            color_Medical_class_validity: val.Medical_class_validity !== null || new Date(val.Medical_class_validity!).getTime() > new Date().getTime() ? 'white' : 'red',
+            Bq_qual: new FormControl(val.Bq_qual),
+            color_Bq_qual: val.Bq_qual !== null ? 'white' : 'red',
+            Bq_date: new FormControl(val.Bq_date),
+            color_Bq_date: val.Bq_date === null || Date.now() < new Date(val.Bq_date!).getTime() + 7889400000 ? 'white' : 'red',
+            Bi_qual: new FormControl(val.Bi_qual),
+            color_Bi_qual: val.Bi_qual !== null ? 'white' : 'red',
+            Bi_date: new FormControl(val.Bi_date),
+            color_Bi_date: val.Bi_date === null || Date.now() < new Date(val.Bi_date!).getTime() + 7889400000 ? 'white' : 'red',
+            Bu_qual: new FormControl(val.Bu_qual),
+            color_Bu_qual: val.Bu_qual !== null ? 'white' : 'red',
+            Bu_date: new FormControl(val.Bu_date),
+            color_Bu_date: val.Bu_date === null || Date.now() < new Date(val.Bu_date!).getTime() + 7889400000 ? 'white' : 'red',
+            By_qual: new FormControl(val.By_qual),
+            color_By_qual: val.By_qual !== null ? 'white' : 'red',
+            By_date: new FormControl(val.By_date),
+            color_By_date: val.By_date === null || Date.now() < new Date(val.By_date!).getTime() + 7889400000 ? 'white' : 'red',
+            Special_decision_end: new FormControl(val.Special_decision_end),
+            color_Special_decision_end: val.Special_decision_end === null || new Date(val.Special_decision_end!).getTime() < new Date().getTime() ? 'white' : 'red',
+            isEditable: new FormControl(true),
+            isNewRow: new FormControl(false)
+          })))
+        })
+
+        this.dataSource = new MatTableDataSource((this.VOForm.get('VORows') as FormArray).controls)
+        this.dataSource.paginator = this.paginator
+        const filterPredicate = this.dataSource.filterPredicate;
+        this.dataSource.filterPredicate = (data: AbstractControl, filter) => {
+          return filterPredicate.call(this.dataSource, data.value, filter);
+        }
+      })
+
+    })
+
     this._api.getTypeRequest('user/all-members-operational-status/' + this.currentUser[0].id).subscribe((result: any) => {
       this.all_members_operational_status = result.data
       console.log(result.data)
-
+      console.log(new Date(this.all_members_operational_status[0].Sep_validity!).getTime() > new Date().getTime())
       this.VOForm = this.fb.group({
         VORows: this.fb.array(this.all_members_operational_status.map((val: MembersOperationalStatus) => this.fb.group({
           position: new FormControl(this.all_members_operational_status.indexOf(val) + 1),
           FirstName: new FormControl(val.FirstName),
           LastName: new FormControl(val.LastName),
           License_validity: new FormControl(val.License_validity),
+          color_License_validity: val.License_validity !== null || new Date(val.License_validity!).getTime() > new Date().getTime() ? 'white' : 'red',
           Sep_validity: new FormControl(val.Sep_validity),
+          color_Sep_validity: val.Sep_validity !== null || new Date(val.Sep_validity!).getTime() > new Date().getTime() ? 'white' : 'red',
           Medical_class_validity: new FormControl(val.Medical_class_validity),
+          color_Medical_class_validity: val.Medical_class_validity !== null || new Date(val.Medical_class_validity!).getTime() > new Date().getTime() ? 'white' : 'red',
           Bq_qual: new FormControl(val.Bq_qual),
+          color_Bq_qual: val.Bq_qual !== null ? 'white' : 'red',
           Bq_date: new FormControl(val.Bq_date),
+          color_Bq_date: val.Bq_date !== null || Date.now() < new Date(val.Bq_date!).getTime() + 7889400000 ? 'white' : 'red',
           Bi_qual: new FormControl(val.Bi_qual),
+          color_Bi_qual: val.Bi_qual !== null ? 'white' : 'red',
           Bi_date: new FormControl(val.Bi_date),
+          color_Bi_date: val.Bi_date !== null || Date.now() < new Date(val.Bi_date!).getTime() + 7889400000 ? 'white' : 'red',
           Bu_qual: new FormControl(val.Bu_qual),
+          color_Bu_qual: val.Bu_qual !== null ? 'white' : 'red',
           Bu_date: new FormControl(val.Bu_date),
+          color_Bu_date: val.Bu_date !== null || Date.now() < new Date(val.Bu_date!).getTime() + 7889400000 ? 'white' : 'red',
           By_qual: new FormControl(val.By_qual),
+          color_By_qual: val.By_qual !== null ? 'white' : 'red',
           By_date: new FormControl(val.By_date),
+          color_By_date: val.By_date !== null || Date.now() < new Date(val.By_date!).getTime() + 7889400000 ? 'white' : 'red',
           Special_decision_end: new FormControl(val.Special_decision_end),
+          color_Special_decision_end: val.Special_decision_end === null || new Date(val.Special_decision_end!).getTime() < new Date().getTime() ? 'white' : 'red',
           isEditable: new FormControl(true),
           isNewRow: new FormControl(false)
         })))
@@ -131,7 +208,9 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
     });
   }
 
-  EditSVO(VOFormElement: { get: (arg0: string) => { (): any; new(): any; at: { (arg0: any): { (): any; new(): any; get: { (arg0: string): { (): any; new(): any; patchValue: { (arg0: boolean): void; new(): any; }; }; new(): any; }; }; new(): any; }; }; }, i: any) {
+  EditSVO(VOFormElement: { get: (arg0: string) => { (): any; new(): any; at: { (arg0: any): {
+    value: any; (): any; new(): any; get: { (arg0: string): { (): any; new(): any; patchValue: { (arg0: boolean): void; new(): any; }; }; new(): any; };
+}; new(): any; }; }; }, i: any) {
 
     // VOFormElement.get('VORows').at(i).get('name').disabled(false)
     VOFormElement.get('VORows').at(i).get('isEditable').patchValue(false);
@@ -142,11 +221,26 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
   }
 
   // On click of correct button in table (after click on edit) this method will call
-  SaveVO(VOFormElement: { get: (arg0: string) => { (): any; new(): any; at: { (arg0: any): { (): any; new(): any; get: { (arg0: string): { (): any; new(): any; patchValue: { (arg0: boolean): void; new(): any; }; }; new(): any; }; }; new(): any; }; }; }, i: any) {
+  async SaveVO(VOFormElement: { get: (arg0: string) => { (): any; new(): any; at: { (arg0: any): {
+    value: any; (): any; new(): any; get: { (arg0: string): { (): any; new(): any; patchValue: { (arg0: boolean): void; new(): any; }; }; new(): any; };
+}; new(): any; }; }; }, i: any) {
     // alert('SaveVO')
     VOFormElement.get('VORows').at(i).get('isEditable').patchValue(true);
     console.log("new value")
     console.log(VOFormElement.get('VORows').at(i))
+    let result: any = await this._api.getTypeRequest('user/member-by-name/' + VOFormElement.get('VORows').at(i).value.LastName + '/' + VOFormElement.get('VORows').at(i).value.FirstName).toPromise()
+    console.log(result)
+
+    this.data_to_send.member_id = result.data[0].ID
+    this.data_to_send.Bi_qual = VOFormElement.get('VORows').at(i).value.Bi_qual
+    this.data_to_send.Bu_qual = VOFormElement.get('VORows').at(i).value.Bu_qual
+    this.data_to_send.By_qual = VOFormElement.get('VORows').at(i).value.By_qual
+    this.data_to_send.Bq_qual = VOFormElement.get('VORows').at(i).value.Bq_qual
+    this.data_to_send.Special_decision_end = VOFormElement.get('VORows').at(i).value.Special_decision_end
+
+    let update_result = await this._api.postTypeRequest('user/update-operational-status', this.data_to_send).toPromise()
+    console.log(update_result)
+    this._socket.reloadForEveryone()
 
   }
 

@@ -61,5 +61,8 @@ dd
 <button class = "btn btn-danger" (click)= "addDutyNeeded()" *ngIf="allRoles.includes('Flights manager')">Add duty needed</button>
 <button (click) = "changeView()" [routerLink]="['']" routerLinkActive="active" class = "btn btn-outline-secondary">Aircraft booking</button>
 
+<!--ERROR HANDLING-->
+<p-toast></p-toast>
+
 
 

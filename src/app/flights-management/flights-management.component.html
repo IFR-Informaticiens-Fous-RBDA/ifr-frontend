@@ -101,27 +101,48 @@
           </td>
         </ng-container>
 
-          <!-- Name Column -->
-          <ng-container matColumnDef="FirstName">
-            <th mat-header-cell *matHeaderCellDef> Instructor first name </th>
-            <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
-              <mat-form-field *ngIf = "element.LastName != null" style="width: 70px;"
-                [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
-                <input matInput type="text"  formControlName="instructor_first_name" [readonly]="VOForm.get('VORows').value[i].isEditable">
-              </mat-form-field>
-            </td>
-          </ng-container>
 
-            <!-- Name Column -->
+        <ng-container matColumnDef="PilotLastName">
+          <th mat-header-cell *matHeaderCellDef> Pilot's first name</th>
+          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+            <mat-form-field style="width: 70px;"
+              [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
+              <input matInput type="text" formControlName="pilot_last_name" [readonly]="VOForm.get('VORows').value[i].isEditable">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="PilotFirstName">
+          <th mat-header-cell *matHeaderCellDef> Pilot's last name</th>
+          <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+            <mat-form-field style="width: 70px;"
+              [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
+              <input matInput type="text" formControlName="pilot_first_name" [readonly]="VOForm.get('VORows').value[i].isEditable">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+
         <ng-container matColumnDef="LastName">
           <th mat-header-cell *matHeaderCellDef> Instructor's last name</th>
           <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
-            <mat-form-field *ngIf = "element.LastName != null" style="width: 70px;"
+            <mat-form-field style="width: 70px;"
               [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
               <input matInput type="text" formControlName="instructor_last_name" [readonly]="VOForm.get('VORows').value[i].isEditable">
             </mat-form-field>
           </td>
         </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="FirstName">
+            <th mat-header-cell *matHeaderCellDef> Instructor first name </th>
+            <td mat-cell *matCellDef="let element; let i = index" [formGroup] = "element">
+              <mat-form-field style="width: 70px;"
+                [appearance]="VOForm.get('VORows').value[i].isEditable ? 'none' : 'legacy'">
+                <input matInput type="text"  formControlName="instructor_first_name" [readonly]="VOForm.get('VORows').value[i].isEditable">
+              </mat-form-field>
+            </td>
+          </ng-container>
 
           <!-- Name Column -->
           <ng-container matColumnDef="ShortName">
@@ -212,7 +233,7 @@
 
             <button mat-icon-button class="material-icons app-toolbar-menu delete-button"
                                     *ngIf="VOForm.get('VORows').value[i].isEditable"
-                                    matTooltip="Delete" color="warn">
+                                    matTooltip="Delete" color="warn" (click)="DeleteSVO(VOForm, i)">
                                     <mat-icon [ngStyle]="{'color': 'red'}">delete</mat-icon>
                                 </button>
           </td>
@@ -223,7 +244,7 @@
       </table>
     </ng-container>
   </form>
-  <mat-paginator #paginator [pageSizeOptions]="[2, 5, 10]"
+  <mat-paginator #paginator [pageSizeOptions]="[10, 20, 50, 100]"
   showFirstLastButtons></mat-paginator>
 </div>
 <button class = "btn btn-primary" (click) = "exportExcel()">Export<mat-icon>file_download</mat-icon></button>

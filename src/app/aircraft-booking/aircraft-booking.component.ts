@@ -2,7 +2,8 @@ import { Component, AfterViewChecked,ChangeDetectorRef, ElementRef, ViewChild, O
 import {
   CalendarEvent,
   CalendarEventTimesChangedEvent,
-  CalendarView
+  CalendarView,
+  collapseAnimation
 } from 'angular-calendar';
 
 import { takeUntil } from 'rxjs/operators';
@@ -40,6 +41,7 @@ export class CalendarUtils extends BaseCalendarUtils {
         const BIEvents = args.events?.filter(event => event.meta.type === 'OO-HBI');
         const BYEvents = args.events?.filter(event => event.meta.type === 'OO-HBY');
         const BQEvents = args.events?.filter(event => event.meta.type === 'OO-HBQ');
+
         const calendarEvents = args.events?.filter(event => event.meta.type == 'OO-HBU' && event.meta.type == 'OO-HBI' && event.meta.type !== 'OO-HBY' && event.meta.type !== 'OO-HBQ')
 
         const calendarView = getWeekView(this.dateAdapter2, {
@@ -139,6 +141,11 @@ export class AircraftBookingComponent implements AfterViewChecked{
 
   events: CalendarEvent[] | any;
 
+  isWeekend: boolean = true;
+  isWeek: boolean = false;
+
+  excludeDays: number[] = [1,2,3,4,5]
+
   currentUser: any;
 
   refresh = new Subject<void>();
@@ -170,6 +177,8 @@ export class AircraftBookingComponent implements AfterViewChecked{
   ngOnInit() {
     this._socket.onReloadForEveryone().subscribe((data: any) => {
       this._api.getTypeRequest('event/all-events').subscribe((result: any) => {
+        console.log("all events")
+        console.log(result)
         this.events = <CalendarEvent[]>result.data;
         this.events.forEach((event: {
           end: Date; start: Date;
@@ -208,7 +217,7 @@ export class AircraftBookingComponent implements AfterViewChecked{
         if (foundBreakpoint) {
           this.daysInWeek = foundBreakpoint.daysInWeek;
         } else {
-          this.daysInWeek = 7;
+          this.daysInWeek = 2;
         }
         this.cd.markForCheck();
       });
@@ -228,6 +237,14 @@ export class AircraftBookingComponent implements AfterViewChecked{
   changeView(){
     GlobalConstants.view = true
   }
+  changeViewToWeek(){
+    this.daysInWeek = 5
+    this.excludeDays = [0,6]
+  }
+  changeViewToWeekend(){
+    this.daysInWeek = 2
+    this.excludeDays = [1,2,3,4,5]
+  }
   eventTimesChanged({
     event,
     newStart,
@@ -242,6 +259,24 @@ export class AircraftBookingComponent implements AfterViewChecked{
     this.destroy$.next();
   }
 
+  transformIndex(index: number): number{
+    let tab = [[1,2,3,4],
+               [5,6,7,8],
+               [9,10,11,12],
+               [13,14,15,16],
+               [17,18,19,20],
+               [21,22,23,24],
+               [25,26,27,28]]
+    for(let i = 0; i < tab.length; i++){
+      for(let j = 0; j < tab.length; j++){
+        if(index === tab[i][j]){
+          return j+1
+        }
+      }
+    }
+    return 0
+  }
+
   userChanged({ event, newUser }: {event:any; newUser:any}) {
     event.color = newUser.color;
     event.meta.user = newUser;
@@ -252,55 +287,44 @@ export class AircraftBookingComponent implements AfterViewChecked{
     this.viewDate = dateChange;
   }
 
-  addEventDialog(slot: any) : void{
-    const dialogRef = this.dialog.open(AddEventDialogComponent, {
-      width:'500px',
-      data: {
-        slot: slot.date
-      },
-      disableClose: true
-    });
-    dialogRef.afterClosed().subscribe(result =>{
-      this._api.postTypeRequest('event/addevent', result).subscribe((res: any) => {
-        console.log(res)
-        if(res.status && !res.rec_ids){
-          //add even
-          this.events = [
-            ...this.events,
-            {
-              title: res.data[0].title,
-              start: result.start,
-              end: result.end,
-              meta: {
-                user: res.data[0],
-                eventId: res.data[1].insert_result.insertId,
-                description: result.description,
-                type: res.data[0].aircraft_registration
-              },
-              color: {primary: res.data[0].color_primary,
-                      secondary: res.data[0].color_secondary},
-              draggable: false,
-              resizable: {
-                beforeStart: false,
-                afterEnd: false,
-              },
 
-            },
-          ]
-          this._socket.reloadForEveryone()
+   async addEventDialog(slot: any){
+    const rowxcol = slot.sourceEvent.target.closest(".cal-day-column");
+    let colIndex = [...rowxcol.parentElement.children].indexOf(rowxcol) + 1
 
-        }
-        else if(res.status && res.rec_ids.length > 0){
-          for(let i = 0; i < res.rec_ids.length; i++){
+    let member_id = await this._api.getTypeRequest('user/member-id/' + this.currentUser[0].id).toPromise()
+    let dateLastFlight = await this._api.getTypeRequest('flights/last-flight-account/' + this.transformIndex(colIndex) + '/' + this.currentUser[0].id).toPromise()
+
+    let dtoMemberAircraft = {
+      id_member: (member_id as any).data[0].ID_Member,
+      id_aircraft: this.transformIndex(colIndex),
+      date_last_flight: (dateLastFlight as any).data.length > 0 ? (dateLastFlight as any).data[0].Date_Of_Flight : new Date(+0)
+    }
+    let isOperational = await this._api.postTypeRequest('user/operational-aircraft', dtoMemberAircraft).toPromise()
+    console.log(isOperational)
+
+      const dialogRef = this.dialog.open(AddEventDialogComponent, {
+        width:'500px',
+        data: {
+          aircraft_id: this.transformIndex(colIndex),
+          slot: slot.date,
+          instructor_required : (isOperational as any).status ? false : true
+        },
+        disableClose: true
+      });
+
+      dialogRef.afterClosed().subscribe(result =>{
+        if(result.maintenance){
+          this._api.postTypeRequest('event/addmaintenance', result).subscribe((res: any) => {
             this.events = [
               ...this.events,
               {
                 title: res.data[0].title,
-                start: new Date(res.rec_ids[i].start),
-                end: new Date(res.rec_ids[i].end),
+                start: result.start,
+                end: result.end,
                 meta: {
                   user: res.data[0],
-                  eventId: res.rec_ids[i].id,
+                  eventId: res.data[1].insert_result.insertId,
                   description: result.description,
                   type: res.data[0].aircraft_registration
                 },
@@ -314,28 +338,92 @@ export class AircraftBookingComponent implements AfterViewChecked{
 
               },
             ]
-          }
+            this._socket.reloadForEveryone()
+          })
         }
         else{
-          console.log("l'even n'ea pas tete cree")
-          console.log(res.message)
-          switch(res.message){
-            case 'TIME_CONFLICT':{
-              this.messageService.add({severity:'error', summary:'Error', detail:'You booked the flight in the past'});
-              break;
-            }
-            case 'SLOT_CONFLICT':{
-              this.messageService.add({severity:'error', summary: 'Error', detail: 'There already is a flight on this time slot with the same aircraft'})
-              break;
-            }
-            default:{
-              this.messageService.add({severity:'error', summary:'Error', detail:'Something went wrong'});
+          this._api.postTypeRequest('event/addevent', result).subscribe((res: any) => {
+            console.log("result")
+            console.log(result)
+
+            if(res.status && !res.rec_ids){
+              console.log("je suis pas maintenance1")
+
+              //add even
+              this.events = [
+                ...this.events,
+                {
+                  title: res.data[0].title,
+                  start: result.start,
+                  end: result.end,
+                  meta: {
+                    user: res.data[0],
+                    eventId: res.data[1].insert_result.insertId,
+                    description: result.description,
+                    type: res.data[0].aircraft_registration
+                  },
+                  color: {primary: res.data[0].color_primary,
+                          secondary: res.data[0].color_secondary},
+                  draggable: false,
+                  resizable: {
+                    beforeStart: false,
+                    afterEnd: false,
+                  },
+
+                },
+              ]
+              this._socket.reloadForEveryone()
 
             }
-          }
+            else if(res.status && res.rec_ids.length > 0){
+              console.log("je suis maintenance2")
+
+              for(let i = 0; i < res.rec_ids.length; i++){
+                this.events = [
+                  ...this.events,
+                  {
+                    title: res.data[0].title,
+                    start: new Date(res.rec_ids[i].start),
+                    end: new Date(res.rec_ids[i].end),
+                    meta: {
+                      user: res.data[0],
+                      eventId: res.rec_ids[i].id,
+                      description: result.description,
+                      type: res.data[0].aircraft_registration
+                    },
+                    color: {primary: res.data[0].color_primary,
+                            secondary: res.data[0].color_secondary},
+                    draggable: false,
+                    resizable: {
+                      beforeStart: false,
+                      afterEnd: false,
+                    },
+
+                  },
+                ]
+              }
+            }
+            else{
+              console.log("l'even n'ea pas tete cree")
+              console.log(res.message)
+              switch(res.message){
+                case 'TIME_CONFLICT':{
+                  this.messageService.add({severity:'error', summary:'Error', detail:'You booked the flight in the past'});
+                  break;
+                }
+                case 'SLOT_CONFLICT':{
+                  this.messageService.add({severity:'error', summary: 'Error', detail: 'There already is a flight on this time slot with the same aircraft'})
+                  break;
+                }
+                default:{
+                  this.messageService.add({severity:'error', summary:'Error', detail:'Something went wrong'});
+
+                }
+              }
+            }
+          });
         }
       });
-    });
 }
 
 ngAfterViewChecked(): void {
@@ -375,6 +463,7 @@ ngAfterViewChecked(): void {
 }
 
 updateEventDialog(currentEvent: any): void{
+  console.log(currentEvent)
   let check = {currentEvent : currentEvent, currentUser: this.currentUser}
   this._api.postTypeRequest('user/check-event', check).subscribe((res: any) => {
 
@@ -389,6 +478,41 @@ updateEventDialog(currentEvent: any): void{
 
       dialogRef.afterClosed().subscribe(result =>{
         if(!result.delete){
+          if(currentEvent.event.meta.maintenance)
+          {
+            this._api.postTypeRequest('event/update-maintenance', result).subscribe((res: any) => {
+              if(res.status){
+                this.events.map((event: { meta: { eventId: any; }; }) => {
+                  if (event.meta.eventId === result.currentEvent.event.meta.eventId) {
+                    this.events = this.events.filter((event: { meta: { eventId: any; }; }) => event.meta.eventId !== result.currentEvent.event.meta.eventId)
+                    this.events = [
+                      ...this.events,
+                      {
+                        title: res.data[0].title,
+                        start: result.start,
+                        end: result.end,
+                        meta: {
+                          user: res.data[0],
+                          eventId: result.currentEvent.event.meta.eventId,
+                          description: result.description,
+                          type: res.data[0].aircraft_name
+                        },
+                        color: {primary: res.data[0].color_primary,
+                                secondary: res.data[0].color_secondary},
+                        draggable: false,
+                        resizable: {
+                          beforeStart: false,
+                          afterEnd: false,
+                        },
+
+                      },
+                    ]
+                    this._socket.reloadForEveryone()
+                  }
+                })
+              }
+            })
+          }
           this._api.postTypeRequest('event/update-event/', result).subscribe((res2: any) => {
             if(res2.status){
               this.events.map((event: { meta: { eventId: any; }; }) => {
