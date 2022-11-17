@@ -49,7 +49,8 @@ export class ProfileComponent implements OnInit {
     this.primengConfig.ripple = true;
     this._api.getTypeRequest('user/info/' + JSON.parse(localStorage.getItem('userData') || '{}')[0].id).subscribe((res: any) => {
       console.log(JSON.parse(localStorage.getItem('userData') || '{}')[0].id)
-      this.userInfo = res.data[0]
+      console.log(res)
+      this.userInfo = res
       console.log(res)
       console.log(this.userInfo)
       this._api.getTypeRequest('user/member-id/'+ JSON.parse(localStorage.getItem('userData') || '{}')[0].id).subscribe((res:any) => {

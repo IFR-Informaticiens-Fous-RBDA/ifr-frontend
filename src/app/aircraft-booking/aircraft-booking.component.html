@@ -12,9 +12,9 @@
   </div>d
 dd
 </div>-->
-<div class = "btn btn-primary" (click)="changeViewToWeek()">Week only</div>
-<div class = "btn btn-primary" (click)="changeViewToWeekend()">Week-end only</div>
-<div class="container">
+
+
+<div class="container calendar">
   <div class = "inline"><h3>{{ viewDate | calendarDate:('weekViewTitle') }}</h3>
   <button mat-icon-button [matMenuTriggerFor]="appMenu">
     <mat-icon>calendar_today</mat-icon>
@@ -24,6 +24,7 @@ dd
           (selectedChange)="updateView($event)" >
        </mat-calendar>
   </mat-menu>
+
 
   <div class="row">
 
@@ -56,6 +57,15 @@ dd
             Next
           </div>
         </div>
+
+      </div>
+      <div class = "container px-0 bg-light border">
+        <div class="d-flex">
+          <div class="p-2"><mat-icon>filter_list_alt</mat-icon></div>
+          <div class="p-2"><div class = "btn btn-primary" (click)="changeViewToWeek()">Week only</div></div>
+          <div class="p-2"><div class = "btn btn-primary" (click)="changeViewToWeekend()">Week-end only</div></div>
+          <div class = "p-2"><button (click) = "changeView()" [routerLink]="['duty-pilot']" routerLinkActive="active" class = "btn btn-primary">Duty Pilot Booking</button></div>
+        </div>
       </div>
   </div>
 </div>
@@ -64,7 +74,7 @@ dd
 <mwl-calendar-week-view [viewDate]="viewDate" [daysInWeek]="daysInWeek" [dayStartHour]="8" [dayEndHour]="20" [events]= "events" [excludeDays]="excludeDays" (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="addEventDialog($event)"
 (hourSegmentClicked)="addEventDialog($event)" (eventClicked)="updateEventDialog($event)" [refresh]="refresh">
 </mwl-calendar-week-view>
-<button (click) = "changeView()" [routerLink]="['duty-pilot']" routerLinkActive="active" class = "btn btn-outline-secondary">Duty Pilot Booking</button>
+
 
 <div class="dots">
   <span class="dotBI"></span>OO-HBI

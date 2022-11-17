@@ -67,7 +67,7 @@
                 <p>Piper cub / L21 series validity date until :</p>
                 <mat-form-field *ngIf = "userInfo" appearance="fill">
                   <mat-label>Choose a date</mat-label>
-                  <input matInput [(ngModel)]="userInfo.Piper_validity" [matDatepicker]="pickerPiper" [disabled]="isEdit">
+                  <input matInput [(ngModel)]="userInfo.Piper_Validity" [matDatepicker]="pickerPiper" [disabled]="isEdit">
                   <mat-hint>MM/DD/YYYY</mat-hint>
                   <mat-datepicker-toggle matSuffix [for]="pickerPiper"></mat-datepicker-toggle>
                   <mat-datepicker #pickerPiper></mat-datepicker>

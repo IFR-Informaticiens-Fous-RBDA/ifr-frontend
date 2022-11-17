@@ -51,6 +51,13 @@ dd
           </div>
         </div>
       </div>
+      <div class = "container px-0 bg-light border">
+        <div class="d-flex">
+          <div class = "p-2"><mat-icon>filter_list_alt</mat-icon></div>
+          <div *ngIf="allRoles.includes('Flights manager')" class = "p-2"><button class = "btn btn-danger" (click)= "addDutyNeeded()" >Add duty needed</button></div>
+          <div class = "p-2"><button class = "btn btn-primary" (click) = "changeView()" [routerLink]="['']" routerLinkActive="active">Aircraft booking</button></div>
+        </div>
+      </div>
   </div>
 </div>
 <br />
@@ -58,8 +65,7 @@ dd
 <mwl-calendar-week-view [viewDate]="viewDate" [daysInWeek]="daysInWeek" [dayStartHour]="8" [dayEndHour]="20" [events]= "events" (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="addEventDialog($event)"
 (hourSegmentClicked)="addEventDialog($event)" (eventClicked)="deleteDutyPilotDialog($event)" >
 </mwl-calendar-week-view>
-<button class = "btn btn-danger" (click)= "addDutyNeeded()" *ngIf="allRoles.includes('Flights manager')">Add duty needed</button>
-<button (click) = "changeView()" [routerLink]="['']" routerLinkActive="active" class = "btn btn-outline-secondary">Aircraft booking</button>
+
 
 <!--ERROR HANDLING-->
 <p-toast></p-toast>

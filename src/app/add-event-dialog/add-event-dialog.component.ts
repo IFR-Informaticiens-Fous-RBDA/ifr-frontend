@@ -19,6 +19,7 @@ import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material
 export interface DialogData {
   maintenance: boolean
   instructor_required: boolean,
+  instructor: string,
   aircraft_id:number,
   slot: Date,
   start: Date,
@@ -261,6 +262,7 @@ export class AddEventDialogComponent implements AfterViewInit{
     this.data.end = this.dateControlEnd.value
     this.data.recurringDates = this.recurringDates
     this.data.maintenance = this.isAddUnavailability
+    this.data.instructor = this.selectedInstructor
 
     this.dialogRef.close(this.data);
   }

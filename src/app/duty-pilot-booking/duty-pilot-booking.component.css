@@ -52,3 +52,7 @@ button.mat-menu-trigger{
   background-repeat: no-repeat;
   background-position: bottom;
 }
+::ng-deep .container.bg-light.border{
+  max-width: 30rem;
+  padding-left: 0 !important;
+}

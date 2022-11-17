@@ -1,4 +1,4 @@
-::ng-deep div.container{
+::ng-deep div.container.calendar{
   margin: 0;
   padding-left: 45%;
 }
@@ -88,4 +88,8 @@ button.mat-menu-trigger{
   background-image: url("../../assets/img/oohbq.png");
   background-repeat: no-repeat;
   background-position: bottom;
+}
+::ng-deep .container.bg-light.border{
+  max-width: 30rem;
+  padding-left: 0 !important;
 }

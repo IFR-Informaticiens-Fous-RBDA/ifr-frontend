@@ -7,6 +7,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import * as XLSX from 'xlsx';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { TableUtil } from '../flights-management/tableUtil';
 
 export interface MembersOperationalStatus{
   FirstName: string,
@@ -250,13 +251,15 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
   }
 
   exportExcel(): void{
-    let element = document.getElementById('excel-table')
-    const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
 
-    const wb: XLSX.WorkBook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
-
-    XLSX.writeFile(wb, this.fileName)
+    console.log(this.dataSource.filteredData)
+    const data = []
+    for(let i = 0; i < this.dataSource.filteredData.length; i++){
+      data.push(this.dataSource.filteredData[i].value)
+    }
+    const copy = JSON.parse(JSON.stringify(data)) as typeof data // deep copy because it also changed the data source values.
+    copy.forEach(function(v){delete v.id; delete v.isNewRow; delete v.isEditable})
+    TableUtil.exportArrayToExcel(copy, "rbda_members_operational_status")
   }
 
   applyFilter(event: Event) {
