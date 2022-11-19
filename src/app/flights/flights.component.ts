@@ -34,14 +34,26 @@ export class FlightsComponent implements OnInit, AfterViewInit {
     const source = interval(1000)
     this.subscription = source.subscribe(val => this.opensnack())
     this._socket.onReloadForEveryone().subscribe((data:any) => {
-        this._api.postTypeRequest('flights/all-flights', this.currentUser).subscribe((result:any) => {
+      this._api.postTypeRequest('flights/all-flights', this.currentUser).subscribe((result:any) => {
+        console.log(result.data)
         this.dataSource = new MatTableDataSource(result.data)
-        this.dataSource.data = this.dataSource.data.filter((item: { isLogged: any; }) => item.isLogged === 0)
+        this.dataSource.data = this.dataSource.data.filter((item: { isLogged: any; isMaintenance: number }) => item.isLogged === 0 && (item.isMaintenance === 0 || item.isMaintenance === null))
         this.dataSource.data.forEach(function(element : any){
           element.date_depart = new Date(element.date_depart)
           element.date_arrivee = new Date(element.date_arrivee)
+
         })
+        for(let i = 0; i < this.dataSource.data.length; i++){
+          this.legs_number[i] = 1
+        }
+
+      this._api.postTypeRequest('flights/all-logged-flights', this.currentUser).subscribe((result: any) => {
+        this.pastFlights.data = result.data
+
+      })
         this.displayedColumns = ['id', 'registration', 'description', 'date_depart', 'date_arrivee', 'status']
+        this.displayedColumnsLog = ['Registration','Date_Of_Flight', 'Departure_ICAO_Code', 'Departure_Time', 'Arrival_ICAO_Code', 'Arrival_Time', 'Total_Time_Of_Flight', 'FirstName', 'LastName', 'ShortName', 'Landings_Number_Day', 'Name', 'Engine_Start', 'Engine_Stop', 'Engine_Time']
+
       });
     })
     this.currentUser = JSON.parse(localStorage.getItem('userData') || '{}');

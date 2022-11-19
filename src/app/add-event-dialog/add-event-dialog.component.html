@@ -93,6 +93,11 @@
           </mat-autocomplete>
       </mat-form-field>
   </form>
+  <!-- No instructor errors -->
+  <div *ngIf="!selectedInstructor && data.instructor_required"
+  class="alert alert-warning">
+    You are not qualified on this aircraft or you did not fly this aircraft for more than 3 months. Please select an instructor.
+  </div>
 
   </div>
   <div mat-dialog-actions>
