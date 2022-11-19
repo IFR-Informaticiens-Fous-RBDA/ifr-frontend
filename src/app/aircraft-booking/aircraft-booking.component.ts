@@ -545,9 +545,9 @@ updateEventDialog(currentEvent: any): void{
               })
             }
             else{
-              console.log(res)
-              console.log(res.message)
-              switch(res.message){
+              console.log(res2)
+              console.log(res2.error)
+              switch(res2.error){
                 case 'TIME_CONFLICT':{
                   this.messageService.add({severity:'error', summary:'Error', detail:'You booked the flight in the past'});
                   break;
