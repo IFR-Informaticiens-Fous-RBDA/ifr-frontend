@@ -2,6 +2,9 @@
   margin: 0;
   padding-left: 45%;
 }
+::ng-deep body{
+  width: 100% !important;
+}
 
 * {
   -webkit-box-sizing: content-box;
@@ -64,7 +67,9 @@ button.mat-menu-trigger{
   display: inline-block;
 
 }
-
+::ng-deep .my-calendar{
+  width: 100%;
+}
 ::ng-deep .cal-week-view .cal-event-title {
   color: white;
 }

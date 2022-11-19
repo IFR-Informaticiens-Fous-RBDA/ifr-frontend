@@ -544,6 +544,24 @@ updateEventDialog(currentEvent: any): void{
                 }
               })
             }
+            else{
+              console.log("l'even n'ea pas tete cree")
+              console.log(res.message)
+              switch(res.message){
+                case 'TIME_CONFLICT':{
+                  this.messageService.add({severity:'error', summary:'Error', detail:'You booked the flight in the past'});
+                  break;
+                }
+                case 'SLOT_CONFLICT':{
+                  this.messageService.add({severity:'error', summary: 'Error', detail: 'There already is a flight on this time slot with the same aircraft'})
+                  break;
+                }
+                default:{
+                  this.messageService.add({severity:'error', summary:'Error', detail:'Something went wrong'});
+
+                }
+              }
+            }
           });
         }
         else{

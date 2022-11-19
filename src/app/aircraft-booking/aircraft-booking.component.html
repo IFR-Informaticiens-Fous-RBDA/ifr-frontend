@@ -13,7 +13,7 @@
 dd
 </div>-->
 
-
+<body>
 <div class="container calendar">
   <div class = "inline"><h3>{{ viewDate | calendarDate:('weekViewTitle') }}</h3>
   <button mat-icon-button [matMenuTriggerFor]="appMenu">
@@ -26,7 +26,7 @@ dd
   </mat-menu>
 
 
-  <div class="row">
+  <div class="row" style="width: 100%">
 
       <div class="col-md-6" style="margin-left: 2rem;">
 
@@ -71,9 +71,8 @@ dd
 </div>
 <br />
 
-<mwl-calendar-week-view [viewDate]="viewDate" [daysInWeek]="daysInWeek" [dayStartHour]="8" [dayEndHour]="20" [events]= "events" [excludeDays]="excludeDays" (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="addEventDialog($event)"
-(hourSegmentClicked)="addEventDialog($event)" (eventClicked)="updateEventDialog($event)" [refresh]="refresh">
-</mwl-calendar-week-view>
+<div class ="my-calendar"><mwl-calendar-week-view [viewDate]="viewDate" [daysInWeek]="daysInWeek" [dayStartHour]="8" [dayEndHour]="20" [events]= "events" [excludeDays]="excludeDays" (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="addEventDialog($event)"
+(hourSegmentClicked)="addEventDialog($event)" (eventClicked)="updateEventDialog($event)" [refresh]="refresh"></mwl-calendar-week-view></div>
 
 
 <div class="dots">
@@ -87,3 +86,4 @@ dd
 <p-toast></p-toast>
 
 
+</body>

@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   isLogin: boolean = false
-  errorMessage: any
+  error: boolean = false
   constructor(
     private _api: ApiService,
     private _auth: AuthService,
@@ -35,6 +35,9 @@ export class LoginComponent implements OnInit {
         this._auth.setDataInLocalStorage('userData', JSON.stringify(res.data));
         this._auth.setDataInLocalStorage('token', res.token);
         this._router.navigate(['']);
+      }
+      else{
+        this.error = true
       }
     })
 
