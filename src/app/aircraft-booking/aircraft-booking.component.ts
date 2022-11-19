@@ -545,7 +545,7 @@ updateEventDialog(currentEvent: any): void{
               })
             }
             else{
-              console.log("l'even n'ea pas tete cree")
+              console.log(res)
               console.log(res.message)
               switch(res.message){
                 case 'TIME_CONFLICT':{
