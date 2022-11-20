@@ -28,12 +28,11 @@ export class AuthGuardService {
         return false
       }
       if(route.data.operationalAvailability){
-        const current_user = JSON.parse(this._authService.getUserDetails()!)
+        let current_user= await this._authService.getUserDetails()
         this.res = await this._api.getTypeRequest('user/member-id/' + current_user[0].id).toPromise()
         let member_id = this.res.data[0].ID_Member
 
         this.res2 = await this._api.getTypeRequest('user/operational-availability/' + current_user[0].id + '/' + member_id).toPromise()
-        console.log(this.res2)
         let member_availability_dates = this.res2.data
         if(member_availability_dates.length === 0){
           this._router.navigate(['not-authorized'])

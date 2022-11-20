@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, NgZone, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
 import {ConfirmationService, MessageService, PrimeNGConfig} from 'primeng/api';
+import { AuthService } from 'src/app/services/auth.service';
 
 
 export interface UserInfoFormData{
@@ -41,23 +42,22 @@ export class ProfileComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private primengConfig: PrimeNGConfig,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private _auth: AuthService
 
   ) { }
 
   ngOnInit(): void {
     this.primengConfig.ripple = true;
-    this._api.getTypeRequest('user/info/' + JSON.parse(localStorage.getItem('userData') || '{}')[0].id).subscribe((res: any) => {
-      console.log(JSON.parse(localStorage.getItem('userData') || '{}')[0].id)
-      console.log(res)
-      this.userInfo = res
-      console.log(res)
-      console.log(this.userInfo)
-      this._api.getTypeRequest('user/member-id/'+ JSON.parse(localStorage.getItem('userData') || '{}')[0].id).subscribe((res:any) => {
-        this.userInfo.Member_id = res.data[0].ID_Member
-      })
+    this._auth.getUserDetails().then(currentUser => {
+      this._api.getTypeRequest('user/info/' + currentUser[0].id).subscribe((res: any) => {
+        this.userInfo = res
+        this._api.getTypeRequest('user/member-id/'+ currentUser[0].id).subscribe((res:any) => {
+          this.userInfo.Member_id = res.data[0].ID_Member
+        })
 
-    });
+      });
+    })
 
 
 
@@ -87,7 +87,6 @@ export class ProfileComponent implements OnInit {
   }
   confirm(event: Event) {
     this._api.postTypeRequest('user/update-current', this.userInfo).subscribe((res:any) => {
-      console.log(res)
       if(res.status){
         this.messageService.add({severity:'success', summary:'Success', detail:'The member has been updated successfully.'});
       }

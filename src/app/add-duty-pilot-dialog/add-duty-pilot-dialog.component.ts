@@ -41,6 +41,7 @@ export class AddDutyPilotDialogComponent{
   public stepSecond = 1;
   public color: ThemePalette = 'primary';
   public faTrash = faTrash;
+  public currentUser: any
 
   public formGroup = new UntypedFormGroup({
     date: new UntypedFormControl(null, [Validators.required]),
@@ -83,7 +84,9 @@ export class AddDutyPilotDialogComponent{
   }
 
   ngOnInit(): void {
-
+    this._auth.getUserDetails().then(currentUser => {
+      this.currentUser = currentUser
+    })
   }
 
   onNoClick(): void {
@@ -91,7 +94,7 @@ export class AddDutyPilotDialogComponent{
   }
 
   sendData(){
-    this.data.user = this._auth.getUserDetails()
+    this.data.user = this.currentUser
     this.data.start = this.dateControlStart.value
     this.data.end = this.dateControlEnd.value
     this.dialogRef.close(this.data)

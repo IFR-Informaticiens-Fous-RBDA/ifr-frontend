@@ -8,6 +8,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import * as XLSX from 'xlsx';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { TableUtil } from '../flights-management/tableUtil';
+import { AuthService } from '../services/auth.service';
 
 export interface MembersOperationalStatus{
   FirstName: string,
@@ -60,10 +61,9 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
   @ViewChild('paginator') paginator!: MatPaginator;
 
 
-  constructor(private _api: ApiService, private _socket: SocketService, public dialog: MatDialog, private fb: FormBuilder, private _formBuilder: FormBuilder) { }
+  constructor(private _api: ApiService, private _socket: SocketService, public dialog: MatDialog, private fb: FormBuilder, private _formBuilder: FormBuilder, private _auth: AuthService) { }
 
   ngOnInit(): void {
-    this.currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
 
     this.VOForm = this._formBuilder.group({
       VORows: this._formBuilder.array([])
@@ -72,8 +72,6 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
     this._socket.onReloadForEveryone().subscribe((data: any) => {
       this._api.getTypeRequest('user/all-members-operational-status/' + this.currentUser[0].id).subscribe((result: any) => {
         this.all_members_operational_status = result.data
-        console.log(result.data)
-        console.log(new Date(this.all_members_operational_status[0].Sep_validity!).getTime() > new Date().getTime())
         this.VOForm = this.fb.group({
           VORows: this.fb.array(this.all_members_operational_status.map((val: MembersOperationalStatus) => this.fb.group({
             position: new FormControl(this.all_members_operational_status.indexOf(val) + 1),
@@ -118,54 +116,57 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
 
     })
 
-    this._api.getTypeRequest('user/all-members-operational-status/' + this.currentUser[0].id).subscribe((result: any) => {
-      this.all_members_operational_status = result.data
-      console.log(result.data)
-      console.log(new Date(this.all_members_operational_status[0].Sep_validity!).getTime() > new Date().getTime())
-      this.VOForm = this.fb.group({
-        VORows: this.fb.array(this.all_members_operational_status.map((val: MembersOperationalStatus) => this.fb.group({
-          position: new FormControl(this.all_members_operational_status.indexOf(val) + 1),
-          FirstName: new FormControl(val.FirstName),
-          LastName: new FormControl(val.LastName),
-          License_validity: new FormControl(val.License_validity),
-          color_License_validity: val.License_validity !== null || new Date(val.License_validity!).getTime() > new Date().getTime() ? 'white' : 'red',
-          Sep_validity: new FormControl(val.Sep_validity),
-          color_Sep_validity: val.Sep_validity !== null || new Date(val.Sep_validity!).getTime() > new Date().getTime() ? 'white' : 'red',
-          Medical_class_validity: new FormControl(val.Medical_class_validity),
-          color_Medical_class_validity: val.Medical_class_validity !== null || new Date(val.Medical_class_validity!).getTime() > new Date().getTime() ? 'white' : 'red',
-          Bq_qual: new FormControl(val.Bq_qual),
-          color_Bq_qual: val.Bq_qual !== null ? 'white' : 'red',
-          Bq_date: new FormControl(val.Bq_date),
-          color_Bq_date: val.Bq_date !== null || Date.now() < new Date(val.Bq_date!).getTime() + 7889400000 ? 'white' : 'red',
-          Bi_qual: new FormControl(val.Bi_qual),
-          color_Bi_qual: val.Bi_qual !== null ? 'white' : 'red',
-          Bi_date: new FormControl(val.Bi_date),
-          color_Bi_date: val.Bi_date !== null || Date.now() < new Date(val.Bi_date!).getTime() + 7889400000 ? 'white' : 'red',
-          Bu_qual: new FormControl(val.Bu_qual),
-          color_Bu_qual: val.Bu_qual !== null ? 'white' : 'red',
-          Bu_date: new FormControl(val.Bu_date),
-          color_Bu_date: val.Bu_date !== null || Date.now() < new Date(val.Bu_date!).getTime() + 7889400000 ? 'white' : 'red',
-          By_qual: new FormControl(val.By_qual),
-          color_By_qual: val.By_qual !== null ? 'white' : 'red',
-          By_date: new FormControl(val.By_date),
-          color_By_date: val.By_date !== null || Date.now() < new Date(val.By_date!).getTime() + 7889400000 ? 'white' : 'red',
-          Special_decision_end: new FormControl(val.Special_decision_end),
-          color_Special_decision_end: val.Special_decision_end === null || new Date(val.Special_decision_end!).getTime() < new Date().getTime() ? 'white' : 'red',
-          isEditable: new FormControl(true),
-          isNewRow: new FormControl(false)
-        })))
+    this._auth.getUserDetails().then(currentUser => {
+      this.currentUser = currentUser
+
+
+
+      this._api.getTypeRequest('user/all-members-operational-status/' + this.currentUser[0].id).subscribe((result: any) => {
+        this.all_members_operational_status = result.data
+        this.VOForm = this.fb.group({
+          VORows: this.fb.array(this.all_members_operational_status.map((val: MembersOperationalStatus) => this.fb.group({
+            position: new FormControl(this.all_members_operational_status.indexOf(val) + 1),
+            FirstName: new FormControl(val.FirstName),
+            LastName: new FormControl(val.LastName),
+            License_validity: new FormControl(val.License_validity),
+            color_License_validity: val.License_validity !== null || new Date(val.License_validity!).getTime() > new Date().getTime() ? 'white' : 'red',
+            Sep_validity: new FormControl(val.Sep_validity),
+            color_Sep_validity: val.Sep_validity !== null || new Date(val.Sep_validity!).getTime() > new Date().getTime() ? 'white' : 'red',
+            Medical_class_validity: new FormControl(val.Medical_class_validity),
+            color_Medical_class_validity: val.Medical_class_validity !== null || new Date(val.Medical_class_validity!).getTime() > new Date().getTime() ? 'white' : 'red',
+            Bq_qual: new FormControl(val.Bq_qual),
+            color_Bq_qual: val.Bq_qual !== null ? 'white' : 'red',
+            Bq_date: new FormControl(val.Bq_date),
+            color_Bq_date: val.Bq_date !== null || Date.now() < new Date(val.Bq_date!).getTime() + 7889400000 ? 'white' : 'red',
+            Bi_qual: new FormControl(val.Bi_qual),
+            color_Bi_qual: val.Bi_qual !== null ? 'white' : 'red',
+            Bi_date: new FormControl(val.Bi_date),
+            color_Bi_date: val.Bi_date !== null || Date.now() < new Date(val.Bi_date!).getTime() + 7889400000 ? 'white' : 'red',
+            Bu_qual: new FormControl(val.Bu_qual),
+            color_Bu_qual: val.Bu_qual !== null ? 'white' : 'red',
+            Bu_date: new FormControl(val.Bu_date),
+            color_Bu_date: val.Bu_date !== null || Date.now() < new Date(val.Bu_date!).getTime() + 7889400000 ? 'white' : 'red',
+            By_qual: new FormControl(val.By_qual),
+            color_By_qual: val.By_qual !== null ? 'white' : 'red',
+            By_date: new FormControl(val.By_date),
+            color_By_date: val.By_date !== null || Date.now() < new Date(val.By_date!).getTime() + 7889400000 ? 'white' : 'red',
+            Special_decision_end: new FormControl(val.Special_decision_end),
+            color_Special_decision_end: val.Special_decision_end === null || new Date(val.Special_decision_end!).getTime() < new Date().getTime() ? 'white' : 'red',
+            isEditable: new FormControl(true),
+            isNewRow: new FormControl(false)
+          })))
+        })
+
+        this.dataSource = new MatTableDataSource((this.VOForm.get('VORows') as FormArray).controls)
+        this.dataSource.paginator = this.paginator
+        const filterPredicate = this.dataSource.filterPredicate;
+        this.dataSource.filterPredicate = (data: AbstractControl, filter) => {
+          return filterPredicate.call(this.dataSource, data.value, filter);
+        }
+
       })
 
-      this.dataSource = new MatTableDataSource((this.VOForm.get('VORows') as FormArray).controls)
-      this.dataSource.paginator = this.paginator
-      const filterPredicate = this.dataSource.filterPredicate;
-      this.dataSource.filterPredicate = (data: AbstractControl, filter) => {
-        return filterPredicate.call(this.dataSource, data.value, filter);
-      }
-
     })
-
-
 
 
   }
@@ -215,7 +216,6 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
 
     // VOFormElement.get('VORows').at(i).get('name').disabled(false)
     VOFormElement.get('VORows').at(i).get('isEditable').patchValue(false);
-    console.log(VOFormElement.get('VORows').at(i))
     this.editClicked = true
     // this.isEditableNew = true;
 
@@ -227,10 +227,7 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
 }; new(): any; }; }; }, i: any) {
     // alert('SaveVO')
     VOFormElement.get('VORows').at(i).get('isEditable').patchValue(true);
-    console.log("new value")
-    console.log(VOFormElement.get('VORows').at(i))
     let result: any = await this._api.getTypeRequest('user/member-by-name/' + VOFormElement.get('VORows').at(i).value.LastName + '/' + VOFormElement.get('VORows').at(i).value.FirstName).toPromise()
-    console.log(result)
 
     this.data_to_send.member_id = result.data[0].ID
     this.data_to_send.Bi_qual = VOFormElement.get('VORows').at(i).value.Bi_qual
@@ -240,7 +237,6 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
     this.data_to_send.Special_decision_end = VOFormElement.get('VORows').at(i).value.Special_decision_end
 
     let update_result = await this._api.postTypeRequest('user/update-operational-status', this.data_to_send).toPromise()
-    console.log(update_result)
     this._socket.reloadForEveryone()
 
   }
@@ -251,8 +247,6 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
   }
 
   exportExcel(): void{
-
-    console.log(this.dataSource.filteredData)
     const data = []
     for(let i = 0; i < this.dataSource.filteredData.length; i++){
       data.push(this.dataSource.filteredData[i].value)

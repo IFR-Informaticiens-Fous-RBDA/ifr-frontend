@@ -20,6 +20,7 @@ import {GetWeekViewArgs, WeekView, getWeekView} from 'calendar-utils';
 import { GlobalConstants } from '../common/global-constants';
 import { SocketService } from '../services/socket.service';
 import {ConfirmationService, MessageService, PrimeNGConfig} from 'primeng/api';
+import { AuthService } from '../services/auth.service';
 
 
 
@@ -160,6 +161,7 @@ export class AircraftBookingComponent implements AfterViewChecked{
   constructor(
     private breakpointObserver: BreakpointObserver,
     private cd: ChangeDetectorRef,
+    private _auth: AuthService,
     public dialog: MatDialog,
     private ngZone: NgZone,
     private _api: ApiService,
@@ -177,8 +179,6 @@ export class AircraftBookingComponent implements AfterViewChecked{
   ngOnInit() {
     this._socket.onReloadForEveryone().subscribe((data: any) => {
       this._api.getTypeRequest('event/all-events').subscribe((result: any) => {
-        console.log("all events")
-        console.log(result)
         this.events = <CalendarEvent[]>result.data;
         this.events.forEach((event: {
           end: Date; start: Date;
@@ -189,7 +189,10 @@ export class AircraftBookingComponent implements AfterViewChecked{
       });
     })
     GlobalConstants.view = false
-    this.currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
+    this._auth.getUserDetails().then((value: any) => {
+      this.currentUser = value
+    });
+
     const CALENDAR_RESPONSIVE = {
       small: {
         breakpoint: '(max-width: 576px)',
@@ -301,7 +304,6 @@ export class AircraftBookingComponent implements AfterViewChecked{
       date_last_flight: (dateLastFlight as any).data.length > 0 ? (dateLastFlight as any).data[0].Date_Of_Flight : new Date(+0)
     }
     let isOperational = await this._api.postTypeRequest('user/operational-aircraft', dtoMemberAircraft).toPromise()
-    console.log(isOperational)
 
       const dialogRef = this.dialog.open(AddEventDialogComponent, {
         width:'500px',
@@ -343,12 +345,7 @@ export class AircraftBookingComponent implements AfterViewChecked{
         }
         else{
           this._api.postTypeRequest('event/addevent', result).subscribe((res: any) => {
-            console.log("result")
-            console.log(result)
-
             if(res.status && !res.rec_ids){
-              console.log("je suis pas maintenance1")
-
               //add even
               this.events = [
                 ...this.events,
@@ -376,8 +373,6 @@ export class AircraftBookingComponent implements AfterViewChecked{
 
             }
             else if(res.status && res.rec_ids.length > 0){
-              console.log("je suis maintenance2")
-
               for(let i = 0; i < res.rec_ids.length; i++){
                 this.events = [
                   ...this.events,
@@ -404,8 +399,6 @@ export class AircraftBookingComponent implements AfterViewChecked{
               }
             }
             else{
-              console.log("l'even n'ea pas tete cree")
-              console.log(res.message)
               switch(res.message){
                 case 'TIME_CONFLICT':{
                   this.messageService.add({severity:'error', summary:'Error', detail:'You booked the flight in the past'});
@@ -463,7 +456,6 @@ ngAfterViewChecked(): void {
 }
 
 updateEventDialog(currentEvent: any): void{
-  console.log(currentEvent)
   let check = {currentEvent : currentEvent, currentUser: this.currentUser}
   this._api.postTypeRequest('user/check-event', check).subscribe((res: any) => {
 
@@ -545,8 +537,6 @@ updateEventDialog(currentEvent: any): void{
               })
             }
             else{
-              console.log(res2)
-              console.log(res2.error)
               switch(res2.error){
                 case 'TIME_CONFLICT':{
                   this.messageService.add({severity:'error', summary:'Error', detail:'You booked the flight in the past'});

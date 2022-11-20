@@ -49,7 +49,6 @@ export class RecurringEventChooserComponent implements OnInit, OnDestroy {
     this.today = new NgbDate(this.start.value.getFullYear(), this.start.value.getMonth() + 1, this.start.value.getDate());
     this.initRecurringForm();
     this.subscribeToFormValue();
-    console.log(this.start.value)
   }
 
   ngOnDestroy(): void {
@@ -124,7 +123,6 @@ export class RecurringEventChooserComponent implements OnInit, OnDestroy {
         bymonthday: value.frequency === Frequency.MONTHLY ?
           (value.onMonthday && value.onMonthday.day || this.today.day) : null
       };
-      console.log('options', options);
       const rule = new RRule(options);
       this.dates = rule.all();
       this.newDateEvent.emit(this.dates)

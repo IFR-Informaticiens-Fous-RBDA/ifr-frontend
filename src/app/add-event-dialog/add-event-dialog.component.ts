@@ -108,6 +108,7 @@ export class AddEventDialogComponent implements AfterViewInit{
   public selectedAircraftAvailablity: string =""
   public roleUser: any
   public allRoles: string[] = []
+  public currentUser: any
 
   public formGroup = new UntypedFormGroup({
     date: new UntypedFormControl(null, [Validators.required]),
@@ -135,53 +136,53 @@ export class AddEventDialogComponent implements AfterViewInit{
   }
 
   ngOnInit(){
-    this._api.getTypeRequest('aircraft/aircraft-name-by-id/'+this.data.aircraft_id).subscribe((res : any) =>
-    {
-      console.log(res)
-      this.aircrafts = res;
+    this._auth.getUserDetails().then((currentUser: any) => {
+      this.currentUser = currentUser
 
-    });
+      this._api.getTypeRequest('aircraft/aircraft-name-by-id/'+this.data.aircraft_id).subscribe((res : any) =>
+      {
+        this.aircrafts = res;
 
-    this._api.getTypeRequest('user/role/' + JSON.parse(localStorage.getItem('userData') || '{}')[0].id).subscribe((result: any) => {
-      this.roleUser = result.data
-      for(let i = 0; i < this.roleUser.length; i++){
-        this.allRoles = [
-          ...this.allRoles, this.roleUser[i].Role_Name
-        ]
-      }
-    })
+      });
 
-    this._api.getTypeRequest('aircraft/all').subscribe((res:any) => {
-      console.log(res)
-      this.aircraftsAvailability = res.data
-    })
-    console.log(this.aircrafts)
-
-    this._api.getTypeRequest('user/all-instructors').subscribe((res : any) =>
-    {
-      this.instructors = res.data;
-      for(var i = 0; i < this.instructors.length; i++){
-        this.instructorsList.push(this.instructors[i].LastName + ' ' + this.instructors[i].FirstName)
-      }
-
-
-    });
-
-    this._api.getTypeRequest('user/all-members').subscribe((res: any) => {
-      this.members = res.data
-      this.membersList = this.members.map(function(member: { [x: string]: any; }) {
-        return member['fullname']
+      this._api.getTypeRequest('user/role/' + this.currentUser[0].id).subscribe((result: any) => {
+        this.roleUser = result.data
+        for(let i = 0; i < this.roleUser.length; i++){
+          this.allRoles = [
+            ...this.allRoles, this.roleUser[i].Role_Name
+          ]
+        }
       })
 
+      this._api.getTypeRequest('aircraft/all').subscribe((res:any) => {
+        this.aircraftsAvailability = res.data
+      })
 
-      console.log(this.filteredMembers)
+      this._api.getTypeRequest('user/all-instructors').subscribe((res : any) =>
+      {
+        this.instructors = res.data;
+        for(var i = 0; i < this.instructors.length; i++){
+          this.instructorsList.push(this.instructors[i].LastName + ' ' + this.instructors[i].FirstName)
+        }
+
+
+      });
+
+      this._api.getTypeRequest('user/all-members').subscribe((res: any) => {
+        this.members = res.data
+        this.membersList = this.members.map(function(member: { [x: string]: any; }) {
+          return member['fullname']
+        })
+
+
+      })
+      let endDate = new Date(this.dateControlEnd.value).getTime();
+      let purchaseDate = new Date(this.dateControlStart.value).getTime();
+      let diffMs = (endDate - purchaseDate); // milliseconds
+      let diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+      let diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+      this.total_time = (diffHrs < 9 ? "0" + diffHrs : String(diffHrs)) + ":" + (diffMins < 9 ? "0" + diffMins : String(diffMins))
     })
-    let endDate = new Date(this.dateControlEnd.value).getTime();
-    let purchaseDate = new Date(this.dateControlStart.value).getTime();
-    let diffMs = (endDate - purchaseDate); // milliseconds
-    let diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-    let diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
-    this.total_time = (diffHrs < 9 ? "0" + diffHrs : String(diffHrs)) + ":" + (diffMins < 9 ? "0" + diffMins : String(diffMins))
   }
   private _filter(value: string) : string[] {
     const filterValue = value.toLowerCase()
@@ -216,11 +217,9 @@ export class AddEventDialogComponent implements AfterViewInit{
 
   selected(event: MatAutocompleteSelectedEvent): void{
     if(!this.selectedMembers.find(member => member === event.option.viewValue)){
-      console.log(event)
       this.selectedMembers.push(event.option.viewValue)
       this.memberInput.nativeElement.value = ''
       this.membersControl.setValue(null)
-      console.log(this.selectedMembers)
     }
 
 
@@ -240,11 +239,9 @@ export class AddEventDialogComponent implements AfterViewInit{
     this.total_time = (diffHrs < 9 ? "0" + diffHrs : String(diffHrs)) + ":" + (diffMins < 9 ? "0" + diffMins : String(diffMins))
   }
   childChange(value: any){
-    console.log(value)
     this.recurringDates = value
   }
   repeatReservation(){
-    console.log(this.aircrafts)
 
     if(this.doesRepeat){
       this.doesRepeat = false
@@ -257,7 +254,7 @@ export class AddEventDialogComponent implements AfterViewInit{
   sendData(){
     this.data.aircraft = this.aircrafts
     this.data.description = this.description
-    this.data.user = this._auth.getUserDetails()
+    this.data.user = this.currentUser
     this.data.start = this.dateControlStart.value
     this.data.end = this.dateControlEnd.value
     this.data.recurringDates = this.recurringDates

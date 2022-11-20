@@ -98,8 +98,6 @@ export class MembersManagementComponent implements OnInit {
       for(var i = 0; i < this.categories.length; i++){
         this.categoriesList.push([this.categories[i].Category_Name, this.categories[i].Description])
       }
-      console.log(this.categoriesList)
-
     });
     this._api.getTypeRequest('user/all-members').subscribe((res: any) => {
       this.members = res.data;
@@ -117,40 +115,20 @@ export class MembersManagementComponent implements OnInit {
       startWith(''),
       map((value: any) => value.length >= 1 ? this._filter(value || ''): []),
     );
-    console.log(this.filteredMember)
     this.primengConfig.ripple = true;
-
-
-    /*this._api.getTypeRequest('user/info/' + JSON.parse(localStorage.getItem('userData') || '{}')[0].id).subscribe((res: any) => {
-      this.userInfo = res.data[0]
-      console.log(this.userInfo.License_validity)
-      this._api.getTypeRequest('user/member-id/'+ JSON.parse(localStorage.getItem('userData') || '{}')[0].id).subscribe((res:any) => {
-        this.userInfo.Member_id = res.data[0].ID_Member
-      })
-
-    });*/
-
-
-
-
 
   }
 
   async selectMember(){
-    console.log(this.selectedMember)
     this.selectedMemberBool = true
 
     const data_id: any = await this._api.getTypeRequest('user/member-by-name/' + this.selectedMember.split(" ")[0] + '/' + this.selectedMember.split(" ")[1]).toPromise()
 
     this.member_id = data_id.data[0].ID
 
-    console.log(this.member_id)
-
     const data_info_member: any = await this._api.getTypeRequest('user/info-member/' + this.member_id).toPromise()
 
     this.userInfo = data_info_member.data[0]
-
-    console.log(this.userInfo)
 
     const data_account_id: any = await this._api.getTypeRequest('user/account-id/' + this.member_id).toPromise()
 
@@ -162,11 +140,7 @@ export class MembersManagementComponent implements OnInit {
       this.currentUserRoles.push(element.Role_Name)
     })
 
-    console.log(this.currentUserRoles)
-
     this.rolesForm = new FormControl({value: this.currentUserRoles, disabled: true}, Validators.required)
-
-    console.log(this.rolesForm.value)
 
   }
 
@@ -211,13 +185,11 @@ export class MembersManagementComponent implements OnInit {
   }
   async confirm(event: Event) {
     const rolesID = await this._api.postTypeRequest('user/role-by-name', this.rolesForm.value).toPromise()
-    console.log(rolesID)
     this.userInfo.newRoles = rolesID
     this.userInfo.Member_id = this.member_id
     this.userInfo.Account_id = this.currentUserID
     this.userInfo.isEditRole = this.isEditRole
     this._api.postTypeRequest('user/update', this.userInfo).subscribe((res:any) => {
-      console.log(res)
       if(res.status){
         this.messageService.add({severity:'success', summary:'Success', detail:'The member has been updated successfully.'});
       }

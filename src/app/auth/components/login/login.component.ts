@@ -20,19 +20,16 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
 
-    this.isUserLogin();
 
   }
 
 
 
   onSubmit(form: NgForm) {
-    console.log('Your form data : ', form.value);
     this._api.postTypeRequest('user/login', form.value).subscribe((res: any) => {
       console.log(res)
       if (res.status) {
         console.log(JSON.stringify(res.data))
-        this._auth.setDataInLocalStorage('userData', JSON.stringify(res.data));
         this._auth.setDataInLocalStorage('token', res.token);
         this._router.navigate(['']);
       }
@@ -46,7 +43,7 @@ export class LoginComponent implements OnInit {
 
   isUserLogin(){
 
-    if(this._auth.getUserDetails() != null){
+    if(localStorage.getItem('token')){
 
         this.isLogin = true;
     }

@@ -132,7 +132,6 @@ export class AddFlightDialogComponent {
       map((value: any) => value.length >= 1 ? this._filter(value || ''): []),
     );
     this.pilotsSharingList.data.push({pilot: this.data.currentUser.FirstName + " " + this.data.currentUser.LastName, share: 100})
-    console.log(this.pilotsSharingList)
     this._api.getTypeRequest('user/all-instructors').subscribe((res : any) =>
     {
       this.instructors = res.data;
@@ -167,7 +166,6 @@ export class AddFlightDialogComponent {
   }
 
   transformAmount(element: any){
-    console.log(Number(this.fuel_invoice))
     this.formatted_fuel_invoice = this._currencyPipe.transform(this.fuel_invoice, 'EUR');
     // Remove or comment this line if you dont want
     // to show the formatted amount in the textbox.

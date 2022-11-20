@@ -4,6 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { compareAsc } from 'date-fns';
 import { ApiService } from '../services/api.service';
+import { AuthService } from '../services/auth.service';
 import { SocketService } from '../services/socket.service';
 
 export interface AddInspection{
@@ -31,6 +32,7 @@ export interface AircraftPotential{
 export class AircraftPotentialComponent implements OnInit {
 
   allRoles: string[] = []
+  currentUser: any
   roleUser: any
   aircraft_id: any
   inspection: boolean = false
@@ -66,7 +68,7 @@ export class AircraftPotentialComponent implements OnInit {
 
 
 
-  constructor(private _api: ApiService, private _socket: SocketService) { }
+  constructor(private _api: ApiService, private _socket: SocketService, private _auth: AuthService) { }
 
   ngOnInit(): void {
     this._socket.onReloadForEveryone().subscribe((data:any) => {
@@ -75,24 +77,28 @@ export class AircraftPotentialComponent implements OnInit {
       this.dataSource = new MatTableDataSource(result.data)
       this.displayedColumns = ['registration', 'hour_meter', 'reason', 'description', 'status']
       let onlyCompletedInspection = this.dataSource.data.filter(element => !element.completed)
-      console.log(onlyCompletedInspection)
       this.computeFlightTime(onlyCompletedInspection)
       })
     })
-    this._api.getTypeRequest('user/role/' + JSON.parse(localStorage.getItem('userData') || '{}')[0].id).subscribe((result: any) => {
-      this.roleUser = result.data
-      for(let i = 0; i < this.roleUser.length; i++){
-        this.allRoles = [
-          ...this.allRoles, this.roleUser[i].Role_Name
-        ]
-      }
-    })
-    this._api.getTypeRequest('inspection/all').subscribe((result:any) => {
-      this.dataSource = new MatTableDataSource(result.data)
-      this.displayedColumns = ['registration', 'hour_meter', 'reason', 'description', 'status']
-      let onlyCompletedInspection = this.dataSource.data.filter(element => !element.completed)
-      this.computeFlightTime(onlyCompletedInspection)
 
+    this._auth.getUserDetails().then(currentUser => {
+      this.currentUser = currentUser
+
+      this._api.getTypeRequest('user/role/' + this.currentUser[0].id).subscribe((result: any) => {
+        this.roleUser = result.data
+        for(let i = 0; i < this.roleUser.length; i++){
+          this.allRoles = [
+            ...this.allRoles, this.roleUser[i].Role_Name
+          ]
+        }
+      })
+      this._api.getTypeRequest('inspection/all').subscribe((result:any) => {
+        this.dataSource = new MatTableDataSource(result.data)
+        this.displayedColumns = ['registration', 'hour_meter', 'reason', 'description', 'status']
+        let onlyCompletedInspection = this.dataSource.data.filter(element => !element.completed)
+        this.computeFlightTime(onlyCompletedInspection)
+
+      })
     })
 
   }
@@ -103,7 +109,6 @@ export class AircraftPotentialComponent implements OnInit {
       let result: any = await this._api.getTypeRequest('flights/last-flight/' + completedInspection[i].aircraft_id).toPromise()
       let body = {start: result.data[0].Engine_Stop, end: completedInspection[i].hour_meter}
       this.time_before_inspection = await this._api.postTypeRequest('flights/computeFlightTime', body).toPromise()
-      console.log(this.time_before_inspection)
       this.aircrafts_potential = [
         ...this.aircrafts_potential,
         {
@@ -123,8 +128,6 @@ export class AircraftPotentialComponent implements OnInit {
       if(completedInspection[i].aircraft_id === 4){
         this.bq_potential = this.time_before_inspection.flight_time
       }
-
-      console.log(this.aircrafts_potential)
     }
     if(completedInspection.find(element => element.aircraft_id === 1) === undefined){
       this.bi_potential = ''
@@ -146,17 +149,13 @@ export class AircraftPotentialComponent implements OnInit {
   defineInspection(){
     this.inspection = true
     this._api.getTypeRequest('aircraft/all').subscribe((res:any) => {
-      console.log(res)
       this.aircrafts = res.data
     })
 
   }
 
   async onSelectAircraft(selectedAircraft: any){
-    console.log(selectedAircraft)
     this.aircraft_id = await this._api.getTypeRequest('aircraft/aircraft-id-by-name/' + selectedAircraft.value).toPromise()
-    console.log(this.aircraft_id[0])
-
     this._api.getTypeRequest('flights/last-flight/' + this.aircraft_id[0]).subscribe((res: any) => {
       if(res.status && res.data.length != 0){
         this.engine_last_start = res.data[0].Engine_Stop
@@ -168,7 +167,6 @@ export class AircraftPotentialComponent implements OnInit {
   }
 
   sendData(){
-    console.log(this.aircraft_id[0])
     this.dataToSend.aircraft_id = this.aircraft_id[0]
     this.dataToSend.hour_meter = this.engine_last_start
     this.dataToSend.reason = this.reason
@@ -190,7 +188,6 @@ export class AircraftPotentialComponent implements OnInit {
 
   }
   async setInspectionComplete(currentInspection: any){
-    console.log(currentInspection)
     let result_complete:any = await this._api.getTypeRequest('inspection/complete-inspection/' + currentInspection.id).toPromise()
     if(result_complete.status){
       this._socket.reloadForEveryone()

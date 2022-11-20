@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { ApiService } from './api.service';
 
 @Injectable({
@@ -10,10 +11,15 @@ export class AuthService {
 
   public roles = []
 
-   getUserDetails() {
-    if(localStorage.getItem('userData')){
+  public payload: any = null
+  private _currentAuth = new BehaviorSubject(this.payload)
+  currentAuth = this._currentAuth.asObservable()
 
-      return localStorage.getItem('userData')
+   async getUserDetails() {
+    if(localStorage.getItem('token')){
+      let payload: any = await this._api.postTypeRequest('user/check-token', {message: localStorage.getItem('token')}).toPromise()
+      this.changeAuth(payload)
+      return payload.payload.data
 
     }else{
       return null
@@ -21,11 +27,17 @@ export class AuthService {
 
   }
 
+  changeAuth(payload: any){
+    this._currentAuth.next(payload)
+  }
+
   getRole(): any[]{
-    this._api.getTypeRequest('user/role/' + JSON.parse(localStorage.getItem('userData') || '{}')[0].id).subscribe((result: any) => {
-      console.log(result.data)
-      this.roles = result.data
+    this._api.postTypeRequest('user/check-token', {message: localStorage.getItem('token')}).subscribe((res: any) => {
+      this._api.getTypeRequest('user/role/' + res.payload.data[0].id).subscribe((result: any) => {
+        this.roles = result.data
+      })
     })
+
     return this.roles
   }
 

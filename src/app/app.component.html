@@ -6,10 +6,10 @@
     <h1>RBDA Booking</h1>
     <img src="../assets/img/logo.png"/>
     <span class="example-spacer"></span>
-      <button mat-icon-button [ngStyle]="{'color': 'white'}" class = "account_box-icon" [routerLink]="['profile']" *ngIf = "localStorage != null" routerLinkActive="active">
+      <button mat-icon-button [ngStyle]="{'color': 'white'}" class = "account_box-icon" [routerLink]="['profile']" *ngIf = "user != null" routerLinkActive="active">
         <mat-icon>account_box</mat-icon>
       </button>
-      <button mat-icon-button [ngStyle]="{'color': 'white'}" class="logout-icon" [routerLink]="['logout']" *ngIf = "localStorage != null" routerLinkActive="active">
+      <button mat-icon-button [ngStyle]="{'color': 'white'}" class="logout-icon" [routerLink]="['logout']" *ngIf = "user != null" routerLinkActive="active">
         <mat-icon>logout</mat-icon>
       </button>
   </mat-toolbar-row>
@@ -19,14 +19,14 @@
   <mat-sidenav #sidenav>
     <mat-nav-list>
 
-      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['login']" *ngIf = "!localStorage" routerLinkActive="active"> Login </a>
-      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['register']" *ngIf = "!localStorage" routerLinkActive="active"> Register </a>
-      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['']" *ngIf = "localStorage != null" routerLinkActive="active">Booking</a>
-      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['flights']" *ngIf="localStorage != null" routerLinkActive="active">My flights</a>
-      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['flights-management']" *ngIf="localStorage != null" routerLinkActive="active">Flights management</a>
-      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['members-operational-status']" *ngIf="localStorage && localStorage.roles.includes('Flights manager')" routerLinkActive="active">Members operational status</a>
-      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['members-management']" *ngIf="localStorage && localStorage.roles.includes('Secretary')" routerLinkActive="active">Members management</a>
-      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['aircraft-potential-management']" *ngIf="localStorage && localStorage.roles.includes('Aircrafts manager')" routerLinkActive="active">Aircrafts potential management</a>
+      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['login']" *ngIf = "user === null" routerLinkActive="active"> Login </a>
+      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['register']" *ngIf = "user === null" routerLinkActive="active"> Register </a>
+      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['']" *ngIf = "user != null" routerLinkActive="active">Booking</a>
+      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['flights']" *ngIf="user != null" routerLinkActive="active">My flights</a>
+      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['flights-management']" *ngIf="user != null" routerLinkActive="active">Flights management</a>
+      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['members-operational-status']" *ngIf="user != null && user.payload.data[0].roles.includes('Flights manager')" routerLinkActive="active">Members operational status</a>
+      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['members-management']" *ngIf="user != null && user.payload.data[0].roles.includes('Secretary')" routerLinkActive="active">Members management</a>
+      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['aircraft-potential-management']" *ngIf="user != null && user.payload.data[0].roles.includes('Aircrafts manager')" routerLinkActive="active">Aircrafts potential management</a>
 
     </mat-nav-list>
   </mat-sidenav>

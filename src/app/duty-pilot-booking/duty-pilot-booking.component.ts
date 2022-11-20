@@ -68,19 +68,13 @@ export class DutyPilotBookingComponent{
     private cdRef: ChangeDetectorRef,
     private messageService: MessageService,
     private primengConfig: PrimeNGConfig,
+    private _auth: AuthService
   ) {
 
   }
 
   ngOnInit() {
-    this._api.getTypeRequest('user/role/' + JSON.parse(localStorage.getItem('userData') || '{}')[0].id).subscribe((result: any) => {
-      this.roleUser = result.data
-      for(let i = 0; i < this.roleUser.length; i++){
-        this.allRoles = [
-          ...this.allRoles, this.roleUser[i].Role_Name
-        ]
-      }
-    })
+
 
     this._socket.onReloadForEveryone().subscribe((data: any) => {
       this._api.getTypeRequest('event/all-duty-pilots').subscribe((result: any) => {
@@ -94,7 +88,6 @@ export class DutyPilotBookingComponent{
       });
     })
     GlobalConstants.view = true
-    this.currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
     const CALENDAR_RESPONSIVE = {
       small: {
         breakpoint: '(max-width: 576px)',
@@ -127,15 +120,29 @@ export class DutyPilotBookingComponent{
         this.cd.markForCheck();
       });
 
-      this._api.getTypeRequest('event/all-duty-pilots').subscribe((result: any) => {
-        this.events = <CalendarEvent[]>result.data;
-        this.events.forEach((event: {
-          end: Date; start: Date;
-          }) => {
-            event.start = new Date(event.start)
-            event.end = new Date(event.end)
+      this._auth.getUserDetails().then(currentUser => {
+        this.currentUser = currentUser
+
+
+        this._api.getTypeRequest('user/role/' + this.currentUser[0].id).subscribe((result: any) => {
+          this.roleUser = result.data
+          for(let i = 0; i < this.roleUser.length; i++){
+            this.allRoles = [
+              ...this.allRoles, this.roleUser[i].Role_Name
+            ]
+          }
+        })
+
+        this._api.getTypeRequest('event/all-duty-pilots').subscribe((result: any) => {
+          this.events = <CalendarEvent[]>result.data;
+          this.events.forEach((event: {
+            end: Date; start: Date;
+            }) => {
+              event.start = new Date(event.start)
+              event.end = new Date(event.end)
+          });
         });
-      });
+      })
 
 
   }
@@ -176,7 +183,6 @@ export class DutyPilotBookingComponent{
     });
     dialogRef.afterClosed().subscribe(result =>{
       this._api.postTypeRequest('event/add-duty-pilot-needed', result).subscribe((res: any) => {
-        console.log(res)
         if(res.status && !res.rec_ids && result.isDoublePilotService){
           for(let i = 0; i < res.data.length; i++){
             //add even
@@ -226,7 +232,6 @@ export class DutyPilotBookingComponent{
           this._socket.reloadForEveryone()
         }
         else if(res.status && res.rec_ids.length > 0 && !result.isDoublePilotService){
-          console.log(res.rec_ids)
           for(let i = 0; i < res.rec_ids.length; i++){
             this.events = [
               ...this.events,
@@ -320,15 +325,12 @@ export class DutyPilotBookingComponent{
         }
         else{
           console.log("l'even n'ea pas tete cree")
-          console.log(res)
           switch(res.message){
             case 'TIME_CONFLICT':{
-              console.log("coucou")
               this.messageService.add({severity:'error', summary:'Error', detail:'You booked the flight in the past'});
               break;
             }
             case 'SLOT_CONFLICT':{
-              console.log("coucou2")
               this.messageService.add({severity:'error', summary: 'Error', detail: 'There already is a duty pilot on this time slot or you already booked this hour'})
               break;
             }
@@ -337,7 +339,6 @@ export class DutyPilotBookingComponent{
               break;
             }
             default:{
-              console.log('coucou3')
               this.messageService.add({severity:'error', summary:'Error', detail:'Something went wrong'});
 
             }

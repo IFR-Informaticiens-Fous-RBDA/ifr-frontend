@@ -6,6 +6,7 @@ import { SocketService } from '../services/socket.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { interval, Subscription } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 
 @Component({
@@ -28,14 +29,13 @@ export class FlightsComponent implements OnInit, AfterViewInit {
   @ViewChild('paginator') paginator!: MatPaginator;
 
 
-  constructor(private _api: ApiService, private _socket: SocketService, public dialog: MatDialog) { }
+  constructor(private _api: ApiService, private _socket: SocketService, public dialog: MatDialog, private _auth: AuthService) { }
 
   ngOnInit(): void {
     const source = interval(1000)
     this.subscription = source.subscribe(val => this.opensnack())
     this._socket.onReloadForEveryone().subscribe((data:any) => {
       this._api.postTypeRequest('flights/all-flights', this.currentUser).subscribe((result:any) => {
-        console.log(result.data)
         this.dataSource = new MatTableDataSource(result.data)
         this.dataSource.data = this.dataSource.data.filter((item: { isLogged: any; isMaintenance: number }) => item.isLogged === 0 && (item.isMaintenance === 0 || item.isMaintenance === null))
         this.dataSource.data.forEach(function(element : any){
@@ -56,31 +56,31 @@ export class FlightsComponent implements OnInit, AfterViewInit {
 
       });
     })
-    this.currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
-    this._api.postTypeRequest('flights/all-flights', this.currentUser).subscribe((result:any) => {
-      console.log(result.data)
-      this.dataSource = new MatTableDataSource(result.data)
-      this.dataSource.data = this.dataSource.data.filter((item: { isLogged: any; isMaintenance: number }) => item.isLogged === 0 && (item.isMaintenance === 0 || item.isMaintenance === null))
-      this.dataSource.data.forEach(function(element : any){
-        element.date_depart = new Date(element.date_depart)
-        element.date_arrivee = new Date(element.date_arrivee)
+    this._auth.getUserDetails().then(currentUser => {
+      this.currentUser = currentUser
+
+      this._api.postTypeRequest('flights/all-flights', this.currentUser).subscribe((result:any) => {
+        this.dataSource = new MatTableDataSource(result.data)
+        this.dataSource.data = this.dataSource.data.filter((item: { isLogged: any; isMaintenance: number }) => item.isLogged === 0 && (item.isMaintenance === 0 || item.isMaintenance === null))
+        this.dataSource.data.forEach(function(element : any){
+          element.date_depart = new Date(element.date_depart)
+          element.date_arrivee = new Date(element.date_arrivee)
+
+        })
+        for(let i = 0; i < this.dataSource.data.length; i++){
+          this.legs_number[i] = 1
+        }
+
+      this._api.postTypeRequest('flights/all-logged-flights', this.currentUser).subscribe((result: any) => {
+        this.pastFlights.data = result.data
 
       })
-      for(let i = 0; i < this.dataSource.data.length; i++){
-        this.legs_number[i] = 1
-      }
+        this.displayedColumns = ['id', 'registration', 'description', 'date_depart', 'date_arrivee', 'status']
+        this.displayedColumnsLog = ['Registration','Date_Of_Flight', 'Departure_ICAO_Code', 'Departure_Time', 'Arrival_ICAO_Code', 'Arrival_Time', 'Total_Time_Of_Flight', 'FirstName', 'LastName', 'ShortName', 'Landings_Number_Day', 'Name', 'Engine_Start', 'Engine_Stop', 'Engine_Time']
 
-    this._api.postTypeRequest('flights/all-logged-flights', this.currentUser).subscribe((result: any) => {
-      this.pastFlights.data = result.data
+      });
 
     })
-      this.displayedColumns = ['id', 'registration', 'description', 'date_depart', 'date_arrivee', 'status']
-      this.displayedColumnsLog = ['Registration','Date_Of_Flight', 'Departure_ICAO_Code', 'Departure_Time', 'Arrival_ICAO_Code', 'Arrival_Time', 'Total_Time_Of_Flight', 'FirstName', 'LastName', 'ShortName', 'Landings_Number_Day', 'Name', 'Engine_Start', 'Engine_Stop', 'Engine_Time']
-
-    });
-
-
-    console.log(this.legs_number)
   }
   opensnack() {
     this.dateNow = this.dateNow + 1000
@@ -123,14 +123,10 @@ export class FlightsComponent implements OnInit, AfterViewInit {
     clearInterval(this.intervalId)
   }
   getIndex(index: any){
-    console.log(index)
     this.legs_index = index
   }
   logFlight(element:any, index:any){
     this.legs_index = index
-    console.log(this.currentUser[0].id)
-    console.log(this.legs_index)
-    console.log(this.legs_number[this.legs_index])
     const dialogRef = this.dialog.open(AddFlightDialogComponent, {
       width:'50vw',
       data: {
@@ -144,13 +140,9 @@ export class FlightsComponent implements OnInit, AfterViewInit {
       disableClose: true
     });
     dialogRef.afterClosed().subscribe(result =>{
-      console.log(result)
       if(this.legs_number[this.legs_index] > 1){
         this._api.postTypeRequest('flights/log-leg', result).subscribe((result:any) => {
           this.legs_number[this.legs_index] = this.legs_number[this.legs_index] -1
-
-          console.log(result)
-          console.log("leg added")
         })
         this._api.postTypeRequest('flights/last-logged-flight', this.currentUser).subscribe((result: any) => {
           const index = this.pastFlights.data.findIndex(element => element.ID === result.data[0].ID)
@@ -164,7 +156,6 @@ export class FlightsComponent implements OnInit, AfterViewInit {
       if(result != undefined && this.legs_number[this.legs_index] === 1){
         this.selectedInstructor = result.instructor
         this._api.postTypeRequest('flights/log-flight', result).subscribe((result:any) => {
-          console.log(result)
           element.IsActive = result.data[0].IsActive
           this.dataSource.data = this.dataSource.data.map((item: { registration: any; }) => {
             if(item.registration === element.registration){
