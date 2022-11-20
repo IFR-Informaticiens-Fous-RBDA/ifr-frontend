@@ -35,7 +35,7 @@ export class FlightsComponent implements OnInit, AfterViewInit {
     const source = interval(1000)
     this.subscription = source.subscribe(val => this.opensnack())
     this._socket.onReloadForEveryone().subscribe((data:any) => {
-      this._api.postTypeRequest('flights/all-flights', this.currentUser).subscribe((result:any) => {
+      this._api.getTypeRequest('flights/all-flights').subscribe((result:any) => {
         this.dataSource = new MatTableDataSource(result.data)
         this.dataSource.data = this.dataSource.data.filter((item: { isLogged: any; isMaintenance: number }) => item.isLogged === 0 && (item.isMaintenance === 0 || item.isMaintenance === null))
         this.dataSource.data.forEach(function(element : any){
@@ -47,7 +47,7 @@ export class FlightsComponent implements OnInit, AfterViewInit {
           this.legs_number[i] = 1
         }
 
-      this._api.postTypeRequest('flights/all-logged-flights', this.currentUser).subscribe((result: any) => {
+      this._api.getTypeRequest('flights/all-logged-flights').subscribe((result: any) => {
         this.pastFlights.data = result.data
 
       })
@@ -59,7 +59,7 @@ export class FlightsComponent implements OnInit, AfterViewInit {
     this._auth.getUserDetails().then(currentUser => {
       this.currentUser = currentUser
 
-      this._api.postTypeRequest('flights/all-flights', this.currentUser).subscribe((result:any) => {
+      this._api.getTypeRequest('flights/all-flights').subscribe((result:any) => {
         this.dataSource = new MatTableDataSource(result.data)
         this.dataSource.data = this.dataSource.data.filter((item: { isLogged: any; isMaintenance: number }) => item.isLogged === 0 && (item.isMaintenance === 0 || item.isMaintenance === null))
         this.dataSource.data.forEach(function(element : any){
@@ -71,7 +71,7 @@ export class FlightsComponent implements OnInit, AfterViewInit {
           this.legs_number[i] = 1
         }
 
-      this._api.postTypeRequest('flights/all-logged-flights', this.currentUser).subscribe((result: any) => {
+      this._api.getTypeRequest('flights/all-logged-flights').subscribe((result: any) => {
         this.pastFlights.data = result.data
 
       })
@@ -140,11 +140,12 @@ export class FlightsComponent implements OnInit, AfterViewInit {
       disableClose: true
     });
     dialogRef.afterClosed().subscribe(result =>{
+      delete result['currentUser']
       if(this.legs_number[this.legs_index] > 1){
         this._api.postTypeRequest('flights/log-leg', result).subscribe((result:any) => {
           this.legs_number[this.legs_index] = this.legs_number[this.legs_index] -1
         })
-        this._api.postTypeRequest('flights/last-logged-flight', this.currentUser).subscribe((result: any) => {
+        this._api.getTypeRequest('flights/last-logged-flight').subscribe((result: any) => {
           const index = this.pastFlights.data.findIndex(element => element.ID === result.data[0].ID)
           if(index === -1){
             this.pastFlights.data = [
@@ -168,7 +169,7 @@ export class FlightsComponent implements OnInit, AfterViewInit {
 
           this._socket.reloadForEveryone()
         })
-        this._api.postTypeRequest('flights/last-logged-flight', this.currentUser).subscribe((result: any) => {
+        this._api.getTypeRequest('flights/last-logged-flight').subscribe((result: any) => {
           const index = this.pastFlights.data.findIndex(element => element.ID === result.data[0].ID)
           if(index === -1){
             this.pastFlights.data = [

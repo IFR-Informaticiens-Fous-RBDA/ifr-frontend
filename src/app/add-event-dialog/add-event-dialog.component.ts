@@ -254,7 +254,6 @@ export class AddEventDialogComponent implements AfterViewInit{
   sendData(){
     this.data.aircraft = this.aircrafts
     this.data.description = this.description
-    this.data.user = this.currentUser
     this.data.start = this.dateControlStart.value
     this.data.end = this.dateControlEnd.value
     this.data.recurringDates = this.recurringDates

@@ -54,7 +54,6 @@ export class AddDutyPilotNeededDialogComponent{
   public endDate: Date
   public dateControlStart : UntypedFormControl;
   public dateControlEnd : UntypedFormControl;
-  public currentUser: any
 
   public dateControlMinMax = new UntypedFormControl(new Date());
 
@@ -86,9 +85,6 @@ export class AddDutyPilotNeededDialogComponent{
   }
 
   ngOnInit(): void {
-    this._auth.getUserDetails().then(currentUser => {
-      this.currentUser = currentUser
-    })
 
   }
 
@@ -112,7 +108,6 @@ export class AddDutyPilotNeededDialogComponent{
   }
 
   sendData(){
-    this.data.user = this.currentUser[0]
     this.data.start = this.dateControlStart.value
     this.data.end = this.dateControlEnd.value
     this.data.recurringDates = this.recurringDates

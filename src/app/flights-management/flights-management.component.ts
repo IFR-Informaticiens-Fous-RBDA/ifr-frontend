@@ -93,7 +93,7 @@ export class FlightsManagementComponent implements OnInit, AfterViewInit {
     this._socket.onReloadForEveryone().subscribe((data: any) => {
       this._api.getTypeRequest('user/member-id/' + this.currentUser[0].id).subscribe((res: any) => {
       this.currentUser[0].member_id = res.data[0].ID_Member
-        this._api.postTypeRequest('flights/flights-management', this.currentUser).subscribe((result: any) => {
+        this._api.getTypeRequest('flights/flights-management').subscribe((result: any) => {
           this.allFlights = result.data
 
           this.VOForm = this.fb.group({
@@ -139,7 +139,7 @@ export class FlightsManagementComponent implements OnInit, AfterViewInit {
 
       this._api.getTypeRequest('user/member-id/' + this.currentUser[0].id).subscribe((res: any) => {
         this.currentUser[0].member_id = res.data[0].ID_Member
-          this._api.postTypeRequest('flights/flights-management', this.currentUser).subscribe((result: any) => {
+          this._api.getTypeRequest('flights/flights-management').subscribe((result: any) => {
             this.allFlights = result.data
 
             this.VOForm = this.fb.group({
