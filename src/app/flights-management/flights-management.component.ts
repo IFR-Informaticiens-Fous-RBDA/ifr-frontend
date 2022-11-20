@@ -47,6 +47,7 @@ export interface FlightLogRowToSend{
 export class FlightsManagementComponent implements OnInit, AfterViewInit {
   currentUser: any;
   pageNumber: number = 1;
+  member_id: number = 0
   fileName = 'ExcelSheet.xlsx'
   allFlights :any
   data_to_send: FlightLogRowToSend = {
@@ -92,8 +93,8 @@ export class FlightsManagementComponent implements OnInit, AfterViewInit {
 
     this._socket.onReloadForEveryone().subscribe((data: any) => {
       this._api.getTypeRequest('user/member-id/' + this.currentUser[0].id).subscribe((res: any) => {
-      this.currentUser[0].member_id = res.data[0].ID_Member
-        this._api.getTypeRequest('flights/flights-management').subscribe((result: any) => {
+      this.member_id = res.data[0].ID_Member
+        this._api.getTypeRequest('flights/flights-management' + this.member_id).subscribe((result: any) => {
           this.allFlights = result.data
 
           this.VOForm = this.fb.group({
@@ -138,8 +139,8 @@ export class FlightsManagementComponent implements OnInit, AfterViewInit {
 
 
       this._api.getTypeRequest('user/member-id/' + this.currentUser[0].id).subscribe((res: any) => {
-        this.currentUser[0].member_id = res.data[0].ID_Member
-          this._api.getTypeRequest('flights/flights-management').subscribe((result: any) => {
+        this.member_id = res.data[0].ID_Member
+          this._api.getTypeRequest('flights/flights-management' + this.member_id).subscribe((result: any) => {
             this.allFlights = result.data
 
             this.VOForm = this.fb.group({
