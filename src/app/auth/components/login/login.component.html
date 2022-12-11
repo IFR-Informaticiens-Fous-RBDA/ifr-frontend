@@ -1,12 +1,15 @@
-<div class = 'row m-0 w-100'>
 
+<div class = 'row m-0 w-100'>
   <div class = 'col-md-4 offset-4 mt-5' *ngIf = '!this.isLogin'>
     <!-- error handling -->
     <div *ngIf = "error">
       <div class="alert alert-danger" role="alert">
         Username or password is incorrect.
       </div>
+
     </div>
+    <ngx-spinner type="ball-clip-rotate-multiple"></ngx-spinner>
+
       <h4>Login</h4>
       <form #myform = "ngForm" (ngSubmit) = "onSubmit(myform)" >
 
@@ -19,7 +22,10 @@
           </div>
           <input class= 'btn btn-outline-info' type = "submit" value = "Login">
       </form>
+
   </div>
+
+
 
 
   <div class = 'col-md-4 offset-4 mt-5' *ngIf = 'this.isLogin'>

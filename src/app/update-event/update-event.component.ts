@@ -41,6 +41,7 @@ export class UpdateEventComponent {
   ) {}
 
   ngOnInit(){
+    console.log(this.data)
     this._api.getTypeRequest('aircraft/all').subscribe((res : any) =>
     {
       this.aircrafts = res.data;
@@ -91,7 +92,7 @@ export class UpdateEventComponent {
   }
 
   sendData(){
-    this.data.aircraft = this.aircrafts.find((aircraft: { registration: string; }) => aircraft.registration == this.selectedAircraft)!
+    this.data.aircraft = this.aircrafts.find((aircraft: { registration: string; }) => aircraft.registration == this.data.currentEvent.event.meta.type)!
     this.data.description = this.description
     this.data.user = this._auth.getUserDetails()
     this.data.start = this.dateControlStart.value

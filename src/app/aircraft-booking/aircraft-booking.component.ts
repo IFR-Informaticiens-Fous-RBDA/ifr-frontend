@@ -21,6 +21,7 @@ import { GlobalConstants } from '../common/global-constants';
 import { SocketService } from '../services/socket.service';
 import {ConfirmationService, MessageService, PrimeNGConfig} from 'primeng/api';
 import { AuthService } from '../services/auth.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 
 
@@ -169,6 +170,7 @@ export class AircraftBookingComponent implements AfterViewChecked{
     private cdRef: ChangeDetectorRef,
     private messageService: MessageService,
     private primengConfig: PrimeNGConfig,
+    private spinner: NgxSpinnerService
   ) {
     this.cat1aircraft = []
     this.cat2aircraft = []
@@ -177,15 +179,20 @@ export class AircraftBookingComponent implements AfterViewChecked{
   }
 
   ngOnInit() {
+    this.spinner.show()
     this._socket.onReloadForEveryone().subscribe((data: any) => {
       this._api.getTypeRequest('event/all-events').subscribe((result: any) => {
         this.events = <CalendarEvent[]>result.data;
-        this.events.forEach((event: {
-          end: Date; start: Date;
-          }) => {
-            event.start = new Date(event.start)
-            event.end = new Date(event.end)
-        });
+        this.events.forEach((event: any) => {
+          event.start = new Date(event.start)
+          event.end = new Date(event.end)
+          if(event.meta.instructor.length != 0){
+            event['actions'] = [{
+              "label": event.meta.instructor + '</br>'
+            }]
+          }
+      });
+        this.spinner.hide()
       });
     })
     GlobalConstants.view = false
@@ -227,12 +234,17 @@ export class AircraftBookingComponent implements AfterViewChecked{
 
       this._api.getTypeRequest('event/all-events').subscribe((result: any) => {
         this.events = <CalendarEvent[]>result.data;
-        this.events.forEach((event: {
-          end: Date; start: Date;
-          }) => {
+        this.events.forEach((event: any) => {
             event.start = new Date(event.start)
             event.end = new Date(event.end)
+            if(event.meta.instructor.length != 0){
+              event['actions'] = [{
+                "label": event.meta.instructor + '</br>'
+              }]
+            }
         });
+        this.spinner.hide()
+
       });
 
 
@@ -243,6 +255,10 @@ export class AircraftBookingComponent implements AfterViewChecked{
   changeViewToWeek(){
     this.daysInWeek = 5
     this.excludeDays = [0,6]
+  }
+  changeViewToFullWeek(){
+    this.daysInWeek = 7
+    this.excludeDays = []
   }
   changeViewToWeekend(){
     this.daysInWeek = 2
@@ -287,11 +303,13 @@ export class AircraftBookingComponent implements AfterViewChecked{
   }
 
   updateView(dateChange: Date){
+    console.log(dateChange)
     this.viewDate = dateChange;
   }
 
 
    async addEventDialog(slot: any){
+    this.spinner.show()
     const rowxcol = slot.sourceEvent.target.closest(".cal-day-column");
     let colIndex = [...rowxcol.parentElement.children].indexOf(rowxcol) + 1
 
@@ -304,7 +322,7 @@ export class AircraftBookingComponent implements AfterViewChecked{
       date_last_flight: (dateLastFlight as any).data.length > 0 ? (dateLastFlight as any).data[0].Date_Of_Flight : new Date(+0)
     }
     let isOperational = await this._api.postTypeRequest('user/operational-aircraft', dtoMemberAircraft).toPromise()
-
+      this.spinner.hide()
       const dialogRef = this.dialog.open(AddEventDialogComponent, {
         width:'500px',
         data: {
@@ -316,7 +334,7 @@ export class AircraftBookingComponent implements AfterViewChecked{
       });
 
       dialogRef.afterClosed().subscribe(result =>{
-        if(result.maintenance){
+        if(result?.maintenance){
           this._api.postTypeRequest('event/addmaintenance', result).subscribe((res: any) => {
             this.events = [
               ...this.events,
@@ -345,6 +363,7 @@ export class AircraftBookingComponent implements AfterViewChecked{
         }
         else{
           this._api.postTypeRequest('event/addevent', result).subscribe((res: any) => {
+            console.log(result)
             if(res.status && !res.rec_ids){
               //add even
               this.events = [

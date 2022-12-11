@@ -1,4 +1,4 @@
-import { NgModule, Injectable } from '@angular/core';
+import { NgModule, Injectable,  CUSTOM_ELEMENTS_SCHEMA  } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 
@@ -20,7 +20,7 @@ import { AircraftBookingComponent } from './aircraft-booking/aircraft-booking.co
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatSelectModule} from '@angular/material/select';
 
@@ -28,6 +28,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import { AddEventDialogComponent } from './add-event-dialog/add-event-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { NgxSpinnerModule } from "ngx-spinner";
 
 import {
   NgxMatDatetimePickerModule,
@@ -117,6 +118,7 @@ const config: SocketIoConfig = {
   imports: [
     CommonModule,
     BrowserModule,
+    NgxSpinnerModule,
     AppRoutingModule,
     MatTableModule,
     ToastModule,
@@ -160,8 +162,12 @@ const config: SocketIoConfig = {
     {
       provide: MAT_DIALOG_DEFAULT_OPTIONS,
       useValue: {disableCLose: true}
+    },
+    {
+      provide: MAT_DATE_LOCALE, useValue: 'fr'
     }
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule { }

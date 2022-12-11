@@ -14,15 +14,18 @@ dd
 </div>-->
 
 <body>
+
 <div class="container calendar">
   <div class = "inline"><h3>{{ viewDate | calendarDate:('weekViewTitle') }}</h3>
   <button mat-icon-button [matMenuTriggerFor]="appMenu">
     <mat-icon>calendar_today</mat-icon>
   </button></div>
   <mat-menu #appMenu="matMenu">
+    <div (click)="$event.stopPropagation()">
        <mat-calendar #calendar
           (selectedChange)="updateView($event)" >
        </mat-calendar>
+    </div>
   </mat-menu>
 
 
@@ -62,6 +65,7 @@ dd
       <div class = "container px-0 bg-light border">
         <div class="d-flex">
           <div class="p-2"><mat-icon>filter_list_alt</mat-icon></div>
+          <div class ="p-2"><div class="btn btn-primary" (click)="changeViewToFullWeek()">Full Week</div></div>
           <div class="p-2"><div class = "btn btn-primary" (click)="changeViewToWeek()">Week only</div></div>
           <div class="p-2"><div class = "btn btn-primary" (click)="changeViewToWeekend()">Week-end only</div></div>
           <div class = "p-2"><button (click) = "changeView()" [routerLink]="['duty-pilot']" routerLinkActive="active" class = "btn btn-primary">Duty Pilot Booking</button></div>
@@ -71,7 +75,8 @@ dd
 </div>
 <br />
 
-<div class ="my-calendar"><mwl-calendar-week-view [viewDate]="viewDate" [daysInWeek]="daysInWeek" [dayStartHour]="8" [dayEndHour]="20" [events]= "events" [excludeDays]="excludeDays" (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="addEventDialog($event)"
+<div class ="my-calendar"><ngx-spinner type="ball-clip-rotate-multiple"></ngx-spinner>
+  <mwl-calendar-week-view [viewDate]="viewDate" [daysInWeek]="daysInWeek" [dayStartHour]="8" [dayEndHour]="20" [events]= "events" [excludeDays]="excludeDays" (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="addEventDialog($event)"
 (hourSegmentClicked)="addEventDialog($event)" (eventClicked)="updateEventDialog($event)" [refresh]="refresh"></mwl-calendar-week-view></div>
 
 

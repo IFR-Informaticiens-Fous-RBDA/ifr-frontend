@@ -6,6 +6,8 @@ import { SocketService } from '../services/socket.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { TableUtil } from "./tableUtil";
+import { NgxSpinnerService } from 'ngx-spinner';
+
 
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
@@ -84,9 +86,10 @@ export class FlightsManagementComponent implements OnInit, AfterViewInit {
   @ViewChild('paginator') paginator!: MatPaginator;
 
 
-  constructor(private _api: ApiService, private _socket: SocketService, public dialog: MatDialog, private fb: FormBuilder, private _formBuilder: FormBuilder, private _auth: AuthService) { }
+  constructor(private _api: ApiService, private _socket: SocketService, private spinner: NgxSpinnerService, public dialog: MatDialog, private fb: FormBuilder, private _formBuilder: FormBuilder, private _auth: AuthService) { }
 
   ngOnInit(): void {
+    this.spinner.show()
     this.VOForm = this._formBuilder.group({
       VORows: this._formBuilder.array([])
     })
@@ -133,6 +136,7 @@ export class FlightsManagementComponent implements OnInit, AfterViewInit {
 
         })
       })
+      this.spinner.hide()
     })
     this._auth.getUserDetails().then(currentUser => {
       this.currentUser = currentUser
@@ -179,6 +183,8 @@ export class FlightsManagementComponent implements OnInit, AfterViewInit {
 
           })
         })
+        this.spinner.hide()
+
       })
 
 
@@ -195,6 +201,7 @@ export class FlightsManagementComponent implements OnInit, AfterViewInit {
    this.paginator.page.subscribe(() => { // this is page change event
      this.onPaginateChange(this.paginator, this.paginatorList);
    });
+
   }
 
   paginatorList!: HTMLCollectionOf<Element>;

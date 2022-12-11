@@ -130,18 +130,21 @@ export class AddEventDialogComponent implements AfterViewInit{
   public stepMinutes = [1, 5, 10, 15, 20, 25];
   public stepSeconds = [1, 5, 10, 15, 20, 25];
   public aircrafts: any;
+  public aircraft: any
 
   ngAfterViewInit(): void {
 
   }
 
   ngOnInit(){
+    console.log(this.data)
     this._auth.getUserDetails().then((currentUser: any) => {
       this.currentUser = currentUser
 
       this._api.getTypeRequest('aircraft/aircraft-name-by-id/'+this.data.aircraft_id).subscribe((res : any) =>
       {
         this.aircrafts = res;
+        this.aircraft = this.aircrafts[0]
 
       });
 

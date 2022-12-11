@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  socketUrl: 'https://infinite-harbor-32161.herokuapp.com'
+  socketUrl: 'http://localhost:3000/',
+  api:'http://localhost:3000/'
 };
 
 /*

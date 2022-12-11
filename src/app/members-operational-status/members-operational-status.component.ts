@@ -9,6 +9,8 @@ import * as XLSX from 'xlsx';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { TableUtil } from '../flights-management/tableUtil';
 import { AuthService } from '../services/auth.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+
 
 export interface MembersOperationalStatus{
   FirstName: string,
@@ -61,10 +63,10 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
   @ViewChild('paginator') paginator!: MatPaginator;
 
 
-  constructor(private _api: ApiService, private _socket: SocketService, public dialog: MatDialog, private fb: FormBuilder, private _formBuilder: FormBuilder, private _auth: AuthService) { }
+  constructor(private _api: ApiService, private _socket: SocketService, public dialog: MatDialog, private fb: FormBuilder, private _formBuilder: FormBuilder, private spinner: NgxSpinnerService, private _auth: AuthService) { }
 
   ngOnInit(): void {
-
+    this.spinner.show()
     this.VOForm = this._formBuilder.group({
       VORows: this._formBuilder.array([])
     })
@@ -112,6 +114,7 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
         this.dataSource.filterPredicate = (data: AbstractControl, filter) => {
           return filterPredicate.call(this.dataSource, data.value, filter);
         }
+        this.spinner.hide()
       })
 
     })
@@ -165,7 +168,7 @@ export class MembersOperationalStatusComponent implements OnInit, AfterViewInit 
         }
 
       })
-
+      this.spinner.hide()
     })
 
 

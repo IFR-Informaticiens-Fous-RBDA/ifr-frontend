@@ -38,6 +38,7 @@
     "moment": "^2.29.4",
     "ngx-mat-timepicker": "^14.0.2",
     "ngx-socket-io": "^4.3.0",
+    "ngx-spinner": "^14.0.0",
     "pdfmake": "^0.2.5",
     "primeicons": "^5.0.0",
     "primeng": "^14.0.2",

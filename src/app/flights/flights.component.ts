@@ -7,6 +7,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { interval, Subscription } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+
 
 
 @Component({
@@ -29,10 +31,11 @@ export class FlightsComponent implements OnInit, AfterViewInit {
   @ViewChild('paginator') paginator!: MatPaginator;
 
 
-  constructor(private _api: ApiService, private _socket: SocketService, public dialog: MatDialog, private _auth: AuthService) { }
+  constructor(private _api: ApiService, private _socket: SocketService, public dialog: MatDialog, private _auth: AuthService, private spinner: NgxSpinnerService) { }
 
   ngOnInit(): void {
     const source = interval(1000)
+    this.spinner.show()
     this.subscription = source.subscribe(val => this.opensnack())
     this._socket.onReloadForEveryone().subscribe((data:any) => {
       this._api.getTypeRequest('flights/all-flights').subscribe((result:any) => {
@@ -55,6 +58,7 @@ export class FlightsComponent implements OnInit, AfterViewInit {
         this.displayedColumnsLog = ['Registration','Date_Of_Flight', 'Departure_ICAO_Code', 'Departure_Time', 'Arrival_ICAO_Code', 'Arrival_Time', 'Total_Time_Of_Flight', 'FirstName', 'LastName', 'ShortName', 'Landings_Number_Day', 'Name', 'Engine_Start', 'Engine_Stop', 'Engine_Time']
 
       });
+      this.spinner.hide()
     })
     this._auth.getUserDetails().then(currentUser => {
       this.currentUser = currentUser
@@ -79,7 +83,7 @@ export class FlightsComponent implements OnInit, AfterViewInit {
         this.displayedColumnsLog = ['Registration','Date_Of_Flight', 'Departure_ICAO_Code', 'Departure_Time', 'Arrival_ICAO_Code', 'Arrival_Time', 'Total_Time_Of_Flight', 'FirstName', 'LastName', 'ShortName', 'Landings_Number_Day', 'Name', 'Engine_Start', 'Engine_Stop', 'Engine_Time']
 
       });
-
+      this.spinner.hide()
     })
   }
   opensnack() {
@@ -124,6 +128,13 @@ export class FlightsComponent implements OnInit, AfterViewInit {
   }
   getIndex(index: any){
     this.legs_index = index
+  }
+  cancelFlight(element: any, index:any){
+    this.spinner.show()
+    this._api.getTypeRequest('event/delete-event/' + element.id).subscribe((res:any) => {
+      this._socket.reloadForEveryone()
+      this.spinner.hide()
+    })
   }
   logFlight(element:any, index:any){
     this.legs_index = index

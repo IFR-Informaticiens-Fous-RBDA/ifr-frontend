@@ -7,13 +7,9 @@
       <input matInput [(ngModel)] = "description">
     </mat-form-field>
     <p>Aircraft to be reserved</p>
-    <mat-form-field>
-      <mat-label>Avion choisi</mat-label>
-      <mat-select [(value)] = "selectedAircraft">
-        <mat-option *ngFor="let aircraft of aircrafts" [value]="aircraft">
-          {{aircraft}}
-        </mat-option>
-      </mat-select>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Aircraft chosen</mat-label>
+      <input matInput [disabled]="true" [value]= "aircraft">
     </mat-form-field>
     <p>Begin</p>
     <mat-form-field>
@@ -21,7 +17,7 @@
         [min]="minDate" [max]="maxDate" [disabled]="disabled" (change)="computeFlightTime()">
       <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
       <ngx-mat-datetime-picker #picker [showSpinners]="showSpinners" [showSeconds]="showSeconds"
-        [stepHour]="stepHour" [stepMinute]="1" [stepSecond]="stepSecond" [touchUi]="touchUi"
+        [stepHour]="stepHour" [stepMinute]="30" [stepSecond]="stepSecond" [touchUi]="touchUi"
         [color]="color" [enableMeridian]="enableMeridian" (closed)="computeFlightTime()">
       </ngx-mat-datetime-picker>
     </mat-form-field>
@@ -32,7 +28,7 @@
         [disabled]="false" [min]="minDate" [max]="maxDate" (change)="computeFlightTime()">
       <mat-datepicker-toggle matSuffix [for]="$any(picker2)"></mat-datepicker-toggle>
       <ngx-mat-datetime-picker #picker2 [showSpinners]="true" [showSeconds]="false" [stepHour]="1"
-        [stepMinute]="1" [stepSecond]="1" [touchUi]="false"
+        [stepMinute]="30" [stepSecond]="30" [touchUi]="false"
         [enableMeridian]="false" [disableMinute]="false" [hideTime]="false" (closed)="computeFlightTime()">
         <!-- Custom icon or text of Apply icon -->
         <ng-template>
@@ -103,7 +99,7 @@
   <div mat-dialog-actions>
     <button class = "btn btn-danger" mat-button (click)="onNoClick()">Annuler</button>
     <button *ngIf = "data.instructor_required" class = "btn btn-success" mat-button (click)="sendData()" [disabled] = "!selectedAircraft || !selectedInstructor" mat-dialog-close cdkFocusInitial>Valider</button>
-    <button *ngIf = "!data.instructor_required" class = "btn btn-success" mat-button (click)="sendData()" [disabled] = "!selectedAircraft" mat-dialog-close cdkFocusInitial>Valider</button>
+    <button *ngIf = "!data.instructor_required" class = "btn btn-success" mat-button (click)="sendData()" mat-dialog-close cdkFocusInitial>Valider</button>
 
   </div>
 </div>
@@ -130,7 +126,7 @@
         [min]="minDate" [max]="maxDate" [disabled]="disabled">
       <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
       <ngx-mat-datetime-picker #picker [showSpinners]="showSpinners" [showSeconds]="showSeconds"
-        [stepHour]="stepHour" [stepMinute]="1" [stepSecond]="stepSecond" [touchUi]="touchUi"
+        [stepHour]="stepHour" [stepMinute]="30" [stepSecond]="stepSecond" [touchUi]="touchUi"
         [color]="color" [enableMeridian]="enableMeridian">
       </ngx-mat-datetime-picker>
     </mat-form-field>
@@ -141,7 +137,7 @@
         [disabled]="false" [min]="minDate" [max]="maxDate" >
       <mat-datepicker-toggle matSuffix [for]="$any(picker2)"></mat-datepicker-toggle>
       <ngx-mat-datetime-picker #picker2 [showSpinners]="true" [showSeconds]="false" [stepHour]="1"
-        [stepMinute]="1" [stepSecond]="1" [touchUi]="false"
+        [stepMinute]="30" [stepSecond]="30" [touchUi]="false"
         [enableMeridian]="false" [disableMinute]="false" [hideTime]="false">
         <!-- Custom icon or text of Apply icon -->
         <ng-template>
@@ -156,7 +152,7 @@
   </div>
   <div mat-dialog-actions>
     <button class = "btn btn-danger" mat-button (click)="onNoClick()">Annuler</button>
-    <button class = "btn btn-success" mat-button (click)="sendData()" [disabled] = "!selectedAircraft" mat-dialog-close cdkFocusInitial>Valider</button>
+    <button class = "btn btn-success" mat-button (click)="sendData()" mat-dialog-close cdkFocusInitial>Valider</button>
 
   </div>
 </div>

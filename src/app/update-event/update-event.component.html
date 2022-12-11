@@ -6,13 +6,9 @@
       <input matInput [(ngModel)] = "description">
     </mat-form-field>
     <p>Sur quel avion comptez-vous voler ?</p>
-    <mat-form-field>
-      <mat-label>Avion choisi</mat-label>
-      <mat-select [(value)] = "selectedAircraft">
-        <mat-option *ngFor="let aircraft of aircrafts" [value]="aircraft.registration">
-          {{aircraft.registration}}
-        </mat-option>
-      </mat-select>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Aircraft chosen</mat-label>
+      <input matInput [disabled]="true" [value]= "data.currentEvent.event.meta.type">
     </mat-form-field>
     <p>Date et heure de départ</p>
     <mat-form-field>

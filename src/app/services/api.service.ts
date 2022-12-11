@@ -16,19 +16,19 @@ export class ApiService {
 
 
   getTypeRequest(url: any) {
-    return this._http.get(`${this.baseUrl}${url}`).pipe(map(res => {
+    return this._http.get(`${environment.api}${url}`).pipe(map(res => {
       return res;
     }));
   }
 
   postTypeRequest(url: any, payload: any) {
-    return this._http.post(`${this.baseUrl}${url}`, payload).pipe(map(res => {
+    return this._http.post(`${environment.api}${url}`, payload).pipe(map(res => {
       return res;
     }));
   }
 
   putTypeRequest(url: any, payload: any) {
-    return this._http.put(`${this.baseUrl}${url}`, payload).pipe(map(res => {
+    return this._http.put(`${environment.api}${url}`, payload).pipe(map(res => {
       return res;
     }));
   }

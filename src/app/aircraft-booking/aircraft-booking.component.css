@@ -95,6 +95,9 @@ button.mat-menu-trigger{
   background-position: bottom;
 }
 ::ng-deep .container.bg-light.border{
-  max-width: 30rem;
   padding-left: 0 !important;
+  margin-left: 30%;
+}
+.container{
+  max-width: 56% !important;
 }
