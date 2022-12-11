@@ -98,7 +98,7 @@
   </div>
   <div mat-dialog-actions>
     <button class = "btn btn-danger" mat-button (click)="onNoClick()">Annuler</button>
-    <button *ngIf = "data.instructor_required" class = "btn btn-success" mat-button (click)="sendData()" [disabled] = "!selectedAircraft || !selectedInstructor" mat-dialog-close cdkFocusInitial>Valider</button>
+    <button *ngIf = "data.instructor_required" class = "btn btn-success" mat-button (click)="sendData()" [disabled] = "!selectedInstructor" mat-dialog-close cdkFocusInitial>Valider</button>
     <button *ngIf = "!data.instructor_required" class = "btn btn-success" mat-button (click)="sendData()" mat-dialog-close cdkFocusInitial>Valider</button>
 
   </div>
