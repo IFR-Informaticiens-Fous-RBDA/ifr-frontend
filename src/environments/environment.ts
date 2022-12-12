@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  api: 'https://infinite-harbor-32161.herokuapp.com',
-  socketUrl: 'https://infinite-harbor-32161.herokuapp.com'
+  api: 'https://infinite-harbor-32161.herokuapp.com/',
+  socketUrl: 'https://infinite-harbor-32161.herokuapp.com/'
 };
 
 /*

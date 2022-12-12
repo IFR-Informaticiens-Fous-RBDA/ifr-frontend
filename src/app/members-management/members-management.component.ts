@@ -122,7 +122,7 @@ export class MembersManagementComponent implements OnInit {
   async selectMember(){
     this.selectedMemberBool = true
 
-    const data_id: any = await this._api.getTypeRequest('user/member-by-name/' + this.selectedMember.split(" ")[0] + '/' + this.selectedMember.split(" ")[1]).toPromise()
+    const data_id: any = await this._api.getTypeRequest('user/member-by-name/' + (this.selectedMember.split(" ").length < 3 ? this.selectedMember.split(" ")[0] + '/' + this.selectedMember.split(" ")[1] : this.selectedMember.split(" ")[0] + ' ' + this.selectedMember.split(" ")[1]+ '/' + this.selectedMember.split(" ")[2])).toPromise()
 
     this.member_id = data_id.data[0].ID
 
