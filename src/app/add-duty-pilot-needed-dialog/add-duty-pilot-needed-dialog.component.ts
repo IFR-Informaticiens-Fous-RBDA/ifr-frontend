@@ -79,6 +79,8 @@ export class AddDutyPilotNeededDialogComponent{
     this.endDate = new Date()
     this.endDate.setHours(9, 0, 0)
 
+    console.log(this.startDate)
+
 
     this.dateControlStart = new UntypedFormControl(this.startDate)
     this.dateControlEnd = new UntypedFormControl(this.endDate)

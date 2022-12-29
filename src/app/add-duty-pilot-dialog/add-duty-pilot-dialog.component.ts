@@ -70,11 +70,10 @@ export class AddDutyPilotDialogComponent{
     private _api: ApiService,
     @Inject(MAT_DIALOG_DATA) public data: DialogData
   ) {
-    this.startDate = new Date()
-    this.startDate.setDate(this.data.slot.getDate())
+
+    this.startDate = new Date(this.data.slot.getTime())
     this.startDate.setHours(9, 0, 0)
-    this.endDate = new Date()
-    this.endDate.setDate(this.data.slot.getDate())
+    this.endDate = new Date(this.data.slot.getTime())
     this.endDate.setHours(18, 0, 0)
 
 
