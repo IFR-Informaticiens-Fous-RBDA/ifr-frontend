@@ -6,8 +6,13 @@ import { LoginComponent } from './auth/components/login/login.component';
 import { LogoutComponent } from './auth/components/logout/logout.component';
 import { RegisterComponent } from './auth/components/register/register.component';
 import { DutyPilotBookingComponent } from './duty-pilot-booking/duty-pilot-booking.component';
+import { FlightInvoicesComponent } from './flight-invoices/flight-invoices.component';
 import { FlightsManagementComponent } from './flights-management/flights-management.component';
 import { FlightsComponent } from './flights/flights.component';
+import { FlyingCostFuelConsumptionComponent } from './flying-cost-fuel-consumption/flying-cost-fuel-consumption.component';
+import { FuelDeliveryManagementComponent } from './fuel-delivery-management/fuel-delivery-management.component';
+import { FuelManagementComponent } from './fuel-management/fuel-management.component';
+import { FuelTankManagementComponent } from './fuel-tank-management/fuel-tank-management.component';
 import { ProfileComponent } from './main/profile/profile.component';
 import { MembersManagementComponent } from './members-management/members-management.component';
 import { MembersOperationalStatusComponent } from './members-operational-status/members-operational-status.component';
@@ -26,7 +31,15 @@ const routes: Routes = [
   {path: 'register', component: RegisterComponent},
   {path: 'flights',component: FlightsComponent},
   {path: 'profile', canActivate: [AuthGuardService], component: ProfileComponent},
-  {path: 'aircraft-potential-management', canActivate: [AuthGuardService], component: AircraftPotentialComponent}
+  {path: 'aircraft-potential-management', canActivate: [AuthGuardService], component: AircraftPotentialComponent},
+  {path: 'flying-cost-fuel-consumption', canActivate: [AuthGuardService], data: {role: 'Financial manager'}, component: FlyingCostFuelConsumptionComponent},
+  {path: 'fuel-management', canActivate: [AuthGuardService], data: {role: 'Financial manager'}, component: FuelManagementComponent},
+  {path: 'flight-invoices', canActivate: [AuthGuardService], data: {role: 'Financial manager'}, component: FlightInvoicesComponent},
+  {path: 'fuel-tank-management', canActivate: [AuthGuardService], data: {role: 'Financial manager'}, component: FuelTankManagementComponent},
+  {path: 'fuel-delivery-management', canActivate: [AuthGuardService], data: {role: 'Financial manager'}, component: FuelDeliveryManagementComponent}
+
+
+
 ];
 
 @NgModule({

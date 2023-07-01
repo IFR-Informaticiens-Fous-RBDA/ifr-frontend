@@ -17,8 +17,7 @@ export interface DialogData {
   user: any,
   aircraft: Aircraft,
   description: string,
-  delete: boolean
-}
+  delete: boolean}
 interface Color {
   primary: string,
   secondary: string

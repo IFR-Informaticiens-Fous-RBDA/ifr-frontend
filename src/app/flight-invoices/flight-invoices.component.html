@@ -1,0 +1,63 @@
+<h2>Flight Invoices</h2>
+<br>
+
+<mat-form-field appearance="fill">
+  <mat-label>Month</mat-label>
+  <mat-select name = "selectedMonth" [(ngModel)]="selectedMonth">
+    <mat-option *ngFor="let month of months" [value]="month">
+      {{month}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<button class = "btn btn-primary" (click) = "generateInvoice()">Generate Invoices</button>
+<table mat-table *ngIf = "dataSource.data.length != 0" [dataSource]="dataSource" class="mat-elevation-z8">
+
+  <!-- Colonne "Year" -->
+  <ng-container matColumnDef="fullname">
+    <th mat-header-cell *matHeaderCellDef> Full Name </th>
+    <td mat-cell *matCellDef="let element">{{element.fullname}}</td>
+  </ng-container>
+
+  <!-- Colonne "Month" -->
+  <ng-container matColumnDef="year">
+    <th mat-header-cell *matHeaderCellDef> Year </th>
+    <td mat-cell *matCellDef="let element">{{element.year}}</td>
+  </ng-container>
+
+  <!-- Colonne "Member Name" -->
+  <ng-container matColumnDef="month">
+    <th mat-header-cell *matHeaderCellDef> Month </th>
+    <td mat-cell *matCellDef="let element">{{element.month}}</td>
+  </ng-container>
+
+  <!-- Colonne "Member Surname" -->
+  <ng-container matColumnDef="Due_Date">
+    <th mat-header-cell *matHeaderCellDef> Due Date </th>
+    <td mat-cell *matCellDef="let element">{{element.Due_Date}}</td>
+  </ng-container>
+
+  <!-- Colonne "Reference" -->
+  <ng-container matColumnDef="Payment_Date">
+    <th mat-header-cell *matHeaderCellDef> Payment Date </th>
+    <td mat-cell *matCellDef="let element">{{element.Payment_Date}}</td>
+  </ng-container>
+
+  <!-- Colonne "Flight Costs" -->
+  <ng-container matColumnDef="Total_Cost">
+    <th mat-header-cell *matHeaderCellDef> Total Cost </th>
+    <td mat-cell *matCellDef="let element">{{element.Total_Cost}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="Action">
+    <th mat-header-cell *matHeaderCellDef> Action </th>
+    <td mat-cell *matCellDef="let element">
+      <button class="mat-icon-picture_as_pdf" (click)="downloadPDF(element)"><mat-icon >picture_as_pdf</mat-icon></button>
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+
+  <!--ERROR HANDLING-->
+  <p-toast></p-toast>

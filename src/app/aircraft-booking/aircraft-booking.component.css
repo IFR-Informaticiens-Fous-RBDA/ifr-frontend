@@ -1,41 +1,76 @@
-::ng-deep div.container.calendar{
+.aircraft-booking ::ng-deep div.container.calendar{
   margin: 0;
   padding-left: 45%;
 }
-::ng-deep body{
+.aircraft-booking ::ng-deep body{
   width: 100% !important;
 }
 
-* {
+.aircraft-booking * {
   -webkit-box-sizing: content-box;
      -moz-box-sizing: content-box;
           box-sizing: content-box;
 }
-*:before,
+.aircraft-booking *:before,
 *:after {
   -webkit-box-sizing: content-box;
      -moz-box-sizing: content-box;
           box-sizing: content-box;
 }
-.scroll-container {
+.aircraft-booking .scroll-container {
   height: calc(100vh - 320px);
   overflow-y: auto;
 }
-.inline{
+.aircraft-booking .inline{
   display: flex;
 }
 
-button.mat-menu-trigger{
+::ng-deep .aircraft-booking .my-calendar .loading{
+    display: none;
+}
+
+::ng-deep .loading{
+  position: relative
+}
+
+.aircraft-booking button.mat-menu-trigger{
   border: none;
   background-color: #FAFAFA;
 }
 
-.dots{
+.aircraft-booking .filters-container {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.aircraft-booking .filter-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@media screen and (max-width: 768px) {
+  .aircraft-booking .filters-container {
+    width: 80%;
+    left: 10%;
+    font-size: 0.8em;
+    top: 10px;
+    padding: 5px;
+  }
+}
+
+
+.aircraft-booking .dots{
   float:right;
   margin-right:3em;
   margin-top: 2em;
 }
-.dotBU{
+.aircraft-booking .dotBU{
   height: 25px;
   width: 25px;
   background-color: #AB46D2;
@@ -43,7 +78,7 @@ button.mat-menu-trigger{
   display: inline-block;
 
 }
-.dotBI{
+.aircraft-booking .dotBI{
   height: 25px;
   width: 25px;
   background-color: #F9D923;
@@ -51,7 +86,7 @@ button.mat-menu-trigger{
   display: inline-block;
 
 }
-.dotBY{
+.aircraft-booking .dotBY{
   height: 25px;
   width: 25px;
   background-color: #36AE7C;
@@ -59,7 +94,7 @@ button.mat-menu-trigger{
   display: inline-block;
 
 }
-.dotBQ{
+.aircraft-booking .dotBQ{
   height: 25px;
   width: 25px;
   background-color: #187498;
@@ -67,37 +102,129 @@ button.mat-menu-trigger{
   display: inline-block;
 
 }
-::ng-deep .my-calendar{
+.aircraft-booking ::ng-deep .my-calendar{
   width: 100%;
 }
-::ng-deep .cal-week-view .cal-event-title {
+
+.aircraft-booking ::ng-deep .cal-day-headers .cal-header:nth-child(odd) {
+  background-color: white !important;
+}
+
+.aircraft-booking ::ng-deep .cal-day-headers .cal-header:nth-child(even){
+  background-color: #f5f5f5 !important;
+}
+.aircraft-booking ::ng-deep .cal-week-view .cal-day-headers .cal-header {
+  pointer-events: none;
+}
+.aircraft-booking ::ng-deep .cal-day-column {
+  position: relative;
+}
+
+.aircraft-booking ::ng-deep .cal-day-headers {
+  width: fit-content !important;
+}
+
+.aircraft-booking ::ng-deep .cal-week-view .cal-hour-odd {
+  background-color: initial;
+}
+
+.aircraft-booking ::ng-deep .cal-day-column::before {
+  content: attr(data-aircraft-code);
+  display: block;
+  position: absolute;
+  top: -1.5em;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.8em;
+}
+
+.aircraft-booking ::ng-deep .cal-day-column {
+  width: 150px !important;
+}
+
+.aircraft-booking ::ng-deep .cal-week-view {
+  max-width: 95vw;
+}
+
+.aircraft-booking ::ng-deep .cal-header__aircraft {
+  font-weight: bold;
+  font-style: italic;
+}
+
+
+
+.aircraft-booking ::ng-deep .cal-week-view .cal-event-title {
   color: white;
 }
-::ng-deep #oohbi.cal-event{
-  background-image: url("../../assets/img/oohbi.png");
+
+:host .cal-day-column::before {
+  content: attr(data-aircraft-code);
+  display: block;
+  position: absolute;
+  top: -1.5em;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.8em;
+}
+
+.aircraft-booking ::ng-deep .cal-day-column .cal-disabled {
+  background-color: #eee;
+  cursor: not-allowed;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 15px,
+    rgba(255, 153, 153, 0.1) 10px,
+    rgba(255, 153, 153, 0.1) 20px
+  );
+}
+.aircraft-booking ::ng-deep .cal-week-view {
+  overflow-x: scroll;
+  position: relative;
+}
+
+.aircraft-booking ::ng-deep .cal-week-view .cal-time-label-column {
+  position: relative;
+  left: 0;
+  top: 0;
+  background-color: initial;
+  z-index: 99;
+  box-shadow: 4px 0px 4px rgba(0, 0, 0, 0.2); /* Ajoutez une ombre pour séparer la colonne du contenu du calendrier */
+}
+
+
+.aircraft-booking ::ng-deep .oohbi .cal-event{
+  background-image: url("../../assets/img/oohbi.png") !important;
   background-repeat: no-repeat;
   background-position: bottom;
 }
-::ng-deep #oohbu.cal-event{
+.aircraft-booking ::ng-deep .oohbu .cal-event{
   background-image: url("../../assets/img/oohbu.png");
   background-repeat: no-repeat;
   background-position: bottom;
 
 }
-::ng-deep #oohby.cal-event{
+.aircraft-booking ::ng-deep .oohby .cal-event{
   background-image: url("../../assets/img/oohby.png");
   background-repeat: no-repeat;
   background-position: bottom;
 }
-::ng-deep #oohbq.cal-event{
+.aircraft-booking ::ng-deep .oohbq .cal-event{
   background-image: url("../../assets/img/oohbq.png");
   background-repeat: no-repeat;
   background-position: bottom;
 }
-::ng-deep .container.bg-light.border{
+.aircraft-booking ::ng-deep .container.bg-light.border{
   padding-left: 0 !important;
   margin-left: 30%;
 }
-.container{
+.aircraft-booking .container{
   max-width: 56% !important;
 }
+.aircraft-booking .cal-month-view .bg-pink,
+      .cal-week-view .cal-day-columns .bg-pink,
+      .cal-day-view .bg-pink {
+        background-color: hotpink !important;
+      }

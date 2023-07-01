@@ -1,0 +1,43 @@
+
+<div class="container-fluid">
+  <h2>Capture Fuel in Bowser</h2>
+  <div class="tk">
+    <h3 class="text"></h3>
+    <div class="lq" style="--fuelLevel: {{fuelLevel}}">
+      <div class="ring"></div>
+    </div>
+    <span class = "current-level">Current fuel level: {{fuelLevel}}</span>
+  </div>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Fuel Level</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let fuelMeasurement of fuelMeasurements">
+        <td>{{fuelMeasurement.Date_Measure}}</td>
+        <td>{{fuelMeasurement.Fuel_Quantity}} liters</td>
+        <td><button class="mat-icon-delete" (click)="deleteFuelMeasure(fuelMeasurement)"><mat-icon >delete</mat-icon></button></td>
+      </tr>
+    </tbody>
+  </table>
+  <button class="btn btn-primary" (click)="showAddForm = true">Add a new measure</button>
+  <div *ngIf="showAddForm">
+    <h3>Add a new fuel measurement</h3>
+    <form>
+      <div class="form-group">
+        <label for="date">Date:</label>
+        <input type="date" class="form-control" id="date" name="date" [(ngModel)]="start_date_measure">
+      </div>
+      <div class="form-group">
+        <label for="fuelLevel">Fuel Level:</label>
+        <input type="number" class="form-control" id="fuelLevel" name="fuelLevel" [(ngModel)]="fuel_quantity">
+      </div>
+      <button type="submit" class="btn btn-primary" (click)="addNewFuelMeasurement()">Save</button>
+      <button type="button" class="btn btn-secondary" (click)="showAddForm = false">Cancel</button>
+    </form>
+  </div>
+</div>

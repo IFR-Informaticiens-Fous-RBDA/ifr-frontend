@@ -11,16 +11,25 @@ import { CurrencyPipe } from '@angular/common';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { MatTableDataSource } from '@angular/material/table';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 export interface PilotShare{
   pilot: string,
   share: number
 }
 
+export interface LandingFee {
+  landing_fee_location: string,
+  landing_fee_amount: number,
+  landing_fee_paid: boolean
+}
+
+
 export interface DialogData {
   currentEvent: any
   currentUser: any
-  slot: any,
+  start: any,
+  end: any,
   aircraft_id: number,
   date_of_flight: any,
   departure_icao_code: any,
@@ -41,9 +50,11 @@ export interface DialogData {
   oil_added_after: any,
   fuel_added_before: any,
   fuel_added_after: any,
+  landing_fee: LandingFee
   passengers: any,
   remarks: any
 }
+
 
 @Component({
   selector: 'dialog-overview-example-dialog',
@@ -84,11 +95,15 @@ export class AddFlightDialogComponent {
   public fuel_location: string="EBFS"
   public landing_fee_location: string="EBFS"
   public fuel_invoice: number = 0
-  public landing_fee: number = 0
+  public landing_fee: LandingFee = {
+    landing_fee_amount: 0.0,
+    landing_fee_location: "",
+    landing_fee_paid: false
+  }
   public formatted_fuel_invoice!: string | null
   public formatted_landing_fee!: string | null
-  public departure_time: string = '09:00'
-  public arrival_time: string = '10:00'
+  public departure_time: string = ""
+  public arrival_time: string = ""
   public number_landings_day: number = 1
   public number_landings_night: number = 1
   public oil_added_after: number = 0.00
@@ -113,13 +128,43 @@ export class AddFlightDialogComponent {
     public dialogRef: MatDialogRef<AddFlightDialogComponent>,
     private _auth: AuthService,
     private _api: ApiService,
+    private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private _currencyPipe: CurrencyPipe
   ) {
   }
 
   ngOnInit(){
+    console.log(this.data.start)
 
+    const utcDeparture = Date.UTC(
+      this.data.start.getUTCFullYear(),
+      this.data.start.getUTCMonth(),
+      this.data.start.getUTCDate(),
+      this.data.start.getUTCHours(),
+      this.data.start.getUTCMinutes(),
+      this.data.start.getUTCSeconds(),
+      this.data.start.getUTCMilliseconds()
+    );
+    const departureDate = new Date(utcDeparture);
+    const timeString_departure = departureDate.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', timeZone: 'UTC'});
+
+    const [hours_departure, minutes_departure] = timeString_departure.split(':')
+    this.departure_time = `${hours_departure}:${minutes_departure}`
+
+    const utcArrival = Date.UTC(
+      this.data.end.getUTCFullYear(),
+      this.data.end.getUTCMonth(),
+      this.data.end.getUTCDate(),
+      this.data.end.getUTCHours(),
+      this.data.end.getUTCMinutes(),
+      this.data.end.getUTCSeconds(),
+      this.data.end.getUTCMilliseconds()
+    );
+    const arrivalDate = new Date(utcArrival);
+    const timeString_arrival = arrivalDate.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', timeZone: 'UTC'});
+    const [hours_arrival, minutes_arrival] = timeString_arrival.split(':')
+    this.arrival_time = `${hours_arrival}:${minutes_arrival}`
     this._api.getTypeRequest('user/all-members').subscribe((res: any) => {
       this.pilots = res.data
       this.pilotsList = this.pilots.map(function(pilot: { [x: string]: any; }) {
@@ -182,7 +227,9 @@ delete(index: any){
 }
 
   transformAmountFee(element: any){
-    this.formatted_landing_fee = this._currencyPipe.transform(this.landing_fee, 'EUR');
+    const amount = this.landing_fee.landing_fee_amount.toString().replace(/[^\d.-]/g, ''); // remove any non-numeric characters
+
+    this.formatted_landing_fee = this._currencyPipe.transform(amount, 'EUR');
   }
 
   private _filter(value: string) : string[] {
@@ -198,6 +245,22 @@ delete(index: any){
     })
 
   }
+
+  openConfirmationDialog(): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        message: 'Êtes-vous sûr des informations entrées ?'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.sendData();
+      }
+    });
+  }
+
+
 
   updateNightFlight(){
     if(this.isNightFlight){
@@ -216,11 +279,11 @@ delete(index: any){
     }
   }
   updateLandingFeePaid(){
-    if(this.landingFeePaid){
-      this.landingFeePaid = false
+    if(this.landing_fee.landing_fee_paid){
+      this.landing_fee.landing_fee_paid = false
     }
     else{
-      this.landingFeePaid = true
+      this.landing_fee.landing_fee_paid = true
     }
   }
   updateSharingPilots(){
@@ -270,6 +333,7 @@ delete(index: any){
   }
 
   sendData(){
+    console.log("je suis dans sendData")
     const instructor = this.instructors.find((instructor: { LastName: string; FirstName: string; id: any; }) =>{
         if(instructor.LastName + ' ' + instructor.FirstName === this.selectedInstructor){
           return instructor.id
@@ -310,6 +374,8 @@ delete(index: any){
     this.data.oil_added_after = this.oil_added_after
     this.data.fuel_added_before = this.fuel_added_before
     this.data.fuel_added_after = this.fuel_added_after
+    this.landing_fee.landing_fee_amount = parseFloat(this.landing_fee.landing_fee_amount.toString().replace('€', ''));
+    this.data.landing_fee = this.landing_fee
     this.data.passengers = this.passengers
     this.data.remarks = this.remarks
 

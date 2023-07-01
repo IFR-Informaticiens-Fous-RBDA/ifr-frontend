@@ -42,6 +42,7 @@ export class FlightsComponent implements OnInit, AfterViewInit {
         this.dataSource = new MatTableDataSource(result.data)
         this.dataSource.data = this.dataSource.data.filter((item: { isLogged: any; isMaintenance: number }) => item.isLogged === 0 && (item.isMaintenance === 0 || item.isMaintenance === null))
         this.dataSource.data.forEach(function(element : any){
+          console.log(element)
           element.date_depart = new Date(element.date_depart)
           element.date_arrivee = new Date(element.date_arrivee)
 
@@ -67,6 +68,8 @@ export class FlightsComponent implements OnInit, AfterViewInit {
         this.dataSource = new MatTableDataSource(result.data)
         this.dataSource.data = this.dataSource.data.filter((item: { isLogged: any; isMaintenance: number }) => item.isLogged === 0 && (item.isMaintenance === 0 || item.isMaintenance === null))
         this.dataSource.data.forEach(function(element : any){
+          console.log(element)
+
           element.date_depart = new Date(element.date_depart)
           element.date_arrivee = new Date(element.date_arrivee)
 
@@ -130,10 +133,13 @@ export class FlightsComponent implements OnInit, AfterViewInit {
     this.legs_index = index
   }
   cancelFlight(element: any, index:any){
+    console.log(element)
     this.spinner.show()
-    this._api.getTypeRequest('event/delete-event/' + element.id).subscribe((res:any) => {
-      this._socket.reloadForEveryone()
-      this.spinner.hide()
+    this._api.postTypeRequest('flights/unground-me/', element).subscribe((res:any) => {
+      this._api.getTypeRequest('event/delete-event/' + element.id).subscribe((resu:any) => {
+        this._socket.reloadForEveryone()
+        this.spinner.hide()
+      })
     })
   }
   logFlight(element:any, index:any){
@@ -143,7 +149,8 @@ export class FlightsComponent implements OnInit, AfterViewInit {
       data: {
         currentEvent: element,
         currentUser: this.currentUser[0],
-        slot: element.date_depart,
+        start: element.date_depart,
+        end: element.date_arrivee,
         aircraft_id: element.aircraft_id,
         legs_number: this.legs_number[this.legs_index],
         legs_index: this.legs_index
@@ -151,6 +158,7 @@ export class FlightsComponent implements OnInit, AfterViewInit {
       disableClose: true
     });
     dialogRef.afterClosed().subscribe(result =>{
+      console.log(result)
       delete result['currentUser']
       if(this.legs_number[this.legs_index] > 1){
         this._api.postTypeRequest('flights/log-leg', result).subscribe((result:any) => {
@@ -168,6 +176,8 @@ export class FlightsComponent implements OnInit, AfterViewInit {
       if(result != undefined && this.legs_number[this.legs_index] === 1){
         this.selectedInstructor = result.instructor
         this._api.postTypeRequest('flights/log-flight', result).subscribe((result:any) => {
+          console.log("result log flight")
+          console.log(result)
           element.IsActive = result.data[0].IsActive
           this.dataSource.data = this.dataSource.data.map((item: { registration: any; }) => {
             if(item.registration === element.registration){

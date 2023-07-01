@@ -184,16 +184,16 @@
     <p>Landing location</p>
     <mat-form-field class = "example-full-width" appearance="fill">
       <mat-label>Location</mat-label>
-      <input matInput placeholder="Ex.EBFS" [(ngModel)] = "landing_fee_location">
+      <input matInput placeholder="Ex.EBFS" [(ngModel)] = "landing_fee.landing_fee_location">
     </mat-form-field>
     <p>Landing fee</p>
     <mat-form-field class = "example-full-width" appearance="fill">
       <mat-label>Fee</mat-label>
-      <input matInput type="text" [(ngModel)] = "landing_fee" (blur)="transformAmountFee($event)" [value] = "formatted_landing_fee">
+      <input matInput type="text" [(ngModel)] = "landing_fee.landing_fee_amount" (blur)="transformAmountFee($event)" [value] = "formatted_landing_fee">
     </mat-form-field>
-    <p><mat-checkbox *ngIf = "landing_fee > 0" [checked] = "landingFeePaid"  (change) = "updateLandingFeePaid()">Landing fee paid?</mat-checkbox></p>
+    <p><mat-checkbox *ngIf = "+landing_fee.landing_fee_amount > 0" [checked] = "landing_fee.landing_fee_paid"  (change) = "updateLandingFeePaid()">Landing fee paid?</mat-checkbox></p>
   </div>
-  <p><mat-checkbox [checked] = "hasSharing" (change) = "updateSharingPilots()" >Pilots members sharing flight?</mat-checkbox></p>
+  <!-- A GARDER PEUT ETRE POUR PLUS TARD<p><mat-checkbox [checked] = "hasSharing" (change) = "updateSharingPilots()" >Pilots members sharing flight?</mat-checkbox></p>
   <div  *ngIf = "hasSharing" >
     <mat-form-field id = "pilotText">
       <mat-label>Pilot to add</mat-label>
@@ -236,18 +236,18 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>
-  <br/>
+  <br/>-->
 
   <p>POB</p>
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Persons on board</mat-label>
     <input matInput type="number" [(ngModel)] = "total_pob">
   </mat-form-field>
-  <p>Passengers name</p>
+  <!-- Peut être garder pour plus tard? <p>Passengers name</p>
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Passengers names</mat-label>
     <input matInput placeholder="Ex. Philippe" [(ngModel)] = "passengers">
-  </mat-form-field>
+  </mat-form-field>-->
   <p>Remarks</p>
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Remarks</mat-label>
@@ -260,5 +260,5 @@
   </mat-form-field>
   <div mat-dialog-actions>
   <button class = "btn btn-danger" mat-button (click)="onNoClick()">Annuler</button>
-  <button class = "btn btn-success" mat-button (click)="sendData()" [disabled]="!selectedNature || !selectedRunway || !engine_end" cdkFocusInitial>Valider</button>
+  <button class = "btn btn-success" mat-button (click)="openConfirmationDialog()" [disabled]="!selectedNature || !selectedRunway || !engine_end" cdkFocusInitial>Valider</button>
 </div>

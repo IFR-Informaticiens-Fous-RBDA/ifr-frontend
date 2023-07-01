@@ -1,0 +1,63 @@
+::ng-deep .my-card
+{
+    position:absolute;
+    left:40%;
+    top:-20px;
+    border-radius:50%;
+}
+::ng-deep .oohbi{
+  border-color: #f9d923 !important;
+}
+::ng-deep .oohbu{
+  border-color: #ab46d2 !important;
+}
+::ng-deep .oohby{
+  border-color: #36ae7c !important;
+}
+::ng-deep .oohbq{
+  border-color: #187498 !important;
+}
+::ng-deep .oohbi .card{
+  border-color: #f9d923 !important;
+}
+::ng-deep .oohbu .card{
+  border-color: #ab46d2 !important;
+}
+::ng-deep .oohby .card{
+  border-color: #36ae7c !important;
+}
+::ng-deep .oohbq .card{
+  border-color: #187498 !important;
+}
+
+::ng-deep .oohbi .text-center{
+  color: #f9d923 !important;
+}
+::ng-deep .oohbu .text-center{
+  color: #ab46d2 !important;
+}
+::ng-deep .oohby .text-center{
+  color: #36ae7c !important;
+}
+::ng-deep .oohbq .text-center{
+  color: #187498 !important;
+}
+
+::ng-deep .bold{
+  font-weight: bold !important;
+}
+
+
+::ng-deep .card .card{
+  height: 50px;
+  width: 50px;
+}
+
+table {
+  width: 100%;
+}
+::ng-deep button.mat-icon-delete{
+  border: none;
+  background-color: white;
+  color: red;
+}

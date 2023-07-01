@@ -75,7 +75,14 @@ import { MembersManagementComponent } from './members-management/members-managem
 import { AddDutyPilotNeededDialogComponent } from './add-duty-pilot-needed-dialog/add-duty-pilot-needed-dialog.component';
 import { NotAuthorizedHandlerComponent } from './not-authorized-handler/not-authorized-handler.component';
 import { AircraftPotentialComponent } from './aircraft-potential/aircraft-potential.component';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { FlyingCostFuelConsumptionComponent } from './flying-cost-fuel-consumption/flying-cost-fuel-consumption.component';
+import { FuelManagementComponent } from './fuel-management/fuel-management.component';
 
+import {MatExpansionModule} from '@angular/material/expansion';
+import { FlightInvoicesComponent } from './flight-invoices/flight-invoices.component';
+import { FuelTankManagementComponent } from './fuel-tank-management/fuel-tank-management.component';
+import { FuelDeliveryManagementComponent } from './fuel-delivery-management/fuel-delivery-management.component';
 
 
 
@@ -113,6 +120,12 @@ const config: SocketIoConfig = {
     AddDutyPilotNeededDialogComponent,
     NotAuthorizedHandlerComponent,
     AircraftPotentialComponent,
+    ConfirmationDialogComponent,
+    FlyingCostFuelConsumptionComponent,
+    FuelManagementComponent,
+    FlightInvoicesComponent,
+    FuelTankManagementComponent,
+    FuelDeliveryManagementComponent,
   ],
   exports: [AppComponent],
   imports: [
@@ -124,6 +137,7 @@ const config: SocketIoConfig = {
     ToastModule,
     MatCheckboxModule,
     ConfirmPopupModule,
+    MatExpansionModule,
     MatDatepickerModule,
     DialogModule,
     MatAutocompleteModule,

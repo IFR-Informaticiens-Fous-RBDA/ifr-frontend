@@ -1,4 +1,4 @@
-<mat-form-field id = "editMember">
+<!--<mat-form-field id = "editMember">
   <mat-label>Edit member by name</mat-label>
     <input type="text"
         matInput
@@ -7,8 +7,8 @@
         [(ngModel)]="selectedMember"
         [matAutocomplete]="auto2">
     <mat-autocomplete autoActiveFirstOption #auto2="matAutocomplete" >
-      <mat-option *ngFor="let member of filteredMember | async" [value]="member" (click)="selectMember()">
-        {{member}}
+      <mat-option *ngFor="let member of filteredMember | async" [value]="member.fullname" (click)="selectMember(member)">
+        {{member.fullname}}
       </mat-option>
     </mat-autocomplete>
 </mat-form-field>
@@ -41,8 +41,9 @@
           <div class="row mt-3">
               <div class="col-md-6"><label class="labels">Country</label><input type="text" *ngIf = "userInfo" class="form-control" [(ngModel)]="userInfo.Country" value="{{userInfo.Country}}"></div>
               <div class="col-md-6"><label class="labels">City</label><input type="text" *ngIf = "userInfo" class="form-control" [(ngModel)]="userInfo.City" value="{{userInfo.City}}"></div>
-          </div>
+          </div>-->
           <!-- Modal HTML -->
+          <!--
           <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button" (click)="confirm($event)" pButton icon="pi pi-check">Save Profile</button></div>
       </div>
   </div>
@@ -106,7 +107,7 @@
   </div>
 </div>
 
-<div *ngIf = "addMemberClicked && selectMember.length === 0" class = "row">
+<div *ngIf = "addMemberClicked" class = "row">
   <div class="col">
     <div class="p-3 py-5">
       <div class="row mt-2">
@@ -136,4 +137,86 @@
 
 <p-toast></p-toast>
 <p-confirmPopup></p-confirmPopup>
+-->
+
+<mat-form-field appearance="fill">
+  <mat-label>Filter</mat-label>
+  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search...">
+</mat-form-field>
+
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+  <ng-container matColumnDef="lastname">
+    <th mat-header-cell *matHeaderCellDef>Last Name</th>
+    <td mat-cell *matCellDef="let element">{{ element.LastName }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="firstname">
+    <th mat-header-cell *matHeaderCellDef>First Name</th>
+    <td mat-cell *matCellDef="let element">{{ element.FirstName }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="nationalNumber">
+    <th mat-header-cell *matHeaderCellDef>National Number</th>
+    <td mat-cell *matCellDef="let element">{{ element.National_Number }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="ciNumber">
+    <th mat-header-cell *matHeaderCellDef>CI Number</th>
+    <td mat-cell *matCellDef="let element">{{ element.CI_Number }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="address">
+    <th mat-header-cell *matHeaderCellDef>Address</th>
+    <td mat-cell *matCellDef="let element">{{ element.Address }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="homeNumber">
+    <th mat-header-cell *matHeaderCellDef>Home Number</th>
+    <td mat-cell *matCellDef="let element">{{ element.Home_Number }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="postalCode">
+    <th mat-header-cell *matHeaderCellDef>Postal Code</th>
+    <td mat-cell *matCellDef="let element">{{ element.Postal_Code }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="city">
+    <th mat-header-cell *matHeaderCellDef>City</th>
+    <td mat-cell *matCellDef="let element">{{ element.City }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="country">
+    <th mat-header-cell *matHeaderCellDef>Country</th>
+    <td mat-cell *matCellDef="let element">{{ element.Country }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="gsmNumber">
+    <th mat-header-cell *matHeaderCellDef>GSM Number</th>
+    <td mat-cell *matCellDef="let element">{{ element.GSM_Number }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="admissionDate">
+    <th mat-header-cell *matHeaderCellDef>Admission Date</th>
+    <td mat-cell *matCellDef="let element">{{ element.Member-Since | date }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="category">
+    <th mat-header-cell *matHeaderCellDef>Category</th>
+    <td mat-cell *matCellDef="let element">{{ element.Category_Name }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="email">
+    <th mat-header-cell *matHeaderCellDef>Email</th>
+    <td mat-cell *matCellDef="let element">{{ element.email }}</td>
+  </ng-container>
+
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+<mat-paginator #paginator [pageSizeOptions]="[10, 20, 50, 100]"
+showFirstLastButtons></mat-paginator>
+
+<button class = "btn btn-primary" (click) = "exportExcel()">Export<mat-icon>file_download</mat-icon></button>
 

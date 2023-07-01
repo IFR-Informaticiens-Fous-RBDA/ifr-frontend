@@ -1,0 +1,7 @@
+<div class="overlay" *ngIf="showConfirmation">
+  <div class="confirmation-dialog">
+    <h2>Êtes-vous sûr des informations entrées ?</h2>
+    <button class="btn btn-secondary" (click)="cancelConfirmation()">Annuler</button>
+    <button class="btn btn-success" (click)="confirmAction()">Confirmer</button>
+  </div>
+</div>

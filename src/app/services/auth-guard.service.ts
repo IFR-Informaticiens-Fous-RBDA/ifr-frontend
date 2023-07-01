@@ -30,6 +30,7 @@ export class AuthGuardService {
       if(route.data.operationalAvailability){
         let current_user= await this._authService.getUserDetails()
         this.res = await this._api.getTypeRequest('user/member-id/' + current_user[0].id).toPromise()
+        console.log(this.res)
         let member_id = this.res.data[0].ID_Member
 
         this.res2 = await this._api.getTypeRequest('user/operational-availability/' + current_user[0].id + '/' + member_id).toPromise()

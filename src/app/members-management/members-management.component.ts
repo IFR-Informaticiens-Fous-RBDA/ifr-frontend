@@ -1,226 +1,64 @@
-import { ChangeDetectionStrategy, Component, NgZone, OnInit } from '@angular/core';
-import { ApiService } from 'src/app/services/api.service';
-import {ConfirmationService, MessageService, PrimeNGConfig} from 'primeng/api';
-import { Observable } from 'rxjs';
-import { FormControl, Validators } from '@angular/forms';
-import { map, startWith } from 'rxjs/operators';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { ApiService } from '../services/api.service';
+import { TableUtil } from '../flights-management/tableUtil';
 
-
-export interface UserInfoFormData{
-  newRoles: any,
-  isEditRole: boolean,
-  Account_id: number,
-  Member_id: number
-  FirstName: string,
-  LastName: string,
-  Phone_Number: string,
-  Address: string,
-  Postal_Code: number,
-  EMail: string,
-  Country: string,
-  City: string,
-  License_validity: Date,
-  Sep_validity: Date,
-  Medical_class_validity: Date,
-  Piper_validity: Date
+export interface Member {
+  LastName: string;
+  FirstName: string;
+  National_Number: string;
+  CI_Number: string;
+  Address: string;
+  Home_Number: string;
+  Postal_Code: string;
+  City: string;
+  Country: string;
+  GSM_Number: string;
+  EMail: string;
+  Member_Since: string;
 }
-
-export interface UserToAdd{
-  FirstName : string,
-  LastName : string,
-  Member_Category : string,
-  Member_Since : Date
-}
-
 
 @Component({
-  selector: 'app-profile',
+  selector: 'app-members',
   templateUrl: './members-management.component.html',
-  providers: [ConfirmationService, MessageService],
-  styleUrls: ['./members-management.component.css'],
+  styleUrls: ['./members-management.component.css']
 })
-
 export class MembersManagementComponent implements OnInit {
 
-  public protectedData: any
-  public loading: boolean = false
-  public userInfo!: UserInfoFormData
-  public isEdit: boolean = true
-  public isEditRole: boolean = true
-  public updateCompleted: boolean = false
-  public selectedMember: any
-  public members: any
-  public membersList : string[] = []
-  public filteredMember!: Observable<string[]>
-  public selectedMemberBool = false
-  public addMemberClicked = false
-  public selectedMemberCategory = ""
-  public rolesForm = new FormControl()
-  public roles: any
-  public rolesList: string[] = []
-  public currentUserRoles: string[] = []
-  public memberControl = new FormControl('')
-  public currentUserID: any
+  displayedColumns: string[] = ['lastname', 'firstname', 'nationalNumber', 'ciNumber', 'address', 'homeNumber', 'postalCode', 'city', 'country', 'gsmNumber', 'admissionDate', 'category','email'];
+  dataSource: MatTableDataSource<any> | undefined;
 
-  public firstName = ""
-  public avia_number = 0
-  public lastname = ""
-  public member_category = ""
-  public member_since = new Date()
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator | null = null;
 
-  public categories : any
-  public categoriesList: any[] = []
+  constructor(private _api: ApiService) {
+  }
 
-  public userToAdd! : UserToAdd
-  public url : any
-  public member_id: any;
-  public categoryDescription: string = "";
-
-  constructor(
-    private _api: ApiService,
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService,
-    private primengConfig: PrimeNGConfig,
-    private ngZone: NgZone
-
-  ) { }
-
-  ngOnInit(): void {
-    this.userToAdd = {
-      FirstName : "",
-      LastName : "",
-      Member_Category : "",
-      Member_Since : new Date()
-    }
-    this._api.getTypeRequest('user/all-categories').subscribe((res : any) =>
-    {
-      this.categories = res.data;
-      for(var i = 0; i < this.categories.length; i++){
-        this.categoriesList.push([this.categories[i].Category_Name, this.categories[i].Description])
+  ngOnInit() {
+    this._api.getTypeRequest('user/all-members-full').subscribe((data: any) => {
+      if (data.status === 1) {
+        this.dataSource = new MatTableDataSource<Member>(data.data);
+        console.log(data)
+        this.dataSource.paginator = this.paginator;
+      } else {
+        console.error('Unable to fetch data');
       }
     });
-    this._api.getTypeRequest('user/all-members').subscribe((res: any) => {
-      this.members = res.data;
-      for(var i = 0; i < this.members.length; i++){
-        this.membersList.push(this.members[i].fullname)
-      }
-    })
-    this._api.getTypeRequest('user/all-roles').subscribe((res: any) => {
-      this.roles = res.data;
-      for(var i = 0; i < this.roles.length; i++){
-        this.rolesList.push(this.roles[i].Role_Name)
-      }
-    })
-    this.filteredMember = this.memberControl.valueChanges.pipe(
-      startWith(''),
-      map((value: any) => value.length >= 1 ? this._filter(value || ''): []),
-    );
-    this.primengConfig.ripple = true;
-
   }
 
-  async selectMember(){
-    this.selectedMemberBool = true
-
-    const data_id: any = await this._api.getTypeRequest('user/member-by-name/' + (this.selectedMember.split(" ").length < 3 ? this.selectedMember.split(" ")[0] + '/' + this.selectedMember.split(" ")[1] : this.selectedMember.split(" ")[0] + ' ' + this.selectedMember.split(" ")[1]+ '/' + this.selectedMember.split(" ")[2])).toPromise()
-
-    this.member_id = data_id.data[0].ID
-
-    const data_info_member: any = await this._api.getTypeRequest('user/info-member/' + this.member_id).toPromise()
-
-    this.userInfo = data_info_member.data[0]
-
-    const data_account_id: any = await this._api.getTypeRequest('user/account-id/' + this.member_id).toPromise()
-
-    this.currentUserID = data_account_id.data[0].ID
-
-    const data_current_user_role: any = await this._api.getTypeRequest('user/role/' + this.currentUserID).toPromise()
-
-    data_current_user_role.data.forEach((element: any) => {
-      this.currentUserRoles.push(element.Role_Name)
-    })
-
-    this.rolesForm = new FormControl({value: this.currentUserRoles, disabled: true}, Validators.required)
-
+  applyFilter(filterValue: string) {
+    this.dataSource!.filter = filterValue.trim().toLowerCase();
   }
 
-  selectCategory(){
-    this.categoryDescription = this.selectedMemberCategory[1]
-  }
-  private _filter(value: string) : string[] {
-    const filterValue = value.toLowerCase()
-
-    return this.membersList.filter(member => member.toLowerCase().includes(filterValue))
-  }
-
-  onSelectFile(event: any){
-    if(event.target.files && event.target.files[0]){
-      var reader = new FileReader();
-
-      reader.readAsDataURL(event.target.files[0])
-
-      reader.onload = (event) => {
-        this.url = event.target?.result
-      }
+  exportExcel(): void{
+    const data = []
+    console.log(this.dataSource)
+    for(let i = 0; i < this.dataSource!.filteredData.length; i++){
+      data.push(this.dataSource!.filteredData[i])
     }
+    console.log(data)
+    const copy = JSON.parse(JSON.stringify(data)) as typeof data // deep copy because it also changed the data source values.
+    TableUtil.exportArrayToExcel(copy, "rbda_members_list")
   }
-  editQualifications(){
-    if(this.isEdit){
-      this.isEdit = false
-    }
-    else{
-      this.isEdit = true
-    }
-  }
-  editRoles(){
-    if(this.isEditRole){
-      this.isEditRole = false
-    }
-    else{
-      this.isEditRole = true
-    }
-  }
-  delete(){
-    this.url = null
-  }
-  async confirm(event: Event) {
-    const rolesID = await this._api.postTypeRequest('user/role-by-name', this.rolesForm.value).toPromise()
-    this.userInfo.newRoles = rolesID
-    this.userInfo.Member_id = this.member_id
-    this.userInfo.Account_id = this.currentUserID
-    this.userInfo.isEditRole = this.isEditRole
-    this._api.postTypeRequest('user/update', this.userInfo).subscribe((res:any) => {
-      if(res.status){
-        this.messageService.add({severity:'success', summary:'Success', detail:'The member has been updated successfully.'});
-      }
-      else{
-        this.messageService.add({severity:'error', summary:'Rejected', detail:'Something went wrong. Please contact one of the website\'s administrators.'});
 
-      }
-    })
-
-
-
-}
-
-sendNewMember(){
-  this.userToAdd.FirstName = this.firstName
-  this.userToAdd.LastName = this.lastname
-  this.userToAdd.Member_Category = this.selectedMemberCategory[0]
-  this.userToAdd.Member_Since = this.member_since
-
-  this._api.postTypeRequest('user/add-member', this.userToAdd).subscribe((res: any) => {
-
-    if(res.status){
-      this.messageService.add({severity:'success', summary:'Success', detail:'Member added to the database'});
-    }
-    else{
-      this.messageService.add({severity:'error', summary:'Rejected', detail:'Something went wrong. Please contact one of the website\'s administrators.'});
-    }
-  })
-}
-
-  addNewMember(){
-    this.addMemberClicked ? this.addMemberClicked = false : this.addMemberClicked = true
-  }
 }

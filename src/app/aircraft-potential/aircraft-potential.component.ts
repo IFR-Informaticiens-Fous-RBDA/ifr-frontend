@@ -36,7 +36,8 @@ export class AircraftPotentialComponent implements OnInit {
   roleUser: any
   aircraft_id: any
   inspection: boolean = false
-  aircrafts: string[] = []
+  aircrafts: any[] = [];
+
   selectedAircraft: string = ""
   engine_last_start: any
   reason: string = ""
@@ -81,6 +82,11 @@ export class AircraftPotentialComponent implements OnInit {
       })
     })
 
+    this._api.getTypeRequest('aircraft/all').subscribe((res:any) => {
+      this.aircrafts = res.data
+      console.log(this.aircrafts)
+    })
+
     this._auth.getUserDetails().then(currentUser => {
       this.currentUser = currentUser
 
@@ -103,54 +109,44 @@ export class AircraftPotentialComponent implements OnInit {
 
   }
 
-  async computeFlightTime(completedInspection: any[]){
-    for(var i = 0; i < completedInspection.length; i++){
 
-      let result: any = await this._api.getTypeRequest('flights/last-flight/' + completedInspection[i].aircraft_id).toPromise()
-      let body = {start: result.data[0].Engine_Stop, end: completedInspection[i].hour_meter}
-      this.time_before_inspection = await this._api.postTypeRequest('flights/computeFlightTime', body).toPromise()
-      this.aircrafts_potential = [
-        ...this.aircrafts_potential,
-        {
-          aircraft_id: completedInspection[i].aircraft_id,
-          time_left: this.time_before_inspection
-        }
-      ]
-      if(completedInspection[i].aircraft_id === 1){
-        this.bi_potential = this.time_before_inspection.flight_time
-      }
-      if(completedInspection[i].aircraft_id === 2){
-        this.bu_potential = this.time_before_inspection.flight_time
-      }
-      if(completedInspection[i].aircraft_id === 3){
-        this.by_potential = this.time_before_inspection.flight_time
-      }
-      if(completedInspection[i].aircraft_id === 4){
-        this.bq_potential = this.time_before_inspection.flight_time
+  async computeFlightTime(completedInspection: any[]) {
+    let aircraftToUpdate: any;
+    for (var i = 0; i < completedInspection.length; i++) {
+      let result: any = await this._api.getTypeRequest('flights/last-flight/' + completedInspection[i].aircraft_id).toPromise();
+      let body = { start: result.data[0].Engine_Stop, end: completedInspection[i].hour_meter };
+      this.time_before_inspection = await this._api.postTypeRequest('flights/computeFlightTime', body).toPromise();
+
+      console.log(completedInspection)
+      console.log(this.aircrafts)
+
+      let aircraftToUpdate = this.aircrafts.find((aircraft) => aircraft.registration === completedInspection[i].Registration);
+      console.log(aircraftToUpdate)
+      if (aircraftToUpdate) {
+        console.log(this.time_before_inspection)
+        aircraftToUpdate.potential = this.time_before_inspection.flight_time;
+      } else {
+        console.warn(`Could not find aircraft with ID ${completedInspection[i].aircraft_id} to update potential flight time.`);
       }
     }
-    if(completedInspection.find(element => element.aircraft_id === 1) === undefined){
-      this.bi_potential = ''
-    }
-    if(completedInspection.find(element => element.aircraft_id === 2) === undefined){
-      this.bu_potential = ''
-    }
-    if(completedInspection.find(element => element.aircraft_id === 3) === undefined){
-      this.by_potential = ''
-    }
-    if(completedInspection.find(element => element.aircraft_id === 4) === undefined){
-      this.bq_potential = ''
-    }
 
-
-
+    this.aircrafts.forEach((aircraft) => {
+      if (completedInspection.find((element) => element.Registration === aircraft.registration) === undefined) {
+        aircraft.potential = '';
+      }
+      else{
+        if(aircraftToUpdate)
+         aircraft.potential = aircraftToUpdate.potential
+      }
+    });
   }
+
+
+
 
   defineInspection(){
     this.inspection = true
-    this._api.getTypeRequest('aircraft/all').subscribe((res:any) => {
-      this.aircrafts = res.data
-    })
+
 
   }
 

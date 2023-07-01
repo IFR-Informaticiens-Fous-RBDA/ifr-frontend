@@ -1,36 +1,16 @@
 
 <div class="jumbotron">
-<div class="row w-100">
-        <div class="col-md-3">
-            <div class="card border-info mx-sm-1 p-3 oohbi">
-                <div class="card border-info shadow text-info p-3 my-card" ><img src="../../assets/img/cessna icon.png" width = "16" height = "16"></div>
-                <div class="text-center mt-3"><h4 class = "toohbi">OO-HBI</h4></div>
-                <div *ngIf = "bi_potential != ''" class="text-center mt-2"><p>{{bi_potential}}</p> heure(s) de temps de vol avant la prochaine inspection</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-success mx-sm-1 p-3 oohbu">
-                <div class="card border-success shadow text-success p-3 my-card"><img src="../../assets/img/cessna icon.png" width = "16" height = "16"></div>
-                <div class="text-center mt-3"><h4 class = "toohbu">OO-HBU</h4></div>
-                <div *ngIf = "bu_potential != ''" class="text-center mt-2"><p>{{bu_potential}}</p> heure(s) de temps de vol avant la prochaine inspection</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-danger mx-sm-1 p-3 oohby">
-                <div class="card border-danger shadow text-danger p-3 my-card" ><img src="../../assets/img/cessna icon.png" width = "16" height = "16"></div>
-                <div class="text-center mt-3"><h4 class = "toohby">OO-HBY</h4></div>
-                <div *ngIf = "by_potential != ''" class="text-center mt-2"><p>{{by_potential}}</p> heure(s) de temps de vol avant la prochaine inspection</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-warning mx-sm-1 p-3 oohbq">
-                <div class="card border-warning shadow text-warning p-3 my-card" ><img src="../../assets/img/cub.png" style="margin-top: 0.2rem;"width = "16" height = "6.42"></div>
-                <div class="text-center mt-3"><h4 class = "toohbq">OO-HBQ</h4></div>
-                <div *ngIf = "bq_potential != ''" class="text-center mt-2"><p>{{bq_potential}}</p> heure(s) de temps de vol avant la prochaine inspection</div>
-              </div>
-        </div>
-     </div>
+  <div class="row w-100">
+    <div class="col-md-3" *ngFor="let aircraft of aircrafts">
+      <div class="card mx-sm-1 p-3" [ngStyle]="{'border': '2px solid ' + aircraft.Color_secondary}">
+        <div class="card shadow text-info p-3 my-card" [ngStyle]="{'border': '2px solid ' + aircraft.Color_secondary}"><img src="../../assets/img/cessna icon.png" width="16" height="16"></div>
+        <div class="text-center mt-3"><h4 >{{ aircraft.registration }}</h4></div>
+        <div *ngIf="aircraft.potential !== ''" class="text-center mt-2"><p>{{ aircraft.potential }}</p> heure(s) de temps de vol avant la prochaine inspection</div>
+      </div>
+    </div>
+  </div>
 </div>
+
 <button *ngIf = "allRoles.includes('Aircrafts manager')" (click) = "defineInspection()" class = "btn btn-success">Define Aircraft Potential</button>
 <div *ngIf = "inspection">
   <div class = "row">

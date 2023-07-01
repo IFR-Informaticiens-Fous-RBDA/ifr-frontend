@@ -14,81 +14,87 @@ dd
 </div>-->
 
 <body>
+<div class = "aircraft-booking">
+  <div class="container calendar">
+    <div class = "inline"><h3>{{ viewDate | calendarDate:('weekViewTitle') }}</h3>
+    <button mat-icon-button [matMenuTriggerFor]="appMenu">
+      <mat-icon>calendar_today</mat-icon>
+    </button></div>
+    <mat-menu #appMenu="matMenu">
+      <div (click)="$event.stopPropagation()">
+        <mat-calendar #calendar
+            (selectedChange)="updateView($event)" >
+        </mat-calendar>
+      </div>
+    </mat-menu>
 
-<div class="container calendar">
-  <div class = "inline"><h3>{{ viewDate | calendarDate:('weekViewTitle') }}</h3>
-  <button mat-icon-button [matMenuTriggerFor]="appMenu">
-    <mat-icon>calendar_today</mat-icon>
-  </button></div>
-  <mat-menu #appMenu="matMenu">
-    <div (click)="$event.stopPropagation()">
-       <mat-calendar #calendar
-          (selectedChange)="updateView($event)" >
-       </mat-calendar>
+
+    <div class="row" style="width: 100%">
+
+        <div class="col-md-6" style="margin-left: 2rem;">
+
+          <div class="btn-group">
+            <div
+              class="btn btn-primary"
+              mwlCalendarPreviousView
+              [view]="'week'"
+              [(viewDate)]="viewDate"
+              [excludeDays]="excludeDays"
+              (click)="changeDate()"
+            >
+              Previous
+            </div>
+            <div
+              class="btn btn-outline-secondary"
+              mwlCalendarToday
+              [(viewDate)]="viewDate"
+            >
+              Today
+            </div>
+            <div
+              class="btn btn-primary"
+              mwlCalendarNextView
+              [view]="'week'"
+              [(viewDate)]="viewDate"
+              [excludeDays]="excludeDays"
+              (click)="changeDate()"
+
+            >
+              Next
+            </div>
+          </div>
+
+        </div>
+        <div class="filters-container">
+          <div class="filter-buttons">
+            <div class="p-2"><mat-icon>filter_list_alt</mat-icon></div>
+            <div class="p-2"><div class="btn btn-primary" (click)="changeViewToFullWeek()">Full Week</div></div>
+            <div class="p-2"><div class="btn btn-primary" (click)="changeViewToWeek()">Week only</div></div>
+            <div class="p-2"><div class="btn btn-primary" (click)="changeViewToWeekend()">Week-end only</div></div>
+            <div class="p-2"><button (click)="changeView()" [routerLink]="['duty-pilot']" routerLinkActive="active" class="btn btn-primary">Duty Pilot Booking</button></div>
+          </div>
+        </div>
+
     </div>
-  </mat-menu>
-
-
-  <div class="row" style="width: 100%">
-
-      <div class="col-md-6" style="margin-left: 2rem;">
-
-        <div class="btn-group">
-          <div
-            class="btn btn-primary"
-            mwlCalendarPreviousView
-            [view]="'week'"
-            [(viewDate)]="viewDate"
-            [excludeDays]="excludeDays"
-          >
-            Previous
-          </div>
-          <div
-            class="btn btn-outline-secondary"
-            mwlCalendarToday
-            [(viewDate)]="viewDate"
-          >
-            Today
-          </div>
-          <div
-            class="btn btn-primary"
-            mwlCalendarNextView
-            [view]="'week'"
-            [(viewDate)]="viewDate"
-            [excludeDays]="excludeDays"
-          >
-            Next
-          </div>
-        </div>
-
-      </div>
-      <div class = "container px-0 bg-light border">
-        <div class="d-flex">
-          <div class="p-2"><mat-icon>filter_list_alt</mat-icon></div>
-          <div class ="p-2"><div class="btn btn-primary" (click)="changeViewToFullWeek()">Full Week</div></div>
-          <div class="p-2"><div class = "btn btn-primary" (click)="changeViewToWeek()">Week only</div></div>
-          <div class="p-2"><div class = "btn btn-primary" (click)="changeViewToWeekend()">Week-end only</div></div>
-          <div class = "p-2"><button (click) = "changeView()" [routerLink]="['duty-pilot']" routerLinkActive="active" class = "btn btn-primary">Duty Pilot Booking</button></div>
-        </div>
-      </div>
   </div>
-</div>
-<br />
+  <br />
 
-<div class ="my-calendar"><ngx-spinner type="ball-clip-rotate-multiple"></ngx-spinner>
-  <mwl-calendar-week-view [viewDate]="viewDate" [daysInWeek]="daysInWeek" [dayStartHour]="8" [dayEndHour]="20" [events]= "events" [excludeDays]="excludeDays" (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="addEventDialog($event)"
-(hourSegmentClicked)="addEventDialog($event)" (eventClicked)="updateEventDialog($event)" [refresh]="refresh"></mwl-calendar-week-view></div>
-
-
-<div class="dots">
-  <span class="dotBI"></span>OO-HBI
-  <span class="dotBU"></span>OO-HBU
-  <span class="dotBY"></span>OO-HBY
-  <span class="dotBQ"></span>OO-HBQ
+<div [class.loading]="!isDOMLoaded">
+  <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false"></ngx-spinner>
+  <mwl-calendar-week-view #weekView [viewDate]="viewDate" [daysInWeek]="daysInWeek" [dayStartHour]="8" [dayEndHour]="20" [events]="events" [excludeDays]="excludeDays" (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="addEventDialog($event)" (hourSegmentClicked)="addEventDialog($event)" (eventClicked)="updateEventDialog($event)" [refresh]="refresh" (beforeViewRender)="beforeViewRender($event)"class="my-calendar" [style.opacity]="isDOMLoaded ? 1 : 0">
+  </mwl-calendar-week-view>
 </div>
 
-<!--ERROR HANDLING-->
-<p-toast></p-toast>
 
+  <div class="dots">
+    <span class="dotBI"></span>OO-HBI
+    <span class="dotBU"></span>OO-HBU
+    <span class="dotBY"></span>OO-HBY
+    <span class="dotBQ"></span>OO-HBQ
+  </div>
 
+  <!--ERROR HANDLING-->
+  <p-toast></p-toast>
+
+</div>
 </body>

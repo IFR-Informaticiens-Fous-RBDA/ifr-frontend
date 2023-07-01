@@ -14,7 +14,7 @@
     <p>Begin</p>
     <mat-form-field>
       <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date" [formControl]="dateControlStart"
-        [min]="minDate" [max]="maxDate" [disabled]="disabled" (change)="computeFlightTime()">
+        [min]="minDate" [max]="maxDate" [disabled]="disabled" (change)="computeFlightTime()" [value]="dateControlStart.value ? dateControlStart.value.toISOString() : ''">
       <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
       <ngx-mat-datetime-picker #picker [showSpinners]="showSpinners" [showSeconds]="showSeconds"
         [stepHour]="stepHour" [stepMinute]="30" [stepSecond]="stepSecond" [touchUi]="touchUi"

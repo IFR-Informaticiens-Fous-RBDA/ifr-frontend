@@ -27,6 +27,21 @@ button.mat-menu-trigger{
   background-color: #FAFAFA;
 }
 
+.filters-container {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.filter-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
 
 ::ng-deep .cal-week-view .cal-event-title {
   color: white;
@@ -55,4 +70,28 @@ button.mat-menu-trigger{
 ::ng-deep .container.bg-light.border{
   max-width: 30rem;
   padding-left: 0 !important;
+}
+::ng-deep .my-calendar-duty .cal-day-column:nth-child(4n+1),
+::ng-deep .my-calendar-duty .cal-day-column:nth-child(4n+2)
+{
+  background-color: white !important;
+}
+
+::ng-deep .my-calendar-duty .cal-day-column:nth-child(4n+5),
+::ng-deep .my-calendar-duty .cal-day-column:nth-child(4n+6)
+{
+  background-color: #f5f5f5 !important;
+}
+::ng-deep .cal-week-view .cal-day-headers .cal-header {
+  pointer-events: none;
+}
+::ng-deep .cal-day-column {
+  position: relative;
+}
+::ng-deep .cal-disabled {
+  background-color: #eee;
+  pointer-events: none;
+}
+::ng-deep .cal-week-view .cal-hour-odd {
+  background-color: initial;
 }

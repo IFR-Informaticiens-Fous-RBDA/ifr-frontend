@@ -1,0 +1,35 @@
+<div class="container-fluid">
+  <h2>Capture Fuel delivery</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Delivered Fuel Quantity</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let fuelDelivery of fuelDeliveries">
+        <td>{{fuelDelivery.Date_Delivery}}</td>
+        <td>{{fuelDelivery.Fuel_Quantity}} liters</td>
+        <td><button class="mat-icon-delete" (click)="deleteFuelDelivery(fuelDelivery)"><mat-icon >delete</mat-icon></button></td>
+      </tr>
+    </tbody>
+  </table>
+  <button class="btn btn-primary" (click)="showAddForm = true">Add a new delivery</button>
+  <div *ngIf="showAddForm">
+    <h3>Add a new delivery</h3>
+    <form>
+      <div class="form-group">
+        <label for="date">Date:</label>
+        <input type="date" class="form-control" id="date" name="date" [(ngModel)]="start_date_delivery">
+      </div>
+      <div class="form-group">
+        <label for="fuelLevel">Delivered Fuel Quantity:</label>
+        <input type="number" class="form-control" id="fuelLevel" name="fuelLevel" [(ngModel)]="fuel_delivery">
+      </div>
+      <button type="submit" class="btn btn-primary" (click)="addNewFuelDelivery()">Save</button>
+      <button type="button" class="btn btn-secondary" (click)="showAddForm = false">Cancel</button>
+    </form>
+  </div>
+</div>

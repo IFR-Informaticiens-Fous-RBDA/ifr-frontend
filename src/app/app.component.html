@@ -23,11 +23,54 @@
       <a mat-list-item (click) = "sidenav.close()" [routerLink]="['register']" *ngIf = "user === null" routerLinkActive="active"> Register </a>
       <a mat-list-item (click) = "sidenav.close()" [routerLink]="['']" *ngIf = "user != null" routerLinkActive="active">Booking</a>
       <a mat-list-item (click) = "sidenav.close()" [routerLink]="['flights']" *ngIf="user != null" routerLinkActive="active">My flights</a>
-      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['flights-management']" *ngIf="user != null" routerLinkActive="active">Flights management</a>
-      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['members-operational-status']" *ngIf="user != null && user.payload.data[0].roles.includes('Flights manager')" routerLinkActive="active">Members operational status</a>
-      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['members-management']" *ngIf="user != null && user.payload.data[0].roles.includes('Secretary')" routerLinkActive="active">Members management</a>
-      <a mat-list-item (click) = "sidenav.close()" [routerLink]="['aircraft-potential-management']" *ngIf="user != null && user.payload.data[0].roles.includes('Aircrafts manager')" routerLinkActive="active">Aircrafts potential management</a>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          Flights
+        </mat-expansion-panel-header>
+        <mat-nav-list>
+          <a mat-list-item (click) = "sidenav.close()" [routerLink]="['flights-management']" *ngIf="user != null" routerLinkActive="active">All Flights</a>
+        </mat-nav-list>
+      </mat-expansion-panel>
 
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          Aircrafts
+        </mat-expansion-panel-header>
+        <mat-nav-list>
+          <a mat-list-item (click) = "sidenav.close()" [routerLink]="['aircraft-potential-management']" *ngIf="user != null" routerLinkActive="active">Aircrafts potential management</a>
+        </mat-nav-list>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          Members
+        </mat-expansion-panel-header>
+        <mat-nav-list>
+          <a mat-list-item (click) = "sidenav.close()" [routerLink]="['members-operational-status']" *ngIf="user != null && user.payload.data[0].roles.includes('Flights manager')" routerLinkActive="active">Members operational status</a>
+          <a mat-list-item (click) = "sidenav.close()" [routerLink]="['members-management']" *ngIf="user != null && user.payload.data[0].roles.includes('Secretary')" routerLinkActive="active">Members management</a>
+        </mat-nav-list>
+      </mat-expansion-panel>
+
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          Finance
+        </mat-expansion-panel-header>
+        <mat-nav-list>
+          <a mat-list-item (click) = "sidenav.close()" [routerLink]="['flying-cost-fuel-consumption']" *ngIf="user != null" routerLinkActive="active">Aircraft Cost and Fuel</a>
+          <a mat-list-item (click) = "sidenav.close()" [routerLink]="['flight-invoices']" *ngIf="user != null" routerLinkActive="active">Flight Invoices</a>
+          <a mat-list-item (click) = "sidenav.close()" [routerLink]="['fuel-management']" *ngIf="user != null" routerLinkActive="active">Fuel Cost</a>
+        </mat-nav-list>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          Fuel
+        </mat-expansion-panel-header>
+        <mat-nav-list>
+          <a mat-list-item (click) = "sidenav.close()" [routerLink]="['fuel-tank-management']" *ngIf="user != null" routerLinkActive="active">Fuel Tank Management</a>
+          <a mat-list-item (click) = "sidenav.close()" [routerLink]="['fuel-delivery-management']" *ngIf="user != null" routerLinkActive="active">Fuel Delivery Management</a>
+        </mat-nav-list>
+      </mat-expansion-panel>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
